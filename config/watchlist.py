@@ -1,9 +1,9 @@
 """
 Ticker watchlist for Project Signal.
 
-US_TICKERS  — routed to Polygon
-TSX_TICKERS — routed to yfinance (permanent, regardless of Polygon tier)
-SECTOR_ETF_TICKERS — routed to Polygon
+US and TSX tickers are loaded from config/ticker_universe.json (has_data=True only).
+SECTOR_ETF_TICKERS remain hardcoded — they are Phase 4 infrastructure (beta proxies)
+and are not part of the personal equity universe in the JSON.
 
 VIX/VVIX tickers are NOT listed here. They are resolved at runtime via
 plugins.routing.resolve_vix_tickers() based on config.VIX_SOURCE, so
@@ -16,25 +16,29 @@ lists which get appended automatically by get_all_tickers().
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
+_UNIVERSE_PATH = Path(__file__).parent / "ticker_universe.json"
+
+with open(_UNIVERSE_PATH) as _f:
+    _UNIVERSE: dict = json.load(_f)
+
+_TICKERS_MAP: dict = _UNIVERSE["tickers"]
+
 US_TICKERS: list[str] = [
-    "AAPL",
-    "MSFT",
-    "NVDA",
-    "AMZN",
-    "GOOGL",
-    "META",
-    "TSLA",
-    "JPM",
-    "XOM",
-    "UNH",
+    ticker
+    for ticker, info in _TICKERS_MAP.items()
+    if info["has_data"] and info["exchange"] == "us"
 ]
 
 TSX_TICKERS: list[str] = [
-    "RY.TO",
-    "TD.TO",
-    "CNQ.TO",
+    ticker
+    for ticker, info in _TICKERS_MAP.items()
+    if info["has_data"] and info["exchange"] in ("tsx", "tsx_venture")
 ]
 
+# Sector ETFs stay hardcoded — Phase 4 beta proxy infrastructure, not in personal universe
 SECTOR_ETF_TICKERS: list[str] = [
     "SPY",
     "QQQ",
@@ -66,7 +70,7 @@ def get_all_tickers() -> list[str]:
 
 
 def get_equity_tickers() -> list[str]:
-    """US + TSX only — excludes sector ETFs. Used by relatedness DAG."""
+    """US + TSX only — excludes sector ETFs. Used by Phase 4 relatedness DAG."""
     extra_us: list[str] = []
     extra_tsx: list[str] = []
 
