@@ -107,9 +107,15 @@ def main() -> None:
 
         rows = [
             (
-                b["ticker"], b["date"],
-                b["open"], b["high"], b["low"], b["close"],
-                b["volume"], b["currency"], b["source"],
+                b["ticker"],
+                b["date"],
+                b["open"],
+                b["high"],
+                b["low"],
+                b["close"],
+                b["volume"],
+                b["currency"],
+                b["source"],
             )
             for b in bars
         ]
