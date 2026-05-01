@@ -27,9 +27,7 @@ with open(_UNIVERSE_PATH) as _f:
 _TICKERS_MAP: dict = _UNIVERSE["tickers"]
 
 US_TICKERS: list[str] = [
-    ticker
-    for ticker, info in _TICKERS_MAP.items()
-    if info["has_data"] and info["exchange"] == "us"
+    ticker for ticker, info in _TICKERS_MAP.items() if info["has_data"] and info["exchange"] == "us"
 ]
 
 TSX_TICKERS: list[str] = [
