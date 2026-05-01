@@ -57,7 +57,8 @@ project-signal/
 ├── sql/
 │   ├── schema.sql         # All CREATE TABLE + indexes — run once on fresh Postgres
 │   └── migrations/        # ALTER TABLE scripts for live database upgrades
-├── scripts/               # Manual utility scripts (not DAGs)
+├── scripts/               # Manual utility scripts (not DAGs, run inside Docker)
+│   └── backfill_history.py  # One-time yfinance backfill — 400 days into raw_prices
 └── tests/                 # One test file per plugin module
 ```
 
@@ -70,7 +71,8 @@ project-signal/
 - All tables defined in `sql/schema.sql`. Never create tables in Python code.
 - All writes: `INSERT ... ON CONFLICT (ticker, date) DO UPDATE SET ...`
 - Never `TRUNCATE` or `DELETE` in DAG tasks. Soft deletes only (update `computed_at`, let queries filter by recency).
-- All DB connections via Airflow Postgres hook. No hardcoded connection strings.
+- All DB connections via Airflow Postgres hook in DAG tasks. No hardcoded connection strings.
+- `scripts/` are standalone utilities — they connect directly via psycopg2, hardcode `dbname="signal"`, and read credentials from `.env`.
 - Primary keys: `(ticker, date)` on all time-series tables.
 
 ---
@@ -131,7 +133,7 @@ That's it. No DAG, schema, or client changes required.
 |---|---|---|
 | Phase 1 | ✅ Complete | Foundation: `polygon_client.py`, `schema.sql`, `config.py`, `watchlist.py` |
 | Phase 2 | ✅ Complete | Ingest DAG live, `raw_prices` populating. yfinance added for TSX + VIX/VVIX (v1.2). |
-| Phase 3 | 🔲 Not started | Indicators DAG, `stock_signals` populating |
+| Phase 3 | 🔄 In progress | Indicators DAG, `stock_signals` populating. `raw_prices` backfilled 400 days. |
 | Phase 4 | 🔲 Not started | Relatedness DAG, `relatedness_matrix` + `sector_beta` |
 | Phase 5 | 🔲 Not started | LLM Analysis DAG, `llm_analysis` table |
 | Phase 6 | 🔲 Not started | Jarvis integration: daily brief endpoint, alert triggers |
