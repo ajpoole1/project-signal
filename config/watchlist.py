@@ -1,14 +1,22 @@
 """
 Ticker watchlist for Project Signal.
 
-WATCHLIST: 10 test tickers for Phase 1 dev/validation.
-Extend this list (never the DAG files) when expanding coverage.
+US_TICKERS  — routed to Polygon
+TSX_TICKERS — routed to yfinance (permanent, regardless of Polygon tier)
+SECTOR_ETF_TICKERS — routed to Polygon
 
-Volatile tickers and ETF proxies are injected automatically by the ingest DAG.
-Personal or sensitive ticker additions go in config/personal/watchlist_extra.py (gitignored).
+VIX/VVIX tickers are NOT listed here. They are resolved at runtime via
+plugins.routing.resolve_vix_tickers() based on config.VIX_SOURCE, so
+upgrading Polygon tiers never requires touching this file.
+
+Personal or sensitive ticker additions go in config/watchlist_personal.py
+(gitignored). That file should define US_TICKERS_EXTRA and TSX_TICKERS_EXTRA
+lists which get appended automatically by get_all_tickers().
 """
 
-WATCHLIST: list[str] = [
+from __future__ import annotations
+
+US_TICKERS: list[str] = [
     "AAPL",
     "MSFT",
     "NVDA",
@@ -21,10 +29,10 @@ WATCHLIST: list[str] = [
     "UNH",
 ]
 
-# Injected automatically — do not remove
-INDEX_TICKERS: list[str] = [
-    "I:VIX",
-    "I:VVIX",
+TSX_TICKERS: list[str] = [
+    "RY.TO",
+    "TD.TO",
+    "CNQ.TO",
 ]
 
 SECTOR_ETF_TICKERS: list[str] = [
@@ -39,5 +47,35 @@ SECTOR_ETF_TICKERS: list[str] = [
 
 
 def get_all_tickers() -> list[str]:
-    """Returns the full ticker set: watchlist + indexes + sector ETFs."""
-    return WATCHLIST + INDEX_TICKERS + SECTOR_ETF_TICKERS
+    """
+    Returns the full equity ticker set: US + TSX + sector ETFs.
+    VIX/VVIX are excluded — callers that need them use resolve_vix_tickers().
+    """
+    extra_us: list[str] = []
+    extra_tsx: list[str] = []
+
+    try:
+        from config import watchlist_personal as personal  # type: ignore[import]
+
+        extra_us = getattr(personal, "US_TICKERS_EXTRA", [])
+        extra_tsx = getattr(personal, "TSX_TICKERS_EXTRA", [])
+    except ImportError:
+        pass
+
+    return US_TICKERS + extra_us + TSX_TICKERS + extra_tsx + SECTOR_ETF_TICKERS
+
+
+def get_equity_tickers() -> list[str]:
+    """US + TSX only — excludes sector ETFs. Used by relatedness DAG."""
+    extra_us: list[str] = []
+    extra_tsx: list[str] = []
+
+    try:
+        from config import watchlist_personal as personal  # type: ignore[import]
+
+        extra_us = getattr(personal, "US_TICKERS_EXTRA", [])
+        extra_tsx = getattr(personal, "TSX_TICKERS_EXTRA", [])
+    except ImportError:
+        pass
+
+    return US_TICKERS + extra_us + TSX_TICKERS + extra_tsx

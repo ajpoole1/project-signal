@@ -9,6 +9,19 @@ RATE_LIMITS = {
     "developer": {"calls_per_min": 999},
 }
 
+# --- VIX / VVIX source ---
+# Free tier:    yfinance (^VIX, ^VVIX) — Polygon free does not include index data
+# Starter+:     switch to polygon (I:VIX, I:VVIX) for consistency with other US data
+# TSX tickers always use yfinance regardless of tier.
+#
+# Upgrading from free to Polygon Starter — complete checklist:
+#   1. POLYGON_TIER  = "starter"
+#   2. VIX_SOURCE    = "polygon"
+#   3. VVIX_SOURCE   = "polygon"
+# That is the entire upgrade. No DAG, schema, or client changes required.
+VIX_SOURCE = "yfinance"  # "yfinance" | "polygon"
+VVIX_SOURCE = "yfinance"  # "yfinance" | "polygon"
+
 # --- Signal weights (must sum to 1.0) ---
 SIGNAL_WEIGHTS = {
     "sma_200": 0.30,

@@ -5,40 +5,25 @@ x-airflow-common:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@host.docker.internal/${POSTGRES_DB}
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    _PIP_ADDITIONAL_REQUIREMENTS: "yfinance>=0.2.40 pandas>=2.0.0"
+    PYTHONPATH: /opt/airflow
     AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
     # Registers the signal DB connection automatically — no manual UI setup needed
-    AIRFLOW_CONN_SIGNAL_POSTGRES: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/signal
+    AIRFLOW_CONN_SIGNAL_POSTGRES: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@host.docker.internal/signal
     POLYGON_API_KEY: ${POLYGON_API_KEY}
     ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
   volumes:
     - ./dags:/opt/airflow/dags
     - ./plugins:/opt/airflow/plugins
     - ./config:/opt/airflow/config
+    - ./dag_components:/opt/airflow/dag_components
     - airflow-logs:/opt/airflow/logs
-  depends_on:
-    postgres:
-      condition: service_healthy
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
 
 services:
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
-      interval: 5s
-      retries: 5
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./sql/init/01_create_signal_db.sh:/docker-entrypoint-initdb.d/01_create_signal_db.sh
-      - ./sql/schema.sql:/docker-entrypoint-initdb.d/02_signal_schema.sql
-
   airflow-init:
     <<: *airflow-common
     entrypoint: /bin/bash
@@ -74,5 +59,4 @@ services:
         condition: service_completed_successfully
 
 volumes:
-  postgres-data:
   airflow-logs:

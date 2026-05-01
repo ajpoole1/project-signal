@@ -1,0 +1,5615 @@
+{
+  "meta": {
+    "generated_at": "2026-05-01",
+    "total_unique_tickers": 650,
+    "us_listed": 555,
+    "tsx_listed": 90,
+    "tsx_venture_listed": 5,
+    "no_data_tickers": 34,
+    "category_count": 21
+  },
+  "categories": {
+    "added_2026": {
+      "label": "Added 2026",
+      "us": [
+        "BMI",
+        "CRM",
+        "GIS",
+        "MSFT"
+      ],
+      "tsx": [
+        "TCL-A.TO",
+        "VDY.TO",
+        "VIDY.TO"
+      ],
+      "tsx_venture": []
+    },
+    "automotive": {
+      "label": "Cars & Vehicles",
+      "us": [
+        "BC",
+        "BWA",
+        "CCL",
+        "CHPT",
+        "CHRW",
+        "DE",
+        "DOOO",
+        "DRPRY",
+        "EVGO",
+        "F",
+        "FCEL",
+        "FUJHY",
+        "GM",
+        "GPC",
+        "GT",
+        "JCI",
+        "LI",
+        "LKQ",
+        "MBGAF",
+        "MBGYY",
+        "MBUU",
+        "MCFT",
+        "MNRO",
+        "MZDAY",
+        "NCLH",
+        "NIO",
+        "NSANY",
+        "PII",
+        "POAHY",
+        "PSNY",
+        "RIDE",
+        "RNLSY",
+        "ROK",
+        "RYCEY",
+        "SHIP",
+        "STLA",
+        "THO",
+        "TSLA",
+        "VWAGY",
+        "WGO",
+        "XPEV"
+      ],
+      "tsx": [
+        "DOO.TO",
+        "MRE.TO"
+      ],
+      "tsx_venture": []
+    },
+    "chemicals_energy": {
+      "label": "Chemicals & Energy",
+      "us": [
+        "AA",
+        "AES",
+        "ALB",
+        "ASH",
+        "BAK",
+        "BIP",
+        "BKH",
+        "CE",
+        "CMI",
+        "DD",
+        "EMR",
+        "FMC",
+        "HD",
+        "LAND",
+        "LYB",
+        "RTO",
+        "SOMMY",
+        "TMRAF",
+        "TSCO",
+        "UGI",
+        "WDFC"
+      ],
+      "tsx": [
+        "SCR.TO"
+      ],
+      "tsx_venture": []
+    },
+    "china": {
+      "label": "China",
+      "us": [
+        "BIDU",
+        "BILI",
+        "CIADY",
+        "CKHUY",
+        "EDU",
+        "HIMX",
+        "JD",
+        "LNVGY",
+        "LU",
+        "MPNGY",
+        "NETTF",
+        "NIO",
+        "NTES",
+        "PDD",
+        "PNGAY",
+        "SE",
+        "TAL",
+        "TCEHY",
+        "TME",
+        "WB",
+        "YMM",
+        "YUMC"
+      ],
+      "tsx": [],
+      "tsx_venture": []
+    },
+    "construction": {
+      "label": "Construction",
+      "us": [
+        "DHI",
+        "LEN"
+      ],
+      "tsx": [],
+      "tsx_venture": []
+    },
+    "consumer_brands": {
+      "label": "Consumer Brands",
+      "us": [
+        "ABEV",
+        "AEO",
+        "ANF",
+        "BBW",
+        "CPRI",
+        "CROX",
+        "DBI",
+        "EL",
+        "ELF",
+        "FIVE",
+        "FOSL",
+        "GAP",
+        "HESAY",
+        "IFF",
+        "IPAR",
+        "JDSPY",
+        "JWN",
+        "KSRYY",
+        "LEG",
+        "LEVI",
+        "LRLCY",
+        "LVMUY",
+        "M",
+        "MOV",
+        "NUS",
+        "PVH",
+        "RVLV",
+        "SKX",
+        "UA",
+        "ULTA",
+        "VFC",
+        "VSCO",
+        "WWW",
+        "YETI"
+      ],
+      "tsx": [
+        "GIL.TO"
+      ],
+      "tsx_venture": []
+    },
+    "defense": {
+      "label": "Defense & Aerospace",
+      "us": [
+        "AUTLF",
+        "BAESY",
+        "CXW",
+        "DASTY",
+        "GD",
+        "HII",
+        "KTOS",
+        "LDOS",
+        "LHX",
+        "LMT",
+        "NOC",
+        "POWW",
+        "ROKT",
+        "RTX",
+        "SHLD",
+        "SYPR"
+      ],
+      "tsx": [
+        "BBD-A.TO",
+        "CAE.TO",
+        "FTG.TO",
+        "HRX.TO",
+        "MAL.TO"
+      ],
+      "tsx_venture": [
+        "FLY.V"
+      ]
+    },
+    "electronics": {
+      "label": "Electronics & Hardware",
+      "us": [
+        "AAPL",
+        "ADTN",
+        "AMD",
+        "ATKR",
+        "CABO",
+        "CCOI",
+        "CGNX",
+        "CMTL",
+        "DLB",
+        "ES",
+        "GTLB",
+        "KBR",
+        "MEI",
+        "MRCY",
+        "NTDOF",
+        "OMRNY",
+        "SATS",
+        "SBGSF",
+        "TV",
+        "UI",
+        "VSAT",
+        "WHR",
+        "WOLF",
+        "YETI"
+      ],
+      "tsx": [
+        "QBR-A.TO",
+        "RCI-B.TO",
+        "T.TO"
+      ],
+      "tsx_venture": []
+    },
+    "entertainment": {
+      "label": "Entertainment & Leisure",
+      "us": [
+        "BRSL",
+        "CALY",
+        "CHTR",
+        "CJREF",
+        "CZR",
+        "EBCRY",
+        "EDR",
+        "EVVTY",
+        "FLUT",
+        "GMVHF",
+        "GMVHY",
+        "GRVY",
+        "GTN",
+        "H",
+        "HTHT",
+        "JAKK",
+        "LION",
+        "LSXMK",
+        "LVS",
+        "LYV",
+        "MANU",
+        "MCS",
+        "MGM",
+        "MTN",
+        "NTDOY",
+        "NXST",
+        "OLLI",
+        "PARA",
+        "PENN",
+        "PPRUY",
+        "PRXXF",
+        "SAM",
+        "SIX",
+        "SONY",
+        "SQNNY",
+        "SQNXF",
+        "SSP",
+        "TGNA",
+        "TKO",
+        "UBSFF",
+        "UBSFY",
+        "UNVGY",
+        "VAC",
+        "VIVEF",
+        "WBD",
+        "WYNN"
+      ],
+      "tsx": [
+        "CJR-B.TO"
+      ],
+      "tsx_venture": []
+    },
+    "fhsa": {
+      "label": "FHSA Best Picks",
+      "us": [
+        "ADBE",
+        "AMD",
+        "ANET",
+        "ARE",
+        "ASH",
+        "ATR",
+        "CE",
+        "CL",
+        "CNC",
+        "CNI",
+        "CP",
+        "CSX",
+        "CVS",
+        "CWT",
+        "DECK",
+        "DHI",
+        "EDV",
+        "EWZ",
+        "FDX",
+        "GIS",
+        "GOOG",
+        "HTO",
+        "ITUB",
+        "JHX",
+        "JNJ",
+        "KBR",
+        "KKR",
+        "KO",
+        "LEN",
+        "LMT",
+        "LW",
+        "LYB",
+        "MEOH",
+        "MRK",
+        "MTN",
+        "NKE",
+        "NSRGY",
+        "NTR",
+        "NVO",
+        "OXY",
+        "PEP",
+        "RHI",
+        "RMCF",
+        "SAM",
+        "STZ",
+        "SWK",
+        "TFII",
+        "TKO",
+        "TTC",
+        "TTD",
+        "TTWO",
+        "WIT",
+        "WTRG",
+        "YORW",
+        "YUM"
+      ],
+      "tsx": [
+        "ATD.TO",
+        "CAR-UN.TO",
+        "GFL.TO",
+        "KMP-UN.TO",
+        "NPI.TO",
+        "RCI-B.TO",
+        "T.TO",
+        "WTE.TO"
+      ],
+      "tsx_venture": []
+    },
+    "financials": {
+      "label": "Financials",
+      "us": [
+        "AGNC",
+        "AXP",
+        "BEN",
+        "BN",
+        "COOP",
+        "IVZ",
+        "KKR",
+        "LAZ",
+        "MA",
+        "NLY",
+        "SCHW",
+        "TROW",
+        "TTD",
+        "V"
+      ],
+      "tsx": [
+        "AD-UN.TO",
+        "BN.TO",
+        "EQB.TO",
+        "FSZ.TO",
+        "IFC.TO",
+        "IGM.TO",
+        "ONEX.TO",
+        "POW.TO"
+      ],
+      "tsx_venture": []
+    },
+    "food_beverage": {
+      "label": "Food & Beverage",
+      "us": [
+        "ARTNA",
+        "AWR",
+        "BJ",
+        "BROS",
+        "BUD",
+        "CABGY",
+        "CAG",
+        "CBRL",
+        "CMG",
+        "CORN",
+        "COST",
+        "CPB",
+        "CWT",
+        "DENN",
+        "DG",
+        "DLTR",
+        "DNUT",
+        "DOLE",
+        "DPUKY",
+        "FDP",
+        "GIS",
+        "HRL",
+        "HSY",
+        "HTO",
+        "JJSF",
+        "K",
+        "KDP",
+        "KHC",
+        "KMB",
+        "KO",
+        "KSS",
+        "KVUE",
+        "LW",
+        "MDLZ",
+        "MKC",
+        "MNST",
+        "PEP",
+        "PZZA",
+        "RMCF",
+        "SHAK",
+        "SJM",
+        "SNDL",
+        "SYY",
+        "TAGS",
+        "TAP",
+        "TGT",
+        "TR",
+        "TSN",
+        "UNFI",
+        "WEAT",
+        "WEN",
+        "WMT",
+        "WNGRF",
+        "WTRG",
+        "YUM"
+      ],
+      "tsx": [
+        "BPF-UN.TO",
+        "L.TO",
+        "NWC.TO",
+        "PRMW.TO",
+        "PZA.TO",
+        "RSI.TO"
+      ],
+      "tsx_venture": []
+    },
+    "global": {
+      "label": "Global Markets",
+      "us": [
+        "ABEV",
+        "ADDYY",
+        "AMBP",
+        "AMKBY",
+        "ASAI",
+        "ATEYY",
+        "BASFY",
+        "BAYZF",
+        "BBRYF",
+        "BOSSY",
+        "BRFS",
+        "BURBY",
+        "CALM",
+        "CCOEF",
+        "CCOEY",
+        "CCU",
+        "CJPRY",
+        "DD",
+        "DEO",
+        "DGS",
+        "DSNKY",
+        "DXJ",
+        "EJPRY",
+        "EVVTY",
+        "EWZ",
+        "EWZS",
+        "FDP",
+        "FMX",
+        "GOFPY",
+        "GRFS",
+        "GVDNY",
+        "HDB",
+        "HE",
+        "HTHIY",
+        "IFF",
+        "IHICY",
+        "ITOCY",
+        "JBSAY",
+        "JRONY",
+        "KAOOY",
+        "KEP",
+        "KGFHY",
+        "KMTUY",
+        "KNBWY",
+        "KONMY",
+        "KPOP",
+        "KUBTY",
+        "KYOCF",
+        "MCOIF",
+        "MHVYF",
+        "MIELF",
+        "MIELY",
+        "MLCO",
+        "MSBHF",
+        "NCBDF",
+        "NCBDY",
+        "NOK",
+        "NPNYY",
+        "NPSCY",
+        "NRDBY",
+        "NRSCF",
+        "NSRGY",
+        "NTDOF",
+        "NTDOY",
+        "ORKLY",
+        "PETRY",
+        "PHG",
+        "POAHY",
+        "PRNDY",
+        "PUMSY",
+        "RANJY",
+        "RBGLD",
+        "SEOAY",
+        "SGAMY",
+        "SHDA.F",
+        "SHECY",
+        "SIEGY",
+        "SMMYY",
+        "SMNEY",
+        "SMNNY",
+        "SONY",
+        "SQNXF",
+        "SSDOY",
+        "SUZ",
+        "TBVPF",
+        "TELFY",
+        "TOELY",
+        "TOSBF",
+        "TOSYY",
+        "TSRYY",
+        "TTC",
+        "UL",
+        "UMGNF",
+        "UMICY",
+        "UNCRY",
+        "UPMMY",
+        "VAC",
+        "VIV",
+        "WJRYY",
+        "WOSGF",
+        "XYIGY",
+        "YAMCF",
+        "YAMHF"
+      ],
+      "tsx": [],
+      "tsx_venture": []
+    },
+    "india": {
+      "label": "India",
+      "us": [
+        "HDB",
+        "IBN",
+        "INFY",
+        "MMYT",
+        "RDY",
+        "SBKFF",
+        "WIT"
+      ],
+      "tsx": [],
+      "tsx_venture": []
+    },
+    "mining_resources": {
+      "label": "Mining & Natural Resources",
+      "us": [
+        "ABML",
+        "CEF",
+        "CMP",
+        "D",
+        "EQNR",
+        "FTS",
+        "HUN",
+        "KMI",
+        "LAC",
+        "LPX",
+        "NEM",
+        "PBR",
+        "REPX",
+        "RIO",
+        "SBSW",
+        "SQM"
+      ],
+      "tsx": [
+        "ABX.TO",
+        "AQN.TO",
+        "BIR.TO",
+        "BLX.TO",
+        "BTO.TO",
+        "EDV.TO",
+        "FNV.TO",
+        "IMG.TO",
+        "INE.TO",
+        "K.TO",
+        "LUN.TO",
+        "NGT.TO",
+        "NPI.TO",
+        "PAAS.TO",
+        "SJ.TO",
+        "SSRM.TO"
+      ],
+      "tsx_venture": [
+        "EMO.V",
+        "LI.V",
+        "NBLC.V"
+      ]
+    },
+    "newest_drop": {
+      "label": "Recent Additions",
+      "us": [
+        "AAPL",
+        "AMD",
+        "AMZN",
+        "BAM",
+        "BBWI",
+        "BDX",
+        "BJ",
+        "BMI",
+        "BN",
+        "BNS",
+        "BULL",
+        "CAG",
+        "CHD",
+        "CL",
+        "CLX",
+        "CNC",
+        "CRM",
+        "CROX",
+        "FLUT",
+        "FNKO",
+        "FTNT",
+        "GIS",
+        "GOOG",
+        "IFF",
+        "INFY",
+        "IP",
+        "JAKK",
+        "JJSF",
+        "KKR",
+        "LMT",
+        "LRCX",
+        "LULU",
+        "MEOH",
+        "NFLX",
+        "NMG",
+        "NVO",
+        "PANW",
+        "PEP",
+        "PG",
+        "PRXXF",
+        "PZZA",
+        "RHI",
+        "SBUX",
+        "SJM",
+        "SNDK",
+        "SONY",
+        "SYY",
+        "TROW",
+        "UAA",
+        "V",
+        "WM",
+        "WMG",
+        "YETI"
+      ],
+      "tsx": [
+        "BAM.TO",
+        "BNS.TO",
+        "DLR-U.TO",
+        "DLR.TO",
+        "DSG.TO",
+        "ENGH.TO",
+        "EQB.TO",
+        "GFL.TO",
+        "HHIS.TO",
+        "IFC.TO",
+        "L.TO",
+        "MX.TO",
+        "NOU.TO",
+        "POW.TO",
+        "QQCC.TO",
+        "SLF.TO",
+        "TOY.TO",
+        "VISA.TO",
+        "WCN.TO",
+        "WFG.TO",
+        "X.TO"
+      ],
+      "tsx_venture": []
+    },
+    "pharmaceuticals": {
+      "label": "Pharmaceuticals & Biotech",
+      "us": [
+        "ABBV",
+        "ABC",
+        "ABT",
+        "AMGN",
+        "ATR",
+        "AZN",
+        "AZNCF",
+        "BAX",
+        "BAYRY",
+        "BAYZF",
+        "BDX",
+        "BMY",
+        "BNTX",
+        "BSX",
+        "CAH",
+        "CI",
+        "CLPBY",
+        "CLX",
+        "CNC",
+        "CVS",
+        "ELV",
+        "FMS",
+        "FSNUY",
+        "GILD",
+        "GSK",
+        "HUM",
+        "ICUI",
+        "IHI",
+        "JNJ",
+        "KVUE",
+        "MCK",
+        "MDT",
+        "MKKGY",
+        "MKSI",
+        "MOH",
+        "MRK",
+        "MRNA",
+        "NVAX",
+        "NVCR",
+        "NVO",
+        "NVS",
+        "OMCL",
+        "PDCO",
+        "PFE",
+        "PRGO",
+        "PSCH",
+        "RDY",
+        "RHHBY",
+        "SENS",
+        "SNY",
+        "SRCL",
+        "TAK",
+        "TARO",
+        "TEVA",
+        "TNDM",
+        "UNH",
+        "WBA",
+        "WST"
+      ],
+      "tsx": [
+        "HHL.TO",
+        "HHLE.TO"
+      ],
+      "tsx_venture": []
+    },
+    "reits": {
+      "label": "REITs",
+      "us": [
+        "ADC",
+        "AMT",
+        "APYRF",
+        "ARE",
+        "EXR",
+        "GLPI",
+        "HIW",
+        "HR",
+        "LAND",
+        "MAA",
+        "MPT",
+        "NNN",
+        "O",
+        "PSA",
+        "SBRA",
+        "UHT",
+        "VICI",
+        "WPC",
+        "WY"
+      ],
+      "tsx": [
+        "AP-UN.TO",
+        "APR-UN.TO",
+        "CAR-UN.TO",
+        "CRR-UN.TO",
+        "CRT-UN.TO",
+        "D-UN.TO",
+        "EXE.TO",
+        "FCR-UN.TO",
+        "GRT-UN.TO",
+        "HOM-UN.TO",
+        "HR-UN.TO",
+        "IIP-UN.TO",
+        "KMP-UN.TO",
+        "MI-UN.TO",
+        "MRG-UN.TO",
+        "NRR-UN.TO",
+        "REI-UN.TO",
+        "SGR-UN.TO",
+        "SOT-UN.TO",
+        "SRU-UN.TO",
+        "VITL-UN.TO"
+      ],
+      "tsx_venture": []
+    },
+    "software_tech": {
+      "label": "Software & Technology",
+      "us": [
+        "ADBE",
+        "ADP",
+        "AYX",
+        "BB",
+        "BBIG",
+        "BEN",
+        "COIN",
+        "CRSR",
+        "CSCO",
+        "DBX",
+        "DDOG",
+        "DKNG",
+        "GLBE",
+        "HRB",
+        "INFY",
+        "NET",
+        "NNDM",
+        "ORCL",
+        "PINS",
+        "PLTR",
+        "PSN",
+        "RBLX",
+        "RHI",
+        "SBGI",
+        "SLGG",
+        "SNAP",
+        "SNOW",
+        "U",
+        "UBSFY",
+        "UFO"
+      ],
+      "tsx": [
+        "DSG.TO",
+        "NVEI.TO",
+        "WELL.TO"
+      ],
+      "tsx_venture": [
+        "FLT.V"
+      ]
+    },
+    "waste_management": {
+      "label": "Waste & Environmental",
+      "us": [
+        "CLH",
+        "CWST",
+        "GFL",
+        "MEG",
+        "NVRI",
+        "RSG",
+        "SNOW",
+        "SRCL",
+        "WCN",
+        "WM"
+      ],
+      "tsx": [
+        "GFL.TO",
+        "WCN.TO"
+      ],
+      "tsx_venture": []
+    },
+    "water_beverages": {
+      "label": "Water & Beverages",
+      "us": [
+        "ARTNA",
+        "AWK",
+        "AWR",
+        "BDWBF",
+        "CABGY",
+        "CCU",
+        "CELH",
+        "CWCO",
+        "CWT",
+        "DEO",
+        "DGEAF",
+        "FIZZ",
+        "GWRS",
+        "HEINY",
+        "HINKF",
+        "HTO",
+        "MOJO",
+        "MSEX",
+        "PDRDF",
+        "PEGRY",
+        "PRNDY",
+        "REMYF",
+        "REMYY",
+        "SAM",
+        "UUGRY",
+        "WTRG",
+        "WVVI",
+        "XYL",
+        "YORW"
+      ],
+      "tsx": [],
+      "tsx_venture": []
+    }
+  },
+  "tickers": {
+    "AA": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AAPL": {
+      "categories": [
+        "electronics",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ABBV": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ABC": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "ABEV": {
+      "categories": [
+        "global",
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ABML": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "ABT": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ABX.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "AD-UN.TO": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "ADBE": {
+      "categories": [
+        "fhsa",
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ADC": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ADDYY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ADP": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ADTN": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AEO": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AES": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AGNC": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ALB": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AMBP": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AMD": {
+      "categories": [
+        "fhsa",
+        "electronics",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AMGN": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AMKBY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AMT": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AMZN": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ANET": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ANF": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AP-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "APR-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "APYRF": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AQN.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "ARE": {
+      "categories": [
+        "fhsa",
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ARTNA": {
+      "categories": [
+        "food_beverage",
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ASAI": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "ASH": {
+      "categories": [
+        "fhsa",
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ATD.TO": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "ATEYY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ATKR": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ATR": {
+      "categories": [
+        "fhsa",
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AUTLF": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AWK": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AWR": {
+      "categories": [
+        "food_beverage",
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AXP": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AYX": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "AZN": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "AZNCF": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "BAESY": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BAK": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BAM": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BAM.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "BASFY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BAX": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BAYRY": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BAYZF": {
+      "categories": [
+        "pharmaceuticals",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BB": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BBD-A.TO": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "BBIG": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BBRYF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BBW": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BBWI": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BC": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BDWBF": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BDX": {
+      "categories": [
+        "pharmaceuticals",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BEN": {
+      "categories": [
+        "software_tech",
+        "financials"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BIDU": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BILI": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BIP": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BIR.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "BJ": {
+      "categories": [
+        "food_beverage",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BKH": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BLX.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "BMI": {
+      "categories": [
+        "added_2026",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BMY": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BN": {
+      "categories": [
+        "financials",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BN.TO": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "BNS": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BNS.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "BNTX": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BOSSY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BPF-UN.TO": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "BRFS": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "BROS": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BRSL": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BSX": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BTO.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "BUD": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BULL": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BURBY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "BWA": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CABGY": {
+      "categories": [
+        "food_beverage",
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CABO": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CAE.TO": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "CAG": {
+      "categories": [
+        "food_beverage",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CAH": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CALM": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CALY": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CAR-UN.TO": {
+      "categories": [
+        "fhsa",
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "CBRL": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CCL": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CCOEF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CCOEY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CCOI": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CCU": {
+      "categories": [
+        "global",
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CE": {
+      "categories": [
+        "fhsa",
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CEF": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CELH": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CGNX": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CHD": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CHPT": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CHRW": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CHTR": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CI": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CIADY": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CJPRY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CJR-B.TO": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "CJREF": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CKHUY": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CL": {
+      "categories": [
+        "fhsa",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CLH": {
+      "categories": [
+        "waste_management"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CLPBY": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CLX": {
+      "categories": [
+        "pharmaceuticals",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CMG": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CMI": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CMP": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CMTL": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CNC": {
+      "categories": [
+        "fhsa",
+        "pharmaceuticals",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CNI": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "COIN": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "COOP": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "CORN": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "COST": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CP": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CPB": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CPRI": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CRM": {
+      "categories": [
+        "added_2026",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CROX": {
+      "categories": [
+        "newest_drop",
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CRR-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "CRSR": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CRT-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "CSCO": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CSX": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CVS": {
+      "categories": [
+        "fhsa",
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CWCO": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CWST": {
+      "categories": [
+        "waste_management"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CWT": {
+      "categories": [
+        "fhsa",
+        "food_beverage",
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CXW": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "CZR": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "D": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "D-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "DASTY": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DBI": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DBX": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DD": {
+      "categories": [
+        "global",
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DDOG": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DE": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DECK": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DENN": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "DEO": {
+      "categories": [
+        "global",
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DG": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DGEAF": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DGS": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DHI": {
+      "categories": [
+        "fhsa",
+        "construction"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DKNG": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DLB": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DLR-U.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "DLR.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "DLTR": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DNUT": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DOLE": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DOO.TO": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "DOOO": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "DPUKY": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DRPRY": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DSG.TO": {
+      "categories": [
+        "software_tech",
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "DSNKY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "DXJ": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "EBCRY": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "EDR": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "EDU": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "EDV": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "EDV.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "EJPRY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "EL": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ELF": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ELV": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "EMO.V": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx_venture",
+      "has_data": true
+    },
+    "EMR": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ENGH.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "EQB.TO": {
+      "categories": [
+        "financials",
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "EQNR": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ES": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "EVGO": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "EVVTY": {
+      "categories": [
+        "entertainment",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "EWZ": {
+      "categories": [
+        "fhsa",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "EWZS": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "EXE.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "EXR": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "F": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FCEL": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FCR-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "FDP": {
+      "categories": [
+        "food_beverage",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FDX": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FIVE": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FIZZ": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FLT.V": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "tsx_venture",
+      "has_data": true
+    },
+    "FLUT": {
+      "categories": [
+        "entertainment",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FLY.V": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "tsx_venture",
+      "has_data": false
+    },
+    "FMC": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FMS": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FMX": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FNKO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FNV.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "FOSL": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FSNUY": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FSZ.TO": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "FTG.TO": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "FTNT": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FTS": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "FUJHY": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GAP": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GD": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GFL": {
+      "categories": [
+        "waste_management"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GFL.TO": {
+      "categories": [
+        "fhsa",
+        "waste_management",
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "GIL.TO": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "GILD": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GIS": {
+      "categories": [
+        "fhsa",
+        "food_beverage",
+        "added_2026",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GLBE": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GLPI": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GM": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GMVHF": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GMVHY": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GOFPY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GOOG": {
+      "categories": [
+        "fhsa",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GPC": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GRFS": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GRT-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "GRVY": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GSK": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GT": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GTLB": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GTN": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GVDNY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "GWRS": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "H": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HD": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HDB": {
+      "categories": [
+        "india",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HE": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HEINY": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HESAY": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HHIS.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "HHL.TO": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "HHLE.TO": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "HII": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HIMX": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HINKF": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HIW": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HOM-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "HR": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HR-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "HRB": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HRL": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HRX.TO": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "tsx",
+      "has_data": false
+    },
+    "HSY": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HTHIY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HTHT": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HTO": {
+      "categories": [
+        "fhsa",
+        "food_beverage",
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HUM": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "HUN": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "IBN": {
+      "categories": [
+        "india"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ICUI": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "IFC.TO": {
+      "categories": [
+        "financials",
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "IFF": {
+      "categories": [
+        "global",
+        "newest_drop",
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "IGM.TO": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "IHI": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "IHICY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "IIP-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "IMG.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "INE.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": false
+    },
+    "INFY": {
+      "categories": [
+        "india",
+        "software_tech",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "IP": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "IPAR": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ITOCY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ITUB": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "IVZ": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "JAKK": {
+      "categories": [
+        "entertainment",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "JBSAY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "JCI": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "JD": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "JDSPY": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "JHX": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "JJSF": {
+      "categories": [
+        "food_beverage",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "JNJ": {
+      "categories": [
+        "fhsa",
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "JRONY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "JWN": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "K": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "K.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "KAOOY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KBR": {
+      "categories": [
+        "fhsa",
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KDP": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KEP": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KGFHY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KHC": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KKR": {
+      "categories": [
+        "fhsa",
+        "financials",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KMB": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KMI": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KMP-UN.TO": {
+      "categories": [
+        "fhsa",
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "KMTUY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KNBWY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KO": {
+      "categories": [
+        "fhsa",
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KONMY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KPOP": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KSRYY": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KSS": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KTOS": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KUBTY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KVUE": {
+      "categories": [
+        "pharmaceuticals",
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "KYOCF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "L.TO": {
+      "categories": [
+        "food_beverage",
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "LAC": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LAND": {
+      "categories": [
+        "reits",
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LAZ": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LDOS": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LEG": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LEN": {
+      "categories": [
+        "fhsa",
+        "construction"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LEVI": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LHX": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LI": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LI.V": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx_venture",
+      "has_data": true
+    },
+    "LION": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LKQ": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LMT": {
+      "categories": [
+        "fhsa",
+        "defense",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LNVGY": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LPX": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LRCX": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LRLCY": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LSXMK": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "LU": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LULU": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LUN.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "LVMUY": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LVS": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LW": {
+      "categories": [
+        "fhsa",
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LYB": {
+      "categories": [
+        "fhsa",
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "LYV": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "M": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MA": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MAA": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MAL.TO": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "MANU": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MBGAF": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MBGYY": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MBUU": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MCFT": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MCK": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MCOIF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "MCS": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MDLZ": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MDT": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MEG": {
+      "categories": [
+        "waste_management"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MEI": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MEOH": {
+      "categories": [
+        "fhsa",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MGM": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MHVYF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MI-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "MIELF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MIELY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MKC": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MKKGY": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MKSI": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MLCO": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MMYT": {
+      "categories": [
+        "india"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MNRO": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MNST": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MOH": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MOJO": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MOV": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MPNGY": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MPT": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MRCY": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MRE.TO": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "MRG-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "MRK": {
+      "categories": [
+        "fhsa",
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MRNA": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MSBHF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MSEX": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MSFT": {
+      "categories": [
+        "added_2026"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MTN": {
+      "categories": [
+        "fhsa",
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "MX.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "MZDAY": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NBLC.V": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx_venture",
+      "has_data": true
+    },
+    "NCBDF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NCBDY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NCLH": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NEM": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NET": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NETTF": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NFLX": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NGT.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": false
+    },
+    "NIO": {
+      "categories": [
+        "china",
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NKE": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NLY": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NMG": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NNDM": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NNN": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NOC": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NOK": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NOU.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "NPI.TO": {
+      "categories": [
+        "fhsa",
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "NPNYY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NPSCY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NRDBY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NRR-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "NRSCF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NSANY": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NSRGY": {
+      "categories": [
+        "fhsa",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NTDOF": {
+      "categories": [
+        "electronics",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NTDOY": {
+      "categories": [
+        "entertainment",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NTES": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NTR": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NUS": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NVAX": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NVCR": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NVEI.TO": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "tsx",
+      "has_data": false
+    },
+    "NVO": {
+      "categories": [
+        "fhsa",
+        "pharmaceuticals",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NVRI": {
+      "categories": [
+        "waste_management"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NVS": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "NWC.TO": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "NXST": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "O": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "OLLI": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "OMCL": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "OMRNY": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ONEX.TO": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "ORCL": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ORKLY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "OXY": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PAAS.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "PANW": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PARA": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "PBR": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PDCO": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "PDD": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PDRDF": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PEGRY": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PENN": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PEP": {
+      "categories": [
+        "fhsa",
+        "food_beverage",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PETRY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "PFE": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PG": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PHG": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PII": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PINS": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PLTR": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PNGAY": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "POAHY": {
+      "categories": [
+        "automotive",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "POW.TO": {
+      "categories": [
+        "financials",
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "POWW": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PPRUY": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PRGO": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PRMW.TO": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "PRNDY": {
+      "categories": [
+        "global",
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PRXXF": {
+      "categories": [
+        "entertainment",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PSA": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PSCH": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PSN": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PSNY": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PUMSY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PVH": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "PZA.TO": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "PZZA": {
+      "categories": [
+        "food_beverage",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "QBR-A.TO": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "QQCC.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "RANJY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RBGLD": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RBLX": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RCI-B.TO": {
+      "categories": [
+        "fhsa",
+        "electronics"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "RDY": {
+      "categories": [
+        "pharmaceuticals",
+        "india"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "REI-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "REMYF": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "REMYY": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "REPX": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RHHBY": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RHI": {
+      "categories": [
+        "fhsa",
+        "software_tech",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RIDE": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "RIO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RMCF": {
+      "categories": [
+        "fhsa",
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RNLSY": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ROK": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ROKT": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RSG": {
+      "categories": [
+        "waste_management"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RSI.TO": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "RTO": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RTX": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RVLV": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "RYCEY": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SAM": {
+      "categories": [
+        "fhsa",
+        "entertainment",
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SATS": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SBGI": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SBGSF": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SBKFF": {
+      "categories": [
+        "india"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SBRA": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SBSW": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SBUX": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SCHW": {
+      "categories": [
+        "financials"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SCR.TO": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "SE": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SENS": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SEOAY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SGAMY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SGR-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "SHAK": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SHDA.F": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SHECY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SHIP": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SHLD": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SIEGY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SIX": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "SJ.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "SJM": {
+      "categories": [
+        "food_beverage",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SKX": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "SLF.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "SLGG": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "SMMYY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SMNEY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "SMNNY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SNAP": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SNDK": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SNDL": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SNOW": {
+      "categories": [
+        "waste_management",
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SNY": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SOMMY": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SONY": {
+      "categories": [
+        "entertainment",
+        "global",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SOT-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": false
+    },
+    "SQM": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SQNNY": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SQNXF": {
+      "categories": [
+        "entertainment",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SRCL": {
+      "categories": [
+        "pharmaceuticals",
+        "waste_management"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SRU-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "SSDOY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SSP": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SSRM.TO": {
+      "categories": [
+        "mining_resources"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "STLA": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "STZ": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SUZ": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SWK": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SYPR": {
+      "categories": [
+        "defense"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "SYY": {
+      "categories": [
+        "food_beverage",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "T.TO": {
+      "categories": [
+        "fhsa",
+        "electronics"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "TAGS": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TAK": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TAL": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TAP": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TARO": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "TBVPF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TCEHY": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TCL-A.TO": {
+      "categories": [
+        "added_2026"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "TELFY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TEVA": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TFII": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TGNA": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TGT": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "THO": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TKO": {
+      "categories": [
+        "fhsa",
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TME": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TMRAF": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TNDM": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TOELY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TOSBF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "TOSYY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "TOY.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "TR": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TROW": {
+      "categories": [
+        "financials",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TSCO": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TSLA": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TSN": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TSRYY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TTC": {
+      "categories": [
+        "fhsa",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TTD": {
+      "categories": [
+        "fhsa",
+        "financials"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TTWO": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "TV": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "U": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UA": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UAA": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UBSFF": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UBSFY": {
+      "categories": [
+        "entertainment",
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UFO": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UGI": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UHT": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UI": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UL": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "ULTA": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UMGNF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UMICY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UNCRY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UNFI": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UNH": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UNVGY": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UPMMY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "UUGRY": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "V": {
+      "categories": [
+        "financials",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "VAC": {
+      "categories": [
+        "entertainment",
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "VDY.TO": {
+      "categories": [
+        "added_2026"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "VFC": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "VICI": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "VIDY.TO": {
+      "categories": [
+        "added_2026"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "VISA.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "VITL-UN.TO": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "VIV": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "VIVEF": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "VSAT": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "VSCO": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "VWAGY": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WB": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WBA": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": false
+    },
+    "WBD": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WCN": {
+      "categories": [
+        "waste_management"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WCN.TO": {
+      "categories": [
+        "waste_management",
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "WDFC": {
+      "categories": [
+        "chemicals_energy"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WEAT": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WELL.TO": {
+      "categories": [
+        "software_tech"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "WEN": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WFG.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "WGO": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WHR": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WIT": {
+      "categories": [
+        "fhsa",
+        "india"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WJRYY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WM": {
+      "categories": [
+        "waste_management",
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WMG": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WMT": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WNGRF": {
+      "categories": [
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WOLF": {
+      "categories": [
+        "electronics"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WOSGF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WPC": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WST": {
+      "categories": [
+        "pharmaceuticals"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WTE.TO": {
+      "categories": [
+        "fhsa"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "WTRG": {
+      "categories": [
+        "fhsa",
+        "food_beverage",
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WVVI": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WWW": {
+      "categories": [
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WY": {
+      "categories": [
+        "reits"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "WYNN": {
+      "categories": [
+        "entertainment"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "X.TO": {
+      "categories": [
+        "newest_drop"
+      ],
+      "exchange": "tsx",
+      "has_data": true
+    },
+    "XPEV": {
+      "categories": [
+        "automotive"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "XYIGY": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "XYL": {
+      "categories": [
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "YAMCF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "YAMHF": {
+      "categories": [
+        "global"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "YETI": {
+      "categories": [
+        "electronics",
+        "newest_drop",
+        "consumer_brands"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "YMM": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "YORW": {
+      "categories": [
+        "fhsa",
+        "water_beverages"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "YUM": {
+      "categories": [
+        "fhsa",
+        "food_beverage"
+      ],
+      "exchange": "us",
+      "has_data": true
+    },
+    "YUMC": {
+      "categories": [
+        "china"
+      ],
+      "exchange": "us",
+      "has_data": true
+    }
+  }
+}
