@@ -1,6 +1,12 @@
 requests>=2.31.0
 urllib3>=2.0.0
-pandas>=2.0.0
-pandas-ta>=0.3.14b
-anthropic>=0.40.0
-psycopg2-binary>=2.9.0
+
+# Phase 3 — add when dag_stock_indicators is implemented
+# pandas>=2.0.0
+# pandas-ta==0.3.14b0
+
+# Phase 5 — add when dag_llm_analysis is implemented
+# anthropic>=0.40.0
+
+# Phase 2 — add when dag_stock_ingest is implemented
+# psycopg2-binary>=2.9.0
