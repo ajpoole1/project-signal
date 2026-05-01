@@ -51,12 +51,13 @@ def get_all_tickers() -> list[str]:
     Returns the full equity ticker set: US + TSX + sector ETFs.
     VIX/VVIX are excluded — callers that need them use resolve_vix_tickers().
     """
-    extra_us:  list[str] = []
+    extra_us: list[str] = []
     extra_tsx: list[str] = []
 
     try:
         from config import watchlist_personal as personal  # type: ignore[import]
-        extra_us  = getattr(personal, "US_TICKERS_EXTRA",  [])
+
+        extra_us = getattr(personal, "US_TICKERS_EXTRA", [])
         extra_tsx = getattr(personal, "TSX_TICKERS_EXTRA", [])
     except ImportError:
         pass
@@ -66,12 +67,13 @@ def get_all_tickers() -> list[str]:
 
 def get_equity_tickers() -> list[str]:
     """US + TSX only — excludes sector ETFs. Used by relatedness DAG."""
-    extra_us:  list[str] = []
+    extra_us: list[str] = []
     extra_tsx: list[str] = []
 
     try:
         from config import watchlist_personal as personal  # type: ignore[import]
-        extra_us  = getattr(personal, "US_TICKERS_EXTRA",  [])
+
+        extra_us = getattr(personal, "US_TICKERS_EXTRA", [])
         extra_tsx = getattr(personal, "TSX_TICKERS_EXTRA", [])
     except ImportError:
         pass

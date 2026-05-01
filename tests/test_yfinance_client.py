@@ -18,10 +18,10 @@ def _make_df(ticker: str, is_tsx: bool = False) -> pd.DataFrame:
     idx = pd.DatetimeIndex(["2024-01-02"], name="Date")
     return pd.DataFrame(
         {
-            "Open":   [150.0],
-            "High":   [155.0],
-            "Low":    [149.0],
-            "Close":  [153.0],
+            "Open": [150.0],
+            "High": [155.0],
+            "Low": [149.0],
+            "Close": [153.0],
             "Volume": [1_000_000],
         },
         index=idx,
@@ -121,11 +121,11 @@ def test_fetch_ohlcv_missing_volume_defaults_to_zero():
 def test_fetch_metadata_us_ticker():
     mock_ticker = MagicMock()
     mock_ticker.info = {
-        "longName":  "Apple Inc.",
-        "sector":    "Technology",
-        "industry":  "Consumer Electronics",
+        "longName": "Apple Inc.",
+        "sector": "Technology",
+        "industry": "Consumer Electronics",
         "marketCap": 3_000_000_000_000,
-        "exchange":  "NMS",
+        "exchange": "NMS",
     }
 
     with patch("plugins.yfinance_client.yf.Ticker", return_value=mock_ticker):
@@ -141,11 +141,11 @@ def test_fetch_metadata_us_ticker():
 def test_fetch_metadata_tsx_exchange_label():
     mock_ticker = MagicMock()
     mock_ticker.info = {
-        "longName":  "Royal Bank of Canada",
-        "sector":    "Financial Services",
-        "industry":  "Banks—Diversified",
+        "longName": "Royal Bank of Canada",
+        "sector": "Financial Services",
+        "industry": "Banks—Diversified",
         "marketCap": 200_000_000_000,
-        "exchange":  "TOR",
+        "exchange": "TOR",
     }
 
     with patch("plugins.yfinance_client.yf.Ticker", return_value=mock_ticker):

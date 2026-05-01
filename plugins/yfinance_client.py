@@ -19,7 +19,6 @@ from plugins.base_client import BaseMarketClient
 
 
 class YFinanceClient(BaseMarketClient):
-
     def fetch_ohlcv(self, ticker: str, start: str, end: str) -> list[dict]:
         """
         Fetch OHLCV daily bars via yfinance.
@@ -45,17 +44,19 @@ class YFinanceClient(BaseMarketClient):
         currency = "CAD" if ticker.endswith(".TO") else "USD"
         bars = []
         for ts, row in df.iterrows():
-            bars.append({
-                "ticker":   ticker,
-                "date":     ts.strftime("%Y-%m-%d"),
-                "open":     float(row["Open"]),
-                "high":     float(row["High"]),
-                "low":      float(row["Low"]),
-                "close":    float(row["Close"]),
-                "volume":   int(row.get("Volume", 0)),
-                "currency": currency,
-                "source":   "yfinance",
-            })
+            bars.append(
+                {
+                    "ticker": ticker,
+                    "date": ts.strftime("%Y-%m-%d"),
+                    "open": float(row["Open"]),
+                    "high": float(row["High"]),
+                    "low": float(row["Low"]),
+                    "close": float(row["Close"]),
+                    "volume": int(row.get("Volume", 0)),
+                    "currency": currency,
+                    "source": "yfinance",
+                }
+            )
         return bars
 
     def fetch_metadata(self, ticker: str) -> dict:
@@ -63,9 +64,9 @@ class YFinanceClient(BaseMarketClient):
         info = yf.Ticker(ticker).info
         time.sleep(0.5)
         return {
-            "name":       info.get("longName"),
-            "sector":     info.get("sector"),
-            "industry":   info.get("industry"),
+            "name": info.get("longName"),
+            "sector": info.get("sector"),
+            "industry": info.get("industry"),
             "market_cap": info.get("marketCap"),
-            "exchange":   "TSX" if ticker.endswith(".TO") else info.get("exchange"),
+            "exchange": "TSX" if ticker.endswith(".TO") else info.get("exchange"),
         }

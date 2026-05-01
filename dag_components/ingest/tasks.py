@@ -119,7 +119,9 @@ def validate_raw(bars: list[dict], tickers: list[str]) -> list[dict]:
     valid = [b for b in bars if b["close"] > 0 and b["volume"] >= 0]
     log.info(
         "validate_raw: %d/%d bars valid, %d tickers missing",
-        len(valid), len(bars), len(missing),
+        len(valid),
+        len(bars),
+        len(missing),
     )
     return valid
 
@@ -133,9 +135,15 @@ def upsert_raw_prices(bars: list[dict]) -> None:
     hook = PostgresHook(postgres_conn_id="signal_postgres")
     rows = [
         (
-            b["ticker"], b["date"],
-            b["open"], b["high"], b["low"], b["close"],
-            b["volume"], b.get("currency", "USD"), b.get("source", "polygon"),
+            b["ticker"],
+            b["date"],
+            b["open"],
+            b["high"],
+            b["low"],
+            b["close"],
+            b["volume"],
+            b.get("currency", "USD"),
+            b.get("source", "polygon"),
         )
         for b in bars
     ]

@@ -54,15 +54,15 @@ class PolygonClient(BaseMarketClient):
             return []
         return [
             {
-                "ticker":   ticker,
-                "date":     end,
-                "open":     float(bar["o"]),
-                "high":     float(bar["h"]),
-                "low":      float(bar["l"]),
-                "close":    float(bar["c"]),
-                "volume":   int(bar.get("v", 0)),
+                "ticker": ticker,
+                "date": end,
+                "open": float(bar["o"]),
+                "high": float(bar["h"]),
+                "low": float(bar["l"]),
+                "close": float(bar["c"]),
+                "volume": int(bar.get("v", 0)),
                 "currency": "USD",
-                "source":   "polygon",
+                "source": "polygon",
             }
             for bar in resp.get("results", [])
         ]
@@ -72,11 +72,11 @@ class PolygonClient(BaseMarketClient):
         resp = self.get_ticker_details(ticker)
         r = resp.get("results", {})
         return {
-            "name":       r.get("name"),
-            "sector":     r.get("sic_description"),
-            "industry":   r.get("sic_description"),
+            "name": r.get("name"),
+            "sector": r.get("sic_description"),
+            "industry": r.get("sic_description"),
             "market_cap": r.get("market_cap"),
-            "exchange":   r.get("primary_exchange"),
+            "exchange": r.get("primary_exchange"),
         }
 
     def is_market_holiday(self, response: dict) -> bool:
