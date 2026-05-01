@@ -31,7 +31,7 @@ def _scalar(series: pd.Series, key: str) -> float | None:
 def fetch_price_history() -> dict[str, list[dict]]:
     """Read raw_prices for all tickers over the indicator lookback window."""
     context = get_current_context()
-    target_dt = context["data_interval_end"].date()
+    target_dt = context["data_interval_start"].date()
     start_dt = target_dt - timedelta(days=config.PRICE_HISTORY_DAYS + 30)
 
     vix_ticker, vvix_ticker = resolve_vix_tickers()
@@ -75,7 +75,7 @@ def fetch_price_history() -> dict[str, list[dict]]:
 def compute_indicators(price_history: dict[str, list[dict]]) -> list[dict]:
     """Compute all technical indicators and produce one signal row per ticker."""
     context = get_current_context()
-    target_date = str(context["data_interval_end"].date())
+    target_date = str(context["data_interval_start"].date())
 
     vix_ticker, vvix_ticker = resolve_vix_tickers()
     equity_tickers = get_all_tickers()
