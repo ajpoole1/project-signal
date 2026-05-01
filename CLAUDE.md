@@ -22,7 +22,7 @@ Portfolio-grade open source project. Logic is public; API keys and personal watc
 | DAG | Schedule | Purpose |
 |---|---|---|
 | `dag_stock_ingest` | midnight EST weekdays | Fetch OHLCV + VIX/VVIX from Polygon/yfinance |
-| `dag_stock_indicators` | 10 PM ET weekdays | SMA, MACD, RSI, Bollinger, VIX regime, composite score |
+| `dag_stock_indicators` | 3 AM EST weekdays | SMA, MACD, RSI, Bollinger, VIX regime, composite score |
 | `dag_stock_relatedness` | 11 PM ET Sundays | Pearson correlation matrix, sector beta, peer clusters |
 | `dag_llm_analysis` | 11 PM ET weekdays | Claude API: per-ticker signal + Jarvis briefing |
 
