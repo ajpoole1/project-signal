@@ -21,7 +21,7 @@ Portfolio-grade open source project. Logic is public; API keys and personal watc
 
 | DAG | Schedule | Purpose |
 |---|---|---|
-| `dag_stock_ingest` | 9 PM ET weekdays | Fetch OHLCV + VIX/VVIX from Polygon |
+| `dag_stock_ingest` | midnight EST weekdays | Fetch OHLCV + VIX/VVIX from Polygon/yfinance |
 | `dag_stock_indicators` | 10 PM ET weekdays | SMA, MACD, RSI, Bollinger, VIX regime, composite score |
 | `dag_stock_relatedness` | 11 PM ET Sundays | Pearson correlation matrix, sector beta, peer clusters |
 | `dag_llm_analysis` | 11 PM ET weekdays | Claude API: per-ticker signal + Jarvis briefing |
@@ -31,8 +31,10 @@ Portfolio-grade open source project. Logic is public; API keys and personal watc
 - **Postgres is the shared layer.** All four DAGs read/write the same schema. No per-DAG side databases.
 - **`plugins/` is the shared library.** DAG files import from plugins; DAG files contain no business logic.
 - **All config in `config/config.py`.** Signal weights, VIX thresholds, correlation windows, model names — nothing hardcoded in DAG or plugin files.
-- **Watchlist in `config/watchlist.py`.** Not in DAG files, not in config.py. Extending the watchlist never requires touching a DAG.
+- **Watchlist in `config/watchlist.py`.** Not in DAG files, not in config.py. Extending the watchlist never requires touching a DAG. VIX/VVIX are NOT in the watchlist — resolved at runtime via `plugins/routing.py`.
+- **Ticker routing in `plugins/routing.py`.** Never inspect ticker format (`.TO`, `^`, `I:`) directly in DAG or task files. Call `get_client_for_ticker()` and `resolve_vix_tickers()` instead.
 - **Airflow TaskFlow API only.** Use `@task` decorator for all Python tasks. No classic operators for Python logic.
+- **Data source interface.** All provider clients (`PolygonClient`, `YFinanceClient`) implement `fetch_ohlcv(ticker, start, end)` and `fetch_metadata(ticker)` returning normalized dicts. Tasks use the interface, never provider-specific methods.
 
 ---
 
@@ -40,15 +42,23 @@ Portfolio-grade open source project. Logic is public; API keys and personal watc
 
 ```
 project-signal/
-├── dags/              # Airflow DAG definitions — orchestration only, no logic
-├── plugins/           # Shared library: polygon_client, indicators, vix_classifier, relatedness, llm_client
+├── dags/                  # Airflow DAG definitions — orchestration only, no logic
+├── dag_components/        # Task implementations imported by DAGs
+│   ├── dag_builder.py     # OOP DAG constructor (DAGBuilder base + SignalDAG)
+│   └── ingest/tasks.py    # @task functions for dag_stock_ingest
+├── plugins/               # Shared library: provider clients, routing, indicators
+│   ├── base_client.py     # BaseMarketClient + rate_limited_call decorator
+│   ├── polygon_client.py  # PolygonClient — US equities, ETFs, paid-tier indices
+│   ├── yfinance_client.py # YFinanceClient — TSX equities (permanent), VIX/VVIX (free-tier)
+│   └── routing.py         # get_client_for_ticker(), resolve_vix_tickers()
 ├── config/
-│   ├── config.py      # All tunable values: tiers, weights, thresholds, model names
-│   └── watchlist.py   # Ticker list + ETF proxies
+│   ├── config.py          # All tunable values: tiers, weights, thresholds, model names
+│   └── watchlist.py       # Ticker lists (US, TSX, sector ETFs) — VIX/VVIX excluded
 ├── sql/
-│   └── schema.sql     # All CREATE TABLE + indexes — run once against Postgres
-├── scripts/           # Manual utility scripts (not DAGs)
-└── tests/             # One test file per plugin module
+│   ├── schema.sql         # All CREATE TABLE + indexes — run once on fresh Postgres
+│   └── migrations/        # ALTER TABLE scripts for live database upgrades
+├── scripts/               # Manual utility scripts (not DAGs)
+└── tests/                 # One test file per plugin module
 ```
 
 **Every plugin module must have a corresponding test file.**
@@ -78,10 +88,20 @@ Never use Opus for automated/scheduled tasks. Cost not justified.
 
 ## Rate Limiting Rules
 
-- `polygon_client.py` owns all throttling. The `@rate_limited_call` decorator is the only place `time.sleep()` is called.
+- `base_client.py` owns all throttling. The `@rate_limited_call` decorator is the only place `time.sleep()` is called for rate-limiting. `YFinanceClient` uses a courtesy 0.5s sleep only.
 - `POLYGON_TIER = "free"` → 5 req/min enforced. `POLYGON_TIER = "starter"` → effectively unlimited.
 - Changing the tier in `config.py` is the **only** change needed.
 - Retry strategy: exponential backoff, `backoff_factor=2`, retries on 429/500/502/503/504, respects `Retry-After` header.
+
+### Polygon → Starter upgrade checklist (3 lines in config.py)
+
+```python
+POLYGON_TIER = "starter"   # was "free"
+VIX_SOURCE   = "polygon"   # was "yfinance"
+VVIX_SOURCE  = "polygon"   # was "yfinance"
+```
+
+That's it. No DAG, schema, or client changes required.
 
 ---
 
@@ -109,8 +129,8 @@ Never use Opus for automated/scheduled tasks. Cost not justified.
 
 | Phase | Status | Goal |
 |---|---|---|
-| Phase 1 | 🔄 In progress | Foundation: `polygon_client.py`, `schema.sql`, `config.py`, `watchlist.py` |
-| Phase 2 | 🔲 Not started | Ingest DAG live, `raw_prices` populating |
+| Phase 1 | ✅ Complete | Foundation: `polygon_client.py`, `schema.sql`, `config.py`, `watchlist.py` |
+| Phase 2 | ✅ Complete | Ingest DAG live, `raw_prices` populating. yfinance added for TSX + VIX/VVIX (v1.2). |
 | Phase 3 | 🔲 Not started | Indicators DAG, `stock_signals` populating |
 | Phase 4 | 🔲 Not started | Relatedness DAG, `relatedness_matrix` + `sector_beta` |
 | Phase 5 | 🔲 Not started | LLM Analysis DAG, `llm_analysis` table |

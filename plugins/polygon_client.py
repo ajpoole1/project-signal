@@ -1,67 +1,28 @@
 """
-Polygon.io API client with config-driven rate limiting and exponential backoff.
+Polygon.io API client — US equities, sector ETFs, and paid-tier indices.
 
-Rate limiting is controlled entirely by POLYGON_TIER in config.py.
-No sleep() calls should exist anywhere else in the codebase.
+Rate limiting and backoff session are inherited from BaseMarketClient.
+All throttling is config-driven: changing POLYGON_TIER in config.py is
+the only change needed to remove rate limits.
 """
 
-import time
-from functools import wraps
+from __future__ import annotations
+
 from urllib.parse import urljoin
 
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-
-from config.config import POLYGON_TIER, RATE_LIMITS
+from plugins.base_client import BaseMarketClient, rate_limited_call
 
 BASE_URL = "https://api.polygon.io"
-RATE_WINDOW = 60  # seconds
-
-_rate_config = RATE_LIMITS[POLYGON_TIER]
-RATE_LIMIT = _rate_config["calls_per_min"]
-
-_call_times: list[float] = []
 
 
-def rate_limited_call(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        now = time.time()
-        _call_times[:] = [t for t in _call_times if now - t < RATE_WINDOW]
-
-        if len(_call_times) >= RATE_LIMIT:
-            sleep_for = RATE_WINDOW - (now - _call_times[0])
-            if sleep_for > 0:
-                time.sleep(sleep_for + 0.1)
-
-        _call_times.append(time.time())
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
-def get_polygon_session() -> requests.Session:
-    session = requests.Session()
-    retry = Retry(
-        total=5,
-        backoff_factor=2,
-        status_forcelist=[429, 500, 502, 503, 504],
-        respect_retry_after_header=True,
-    )
-    adapter = HTTPAdapter(max_retries=retry)
-    session.mount("https://", adapter)
-    return session
-
-
-class PolygonClient:
+class PolygonClient(BaseMarketClient):
     def __init__(self, api_key: str) -> None:
         self.api_key = api_key
-        self.session = get_polygon_session()
+        self.session = self._get_session()
 
     @rate_limited_call
     def get_daily_bars(self, ticker: str, from_date: str, to_date: str) -> dict:
-        """Fetch OHLCV daily bars for a ticker. Returns raw Polygon response dict."""
+        """Fetch OHLCV daily bars. Returns raw Polygon response dict."""
         url = urljoin(BASE_URL, f"/v2/aggs/ticker/{ticker}/range/1/day/{from_date}/{to_date}")
         resp = self.session.get(
             url,
@@ -73,7 +34,7 @@ class PolygonClient:
 
     @rate_limited_call
     def get_ticker_details(self, ticker: str) -> dict:
-        """Fetch metadata (name, sector, market_cap) for a ticker."""
+        """Fetch metadata (name, sector, market_cap) for a US ticker."""
         url = urljoin(BASE_URL, f"/v3/reference/tickers/{ticker}")
         resp = self.session.get(
             url,
@@ -83,6 +44,41 @@ class PolygonClient:
         resp.raise_for_status()
         return resp.json()
 
+    def fetch_ohlcv(self, ticker: str, start: str, end: str) -> list[dict]:
+        """
+        Fetch OHLCV daily bars, normalized to the same shape as YFinanceClient.
+        Returns an empty list on market holidays.
+        """
+        resp = self.get_daily_bars(ticker, start, end)
+        if self.is_market_holiday(resp):
+            return []
+        return [
+            {
+                "ticker":   ticker,
+                "date":     end,
+                "open":     float(bar["o"]),
+                "high":     float(bar["h"]),
+                "low":      float(bar["l"]),
+                "close":    float(bar["c"]),
+                "volume":   int(bar.get("v", 0)),
+                "currency": "USD",
+                "source":   "polygon",
+            }
+            for bar in resp.get("results", [])
+        ]
+
+    def fetch_metadata(self, ticker: str) -> dict:
+        """Fetch ticker metadata, normalized to the same shape as YFinanceClient."""
+        resp = self.get_ticker_details(ticker)
+        r = resp.get("results", {})
+        return {
+            "name":       r.get("name"),
+            "sector":     r.get("sic_description"),
+            "industry":   r.get("sic_description"),
+            "market_cap": r.get("market_cap"),
+            "exchange":   r.get("primary_exchange"),
+        }
+
     def is_market_holiday(self, response: dict) -> bool:
-        """Returns True if Polygon returned an empty result set (market holiday)."""
+        """True if Polygon returned an empty result set (holiday or no trading)."""
         return response.get("resultsCount", 0) == 0 or not response.get("results")

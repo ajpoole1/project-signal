@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS raw_prices (
     low         NUMERIC         NOT NULL,
     close       NUMERIC         NOT NULL,
     volume      BIGINT          NOT NULL,
+    currency    VARCHAR(8)      NOT NULL DEFAULT 'USD',
     source      VARCHAR(32)     NOT NULL DEFAULT 'polygon',
     fetched_at  TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
     PRIMARY KEY (ticker, date)
@@ -23,6 +24,7 @@ CREATE TABLE IF NOT EXISTS ticker_metadata (
     sector      VARCHAR(128),
     industry    VARCHAR(128),
     market_cap  BIGINT,
+    exchange    VARCHAR(16),
     updated_at  TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
 
@@ -39,6 +41,7 @@ CREATE TABLE IF NOT EXISTS stock_signals (
     bb_lower            NUMERIC,
     vix_close           NUMERIC,
     vvix_close          NUMERIC,
+    vix_source          VARCHAR(16),
     vix_regime          VARCHAR(16),
     vix_trend           VARCHAR(16),
     vol_environment     VARCHAR(24),
