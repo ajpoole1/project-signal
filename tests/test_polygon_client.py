@@ -16,7 +16,6 @@ import responses as resp_lib
 from plugins.base_client import BaseMarketClient, rate_limited_call
 from plugins.polygon_client import PolygonClient
 
-
 # ---------------------------------------------------------------------------
 # BaseMarketClient._get_session
 # ---------------------------------------------------------------------------

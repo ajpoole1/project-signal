@@ -8,7 +8,8 @@ Task flow:
 """
 
 from airflow.models.dag import DAG  # noqa: F401 — satisfies DagBag safe-mode file scan
-from dag_components.dag_builder import SignalDAG
+
+from dag_components.dag_builder import SignalDAG  # noqa: E402
 from dag_components.ingest.tasks import (
     fetch_metadata,
     fetch_ohlcv,
