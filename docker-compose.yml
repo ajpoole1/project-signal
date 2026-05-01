@@ -14,11 +14,16 @@ x-airflow-common:
     AIRFLOW_CONN_SIGNAL_POSTGRES: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@host.docker.internal/signal
     POLYGON_API_KEY: ${POLYGON_API_KEY}
     ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    POSTGRES_HOST: host.docker.internal
+    POSTGRES_DB: ${POSTGRES_DB}
+    POSTGRES_USER: ${POSTGRES_USER}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   volumes:
     - ./dags:/opt/airflow/dags
     - ./plugins:/opt/airflow/plugins
     - ./config:/opt/airflow/config
     - ./dag_components:/opt/airflow/dag_components
+    - ./scripts:/opt/airflow/scripts
     - airflow-logs:/opt/airflow/logs
   extra_hosts:
     - "host.docker.internal:host-gateway"
