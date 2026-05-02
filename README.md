@@ -70,7 +70,7 @@ VVIX classifies the volatility-of-volatility into: `complacent` / `clean_fear` /
 |---|---|
 | Orchestration | Apache Airflow 2.9 |
 | Database | Postgres (native Windows, accessed via host.docker.internal) |
-| Market data | Polygon.io (free → Starter at $29/mo) + yfinance (TSX + VIX/VVIX) |
+| Market data | Polygon.io (free → Starter at $29/mo) + yfinance (TSX/TSXV + VIX/VVIX) |
 | LLM | Anthropic Claude (Sonnet for analysis, Haiku for classification) |
 | Infrastructure | Docker Compose |
 
@@ -92,7 +92,7 @@ project-signal/
 ├── plugins/                 # Shared library — clients, routing
 │   ├── base_client.py       # BaseMarketClient + @rate_limited_call
 │   ├── polygon_client.py    # US equities, ETFs, paid-tier indices
-│   ├── yfinance_client.py   # TSX equities (permanent) + VIX/VVIX (free-tier)
+│   ├── yfinance_client.py   # TSX/TSXV equities (permanent) + VIX/VVIX (free-tier)
 │   └── routing.py           # get_client_for_ticker(), resolve_vix_tickers()
 ├── config/
 │   ├── config.py            # All tunable values: tiers, weights, thresholds, model names
