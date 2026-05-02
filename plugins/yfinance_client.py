@@ -41,7 +41,7 @@ class YFinanceClient(BaseMarketClient):
         if df.empty:
             return []
 
-        currency = "CAD" if ticker.endswith(".TO") else "USD"
+        currency = "CAD" if (ticker.endswith(".TO") or ticker.endswith(".V")) else "USD"
         bars = []
         for ts, row in df.iterrows():
             bars.append(
