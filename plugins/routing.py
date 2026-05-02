@@ -22,10 +22,11 @@ def get_client_for_ticker(ticker: str, polygon_api_key: str) -> PolygonClient | 
 
     Routing rules (in priority order):
       1. .TO suffix          → YFinanceClient (TSX, permanent)
-      2. VIX/VVIX symbols    → source determined by config.VIX_SOURCE
-      3. Everything else     → PolygonClient (US equities, ETFs)
+      2. .V suffix           → YFinanceClient (TSX Venture, permanent)
+      3. VIX/VVIX symbols    → source determined by config.VIX_SOURCE
+      4. Everything else     → PolygonClient (US equities, ETFs)
     """
-    if ticker.endswith(".TO"):
+    if ticker.endswith(".TO") or ticker.endswith(".V"):
         return YFinanceClient()
 
     if ticker in _ALL_INDEX_TICKERS:

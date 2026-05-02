@@ -28,7 +28,9 @@ def validate_watchlist() -> list[str]:
 @task()
 def fetch_ohlcv(tickers: list[str]) -> list[dict]:
     context = get_current_context()
-    target_date = context["data_interval_end"].strftime("%Y-%m-%d")
+    # data_interval_start = previous scheduled run time = the trading day that has closed.
+    # data_interval_end = now (midnight EST) — market hasn't opened yet, Polygon has no data.
+    target_date = context["data_interval_start"].strftime("%Y-%m-%d")
 
     api_key = os.environ["POLYGON_API_KEY"]
     bars: list[dict] = []
