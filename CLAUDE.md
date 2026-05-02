@@ -35,7 +35,7 @@ Portfolio-grade open source project. Logic is public; API keys and personal watc
 - **All config in `config/config.py`.** Signal weights, VIX thresholds, correlation windows, model names — nothing hardcoded in DAG or plugin files.
 - **Watchlist in `config/watchlist.py`.** Loads US/TSX tickers from `config/ticker_universe.json` at import time (`has_data=True` only). Sector ETFs are hardcoded separately as Phase 4 beta-proxy infrastructure. Extending the watchlist means editing the JSON — never a DAG file.
 - **VIX/VVIX not in watchlist.** Resolved at runtime via `plugins/routing.py:resolve_vix_tickers()` based on `config.VIX_SOURCE`. No format inspection in DAG/task files.
-- **Ticker routing in `plugins/routing.py`.** Never inspect ticker format (`.TO`, `^`, `I:`) directly in DAG or task files. Call `get_client_for_ticker()` and `resolve_vix_tickers()` instead.
+- **Ticker routing in `plugins/routing.py`.** Never inspect ticker format (`.TO`, `.V`, `^`, `I:`) directly in DAG or task files. Call `get_client_for_ticker()` and `resolve_vix_tickers()` instead.
 - **Airflow TaskFlow API only.** Use `@task` decorator for all Python tasks. No classic operators for Python logic.
 - **Data source interface.** All provider clients (`PolygonClient`, `YFinanceClient`) implement `fetch_ohlcv(ticker, start, end)` and `fetch_metadata(ticker)` returning normalized dicts. Tasks use the interface, never provider-specific methods.
 - **No pandas-ta.** All indicator math uses pandas directly (rolling, EWM). No beta library dependencies for core calculations.
@@ -59,7 +59,7 @@ project-signal/
 ├── plugins/                     # Shared library: provider clients, routing
 │   ├── base_client.py           # BaseMarketClient + rate_limited_call decorator
 │   ├── polygon_client.py        # PolygonClient — US equities, ETFs, paid-tier indices
-│   ├── yfinance_client.py       # YFinanceClient — TSX equities (permanent), VIX/VVIX (free-tier)
+│   ├── yfinance_client.py       # YFinanceClient — TSX/TSXV equities (permanent), VIX/VVIX (free-tier)
 │   └── routing.py               # get_client_for_ticker(), resolve_vix_tickers()
 ├── config/
 │   ├── config.py                # All tunable values: tiers, weights, thresholds, model names
@@ -86,7 +86,7 @@ project-signal/
 - **Active universe:** 616 tickers with `has_data=True` (527 US + 89 TSX/TSX-V)
 - **Sector ETFs:** 7 hardcoded in `watchlist.py` (SPY, QQQ, XLK, XLF, XLE, XLV, XLY) — Phase 4 infrastructure, not in JSON
 - **Total ingest load:** 625 tickers per night (623 equity/ETF + ^VIX + ^VVIX)
-- **Routing:** US equities + ETFs → Polygon; `.TO` tickers + VIX/VVIX → yfinance
+- **Routing:** US equities + ETFs → Polygon; `.TO` / `.V` tickers + VIX/VVIX → yfinance
 
 `get_all_tickers()` → 623 tickers (used by ingest + indicators)
 `get_equity_tickers()` → 616 tickers (used by Phase 4 relatedness — excludes sector ETFs)
