@@ -15,20 +15,22 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from config import config as cfg
+# Polygon rate limits — self-contained here since PolygonClient is reference-only.
+_POLYGON_TIER = "free"
+_POLYGON_RATE_LIMITS = {
+    "free": {"calls_per_min": 5},
+    "starter": {"calls_per_min": 999},
+    "developer": {"calls_per_min": 999},
+}
 
 
 def rate_limited_call(func):
-    """
-    Rate-limit decorator for PolygonClient methods.
-    Reads the limit from config at call time so tier upgrades take effect
-    without restarting the process.
-    """
+    """Rate-limit decorator for PolygonClient methods."""
     call_times: list[float] = []
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        limit = cfg.RATE_LIMITS[cfg.POLYGON_TIER]["calls_per_min"]
+        limit = _POLYGON_RATE_LIMITS[_POLYGON_TIER]["calls_per_min"]
         now = time.time()
         call_times[:] = [t for t in call_times if now - t < 60]
 

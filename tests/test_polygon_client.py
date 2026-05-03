@@ -90,9 +90,7 @@ def test_rate_limiter_no_sleep_on_paid_tier():
     def dummy():
         pass
 
-    with patch("plugins.base_client.cfg") as mock_cfg:
-        mock_cfg.POLYGON_TIER = "starter"
-        mock_cfg.RATE_LIMITS = {"starter": {"calls_per_min": 999}}
+    with patch("plugins.base_client._POLYGON_TIER", "starter"):
         with patch("plugins.base_client.time.sleep") as mock_sleep:
             for _ in range(20):
                 dummy()
