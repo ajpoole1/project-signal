@@ -3,7 +3,6 @@ urllib3>=2.0.0
 yfinance>=0.2.40
 pandas>=2.0.0
 
-# Phase 5 — add when dag_llm_analysis is implemented
-# anthropic>=0.40.0
+anthropic>=0.40.0
 
 psycopg2-binary>=2.9.0

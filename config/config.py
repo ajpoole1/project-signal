@@ -1,26 +1,8 @@
 """All tunable values for Project Signal. Nothing is hardcoded in DAG or plugin files."""
 
-# --- Polygon tier ---
-POLYGON_TIER = "free"  # "free" | "starter" | "developer"
-
-RATE_LIMITS = {
-    "free": {"calls_per_min": 5},
-    "starter": {"calls_per_min": 999},
-    "developer": {"calls_per_min": 999},
-}
-
-# --- VIX / VVIX source ---
-# Free tier:    yfinance (^VIX, ^VVIX) — Polygon free does not include index data
-# Starter+:     switch to polygon (I:VIX, I:VVIX) for consistency with other US data
-# TSX tickers always use yfinance regardless of tier.
-#
-# Upgrading from free to Polygon Starter — complete checklist:
-#   1. POLYGON_TIER  = "starter"
-#   2. VIX_SOURCE    = "polygon"
-#   3. VVIX_SOURCE   = "polygon"
-# That is the entire upgrade. No DAG, schema, or client changes required.
-VIX_SOURCE = "yfinance"  # "yfinance" | "polygon"
-VVIX_SOURCE = "yfinance"  # "yfinance" | "polygon"
+# --- Data source ---
+# All market data (US, TSX/TSX-V, VIX/VVIX) is sourced from EODHD.
+# PolygonClient and YFinanceClient are retained in plugins/ for reference only.
 
 # --- Signal weights (must sum to 1.0) ---
 SIGNAL_WEIGHTS = {
@@ -63,6 +45,11 @@ BETA_WINDOWS = [90, 365]
 ANTHROPIC_MODEL_ANALYSIS = "claude-sonnet-4-6"
 ANTHROPIC_MODEL_CLASSIFICATION = "claude-haiku-4-5-20251001"
 LLM_MAX_TOKENS = 1000
+LLM_SIGNAL_THRESHOLD = 0.5  # min abs(composite_vix_adj) to queue for analysis
+LLM_PEER_CORRELATION_MIN_R = 0.6  # min 90-day pearson_r to include a peer in the prompt
+LLM_PEER_COUNT = 5  # top N peers by r to include
+LLM_SIGNAL_HISTORY_DAYS = 14  # days of recent signals to include in prompt
+LLM_BRIEF_TOP_N = 12  # top N tickers (by confidence) to include in daily brief
 
 # --- Sector ETF proxies ---
 SECTOR_ETFS = {
@@ -86,3 +73,4 @@ BB_WINDOW = 20
 BB_STD = 2
 VIX_SMA_WINDOW = 20
 PRICE_HISTORY_DAYS = 250  # enough for SMA_200 + buffer
+RELATEDNESS_HISTORY_DAYS = 400  # enough for 365-day correlation window + buffer
