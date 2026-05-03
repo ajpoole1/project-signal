@@ -7,13 +7,14 @@ x-airflow-common:
     AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@host.docker.internal/${POSTGRES_DB}
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-    _PIP_ADDITIONAL_REQUIREMENTS: "yfinance>=0.2.40 pandas>=2.0.0"
+    _PIP_ADDITIONAL_REQUIREMENTS: "yfinance>=0.2.40 pandas>=2.0.0 anthropic>=0.40.0"
     PYTHONPATH: /opt/airflow
     AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
     # Registers the signal DB connection automatically — no manual UI setup needed
     AIRFLOW_CONN_SIGNAL_POSTGRES: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@host.docker.internal/signal
-    POLYGON_API_KEY: ${POLYGON_API_KEY}
+    EODHD_API_KEY: ${EODHD_API_KEY}
     ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    POLYGON_API_KEY: ${POLYGON_API_KEY}
     POSTGRES_HOST: host.docker.internal
     POSTGRES_DB: ${POSTGRES_DB}
     POSTGRES_USER: ${POSTGRES_USER}

@@ -32,7 +32,7 @@ def fetch_ohlcv(tickers: list[str]) -> list[dict]:
     # data_interval_end = now (midnight EST) — market hasn't opened yet, Polygon has no data.
     target_date = context["data_interval_start"].strftime("%Y-%m-%d")
 
-    api_key = os.environ["POLYGON_API_KEY"]
+    api_key = os.environ["EODHD_API_KEY"]
     bars: list[dict] = []
     empty_count = 0
 
@@ -58,7 +58,7 @@ def fetch_ohlcv(tickers: list[str]) -> list[dict]:
 
 @task()
 def fetch_metadata(tickers: list[str]) -> None:
-    api_key = os.environ["POLYGON_API_KEY"]
+    api_key = os.environ["EODHD_API_KEY"]
     hook = PostgresHook(postgres_conn_id="signal_postgres")
 
     for ticker in tickers:
