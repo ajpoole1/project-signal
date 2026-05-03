@@ -85,14 +85,24 @@ class TestFetchOHLCV:
 
     @resp_lib.activate
     def test_close_uses_adjusted_close(self):
-        resp_lib.add(resp_lib.GET, f"{_BASE}/eod/AAPL.US", json=_eod_payload(close=110.0, adj_close=100.0), status=200)
+        resp_lib.add(
+            resp_lib.GET,
+            f"{_BASE}/eod/AAPL.US",
+            json=_eod_payload(close=110.0, adj_close=100.0),
+            status=200,
+        )
         bars = EODHDClient(_KEY).fetch_ohlcv("AAPL", "2024-06-03", "2024-06-03")
         assert bars[0]["close"] == 100.0
 
     @resp_lib.activate
     def test_ohlc_scaled_by_adjustment_factor(self):
         # close=110, adj_close=99 → factor=0.9
-        resp_lib.add(resp_lib.GET, f"{_BASE}/eod/AAPL.US", json=_eod_payload(close=110.0, adj_close=99.0), status=200)
+        resp_lib.add(
+            resp_lib.GET,
+            f"{_BASE}/eod/AAPL.US",
+            json=_eod_payload(close=110.0, adj_close=99.0),
+            status=200,
+        )
         bars = EODHDClient(_KEY).fetch_ohlcv("AAPL", "2024-06-03", "2024-06-03")
         bar = bars[0]
         factor = 99.0 / 110.0
@@ -101,7 +111,12 @@ class TestFetchOHLCV:
 
     @resp_lib.activate
     def test_no_adjustment_when_close_equals_adj_close(self):
-        resp_lib.add(resp_lib.GET, f"{_BASE}/eod/AAPL.US", json=_eod_payload(close=100.0, adj_close=100.0), status=200)
+        resp_lib.add(
+            resp_lib.GET,
+            f"{_BASE}/eod/AAPL.US",
+            json=_eod_payload(close=100.0, adj_close=100.0),
+            status=200,
+        )
         bars = EODHDClient(_KEY).fetch_ohlcv("AAPL", "2024-06-03", "2024-06-03")
         bar = bars[0]
         assert bar["open"] == pytest.approx(99.0)
@@ -116,15 +131,33 @@ class TestFetchOHLCV:
 
     @resp_lib.activate
     def test_http_error_raises(self):
-        resp_lib.add(resp_lib.GET, f"{_BASE}/eod/FAKE.US", json={"message": "Not found"}, status=404)
+        resp_lib.add(
+            resp_lib.GET, f"{_BASE}/eod/FAKE.US", json={"message": "Not found"}, status=404
+        )
         with pytest.raises(requests.exceptions.HTTPError):
             EODHDClient(_KEY).fetch_ohlcv("FAKE", "2024-06-03", "2024-06-03")
 
     @resp_lib.activate
     def test_multiple_bars_returned(self):
         payload = [
-            {"date": "2024-06-03", "open": 99.0, "high": 102.0, "low": 98.0, "close": 100.0, "adjusted_close": 100.0, "volume": 1_000_000},
-            {"date": "2024-06-04", "open": 100.0, "high": 103.0, "low": 99.0, "close": 101.0, "adjusted_close": 101.0, "volume": 900_000},
+            {
+                "date": "2024-06-03",
+                "open": 99.0,
+                "high": 102.0,
+                "low": 98.0,
+                "close": 100.0,
+                "adjusted_close": 100.0,
+                "volume": 1_000_000,
+            },
+            {
+                "date": "2024-06-04",
+                "open": 100.0,
+                "high": 103.0,
+                "low": 99.0,
+                "close": 101.0,
+                "adjusted_close": 101.0,
+                "volume": 900_000,
+            },
         ]
         resp_lib.add(resp_lib.GET, f"{_BASE}/eod/AAPL.US", json=payload, status=200)
         bars = EODHDClient(_KEY).fetch_ohlcv("AAPL", "2024-06-03", "2024-06-04")
@@ -165,8 +198,13 @@ class TestFetchMetadata:
 
     @resp_lib.activate
     def test_tsx_ticker_calls_correct_symbol(self):
-        payload = {"Name": "Air Canada", "Sector": "Industrials", "Industry": "Airlines",
-                   "MarketCapitalization": 5_000_000_000, "Exchange": "TO"}
+        payload = {
+            "Name": "Air Canada",
+            "Sector": "Industrials",
+            "Industry": "Airlines",
+            "MarketCapitalization": 5_000_000_000,
+            "Exchange": "TO",
+        }
         resp_lib.add(resp_lib.GET, f"{_BASE}/fundamentals/AC.TO", json=payload, status=200)
         meta = EODHDClient(_KEY).fetch_metadata("AC.TO")
         assert meta["name"] == "Air Canada"

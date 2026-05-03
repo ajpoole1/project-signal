@@ -139,23 +139,35 @@ def _compute_rows(ticker: str, close: pd.Series, vix_ctx: dict) -> list[tuple]:
         if vvix_close_v is not None:
             vol_environment = calc.classify_vol_environment(vvix_close_v)
 
-        composite = calc.compute_composite(
-            close_val, sma50_v, sma200_v, macd_v, macd_sig_v, rsi_v
-        )
+        composite = calc.compute_composite(close_val, sma50_v, sma200_v, macd_v, macd_sig_v, rsi_v)
         composite_adj = (
             round(composite * vix_mult, 4)
             if composite is not None and vix_mult is not None
             else None
         )
 
-        rows.append((
-            ticker, date_str,
-            sma50_v, sma200_v, macd_v, macd_sig_v, macd_hist_v, rsi_v,
-            bb_upper_v, bb_lower_v,
-            vix_close_v, vvix_close_v, "eodhd",
-            vix_regime, vix_trend, vol_environment,
-            composite, composite_adj,
-        ))
+        rows.append(
+            (
+                ticker,
+                date_str,
+                sma50_v,
+                sma200_v,
+                macd_v,
+                macd_sig_v,
+                macd_hist_v,
+                rsi_v,
+                bb_upper_v,
+                bb_lower_v,
+                vix_close_v,
+                vvix_close_v,
+                "eodhd",
+                vix_regime,
+                vix_trend,
+                vol_environment,
+                composite,
+                composite_adj,
+            )
+        )
     return rows
 
 
@@ -225,7 +237,9 @@ def main() -> None:
         total_rows += len(rows)
 
         if i % 50 == 0 or i == len(tickers):
-            print(f"  [{i:>3}/{len(tickers)}] {ticker:<16} {len(rows):>5} rows  (running total: {total_rows:,})")
+            print(
+                f"  [{i:>3}/{len(tickers)}] {ticker:<16} {len(rows):>5} rows  (running total: {total_rows:,})"
+            )
 
     conn.close()
     print()

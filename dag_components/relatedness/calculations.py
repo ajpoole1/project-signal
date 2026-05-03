@@ -10,9 +10,7 @@ import numpy as np
 import pandas as pd
 
 
-def build_returns_matrix(
-    price_history: dict[str, list[dict]], tickers: list[str]
-) -> pd.DataFrame:
+def build_returns_matrix(price_history: dict[str, list[dict]], tickers: list[str]) -> pd.DataFrame:
     """Build a daily-returns DataFrame (columns=tickers, rows=DatetimeIndex).
 
     Uses close prices only. NaN where a ticker has no data on a given date.

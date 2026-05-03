@@ -10,14 +10,15 @@ import pytest
 from dag_components.relatedness import calculations as calc
 
 
-def _price_history(tickers_values: dict[str, list[float]], start: str = "2024-01-01") -> dict[str, list[dict]]:
+def _price_history(
+    tickers_values: dict[str, list[float]], start: str = "2024-01-01"
+) -> dict[str, list[dict]]:
     """Build a minimal price_history dict from ticker → list of close prices."""
     history: dict[str, list[dict]] = {}
     for ticker, values in tickers_values.items():
         idx = pd.date_range(start=start, periods=len(values), freq="B")
         history[ticker] = [
-            {"date": str(dt.date()), "close": float(v)}
-            for dt, v in zip(idx, values, strict=False)
+            {"date": str(dt.date()), "close": float(v)} for dt, v in zip(idx, values, strict=False)
         ]
     return history
 
@@ -72,6 +73,7 @@ class TestCorrelationPairs:
     def test_anti_correlated_series(self):
         """Two series with exactly negated daily returns should have r = -1.0."""
         import numpy as np
+
         rng = np.random.default_rng(42)
         raw_returns = rng.normal(0, 0.02, 50)
         prices_a = [100.0]

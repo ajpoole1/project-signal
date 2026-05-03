@@ -43,9 +43,7 @@ def fetch_price_history() -> dict[str, list[dict]]:
 
     history: dict[str, list[dict]] = {}
     for ticker, dt, close in rows:
-        history.setdefault(ticker, []).append(
-            {"date": str(dt), "close": float(close)}
-        )
+        history.setdefault(ticker, []).append({"date": str(dt), "close": float(close)})
 
     log.info(
         "Loaded price history for %d tickers between %s and %s",

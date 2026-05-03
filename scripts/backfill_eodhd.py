@@ -114,13 +114,24 @@ def main() -> None:
             continue
 
         rows = [
-            (b["ticker"], b["date"], b["open"], b["high"], b["low"],
-             b["close"], b["volume"], b["currency"], b["source"])
+            (
+                b["ticker"],
+                b["date"],
+                b["open"],
+                b["high"],
+                b["low"],
+                b["close"],
+                b["volume"],
+                b["currency"],
+                b["source"],
+            )
             for b in bars
         ]
         _upsert(conn, rows)
         total_rows += len(rows)
-        print(f"  [{i:>3}/{len(tickers)}] {ticker:<16} {len(rows):>5} bars  (running total: {total_rows:,})")
+        print(
+            f"  [{i:>3}/{len(tickers)}] {ticker:<16} {len(rows):>5} bars  (running total: {total_rows:,})"
+        )
 
     conn.close()
     print()

@@ -45,11 +45,11 @@ BETA_WINDOWS = [90, 365]
 ANTHROPIC_MODEL_ANALYSIS = "claude-sonnet-4-6"
 ANTHROPIC_MODEL_CLASSIFICATION = "claude-haiku-4-5-20251001"
 LLM_MAX_TOKENS = 1000
-LLM_SIGNAL_THRESHOLD = 0.5        # min abs(composite_vix_adj) to queue for analysis
+LLM_SIGNAL_THRESHOLD = 0.5  # min abs(composite_vix_adj) to queue for analysis
 LLM_PEER_CORRELATION_MIN_R = 0.6  # min 90-day pearson_r to include a peer in the prompt
-LLM_PEER_COUNT = 5                # top N peers by r to include
-LLM_SIGNAL_HISTORY_DAYS = 14      # days of recent signals to include in prompt
-LLM_BRIEF_TOP_N = 12              # top N tickers (by confidence) to include in daily brief
+LLM_PEER_COUNT = 5  # top N peers by r to include
+LLM_SIGNAL_HISTORY_DAYS = 14  # days of recent signals to include in prompt
+LLM_BRIEF_TOP_N = 12  # top N tickers (by confidence) to include in daily brief
 
 # --- Sector ETF proxies ---
 SECTOR_ETFS = {

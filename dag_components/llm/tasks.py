@@ -132,9 +132,9 @@ def analyze_and_upsert(tickers: list[str]) -> int:
 
     # Trim to top-N peers per ticker
     for t in peers_by_ticker:
-        peers_by_ticker[t] = sorted(
-            peers_by_ticker[t], key=lambda x: x["pearson_r"], reverse=True
-        )[: config.LLM_PEER_COUNT]
+        peers_by_ticker[t] = sorted(peers_by_ticker[t], key=lambda x: x["pearson_r"], reverse=True)[
+            : config.LLM_PEER_COUNT
+        ]
 
     # --- call LLM per ticker -------------------------------------------------
     client = anthropic.Anthropic()
@@ -194,7 +194,12 @@ def analyze_and_upsert(tickers: list[str]) -> int:
                 response.usage.input_tokens,
             )
         )
-        log.debug("%s: bias=%s confidence=%.2f", ticker, analysis.get("bias"), analysis.get("confidence", 0))
+        log.debug(
+            "%s: bias=%s confidence=%.2f",
+            ticker,
+            analysis.get("bias"),
+            analysis.get("confidence", 0),
+        )
 
     if not results:
         log.info("No analysis results to upsert.")
