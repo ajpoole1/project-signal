@@ -1,145 +1,43 @@
-"""Prompt construction for dag_llm_analysis.
+"""Prompt construction for the generate_brief Sonnet call in dag_llm_analysis.
 
-Keeps all text and tool schemas out of tasks.py. No Airflow or DB imports.
+No Airflow or DB imports.
 """
 
 from __future__ import annotations
 
-from dag_components.llm import calculations as calc
-
-SYSTEM_PROMPT = """You are a technical analysis engine in an automated stock signal pipeline.
-
-For each ticker you receive a structured snapshot: recent composite signal scores, VIX regime,
-pre-computed price levels, and top correlated peers. Your job is to call the `record_analysis`
-tool with a structured assessment.
-
-Rules:
-- bias: base this on the composite_vix_adj trajectory and RSI context, not a single day
-- confidence: 0.0–1.0; above 0.8 requires clear alignment across multiple indicators
-- key_levels: classify every candidate provided — do not invent prices
-  - role: "support" | "resistance" | "neutral"
-  - significance: "high" | "medium" | "low" (relative to current price action)
-  - note: one sentence on why this level matters right now
-- reasoning: 1–2 sentences on the primary driver of your bias
-- peers are context only; do not override a clear individual signal with peer noise"""
-
-CACHED_SYSTEM = [
-    {
-        "type": "text",
-        "text": SYSTEM_PROMPT,
-        "cache_control": {"type": "ephemeral"},
-    }
-]
-
-ANALYSIS_TOOL = {
-    "name": "record_analysis",
-    "description": "Record the structured technical analysis for a ticker.",
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            "bias": {
-                "type": "string",
-                "enum": ["bullish", "bearish", "neutral"],
-                "description": "Directional bias given the signal context.",
-            },
-            "confidence": {
-                "type": "number",
-                "description": "Confidence in the bias, 0.0 to 1.0.",
-            },
-            "key_levels": {
-                "type": "array",
-                "description": "Classification of each provided price level candidate.",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "price": {"type": "number"},
-                        "type": {"type": "string"},
-                        "role": {
-                            "type": "string",
-                            "enum": ["support", "resistance", "neutral"],
-                        },
-                        "significance": {
-                            "type": "string",
-                            "enum": ["high", "medium", "low"],
-                        },
-                        "note": {"type": "string"},
-                    },
-                    "required": ["price", "type", "role", "significance", "note"],
-                },
-            },
-            "reasoning": {
-                "type": "string",
-                "description": "1–2 sentences on the primary signal driver.",
-            },
-        },
-        "required": ["bias", "confidence", "key_levels", "reasoning"],
-    },
-}
+BRIEF_SYSTEM = (
+    "You are a market analyst producing a concise morning brief for a systematic "
+    "trading pipeline. You receive the top-conviction technical signals from a nightly "
+    "algorithmic analysis run. Produce a brief with:\n"
+    "1. Two or three bullet points for the strongest bullish setups — name the ticker, "
+    "the key driver, and one actionable price level if relevant\n"
+    "2. Two or three bullet points for the strongest bearish setups — same format\n"
+    "3. One sentence on market context (VIX regime, vol environment)\n"
+    "Total length: under 200 words. Be specific and actionable."
+)
 
 
-def build_user_message(
-    ticker: str,
-    target_date: str,
-    current_signal: dict,
-    signal_history: list[dict],
-    key_candidates: list[dict],
-    peers: list[dict],
-) -> str:
-    """Build the per-ticker user message string."""
-    close = current_signal.get("close")
-    close_str = f"{float(close):.2f}" if close is not None else "n/a"
+def build_brief_message(rows: list, count: int, target_dt: object) -> str:
+    """Build the user message string for the Sonnet daily brief call.
 
-    composite = current_signal.get("composite_vix_adj")
-    composite_str = f"{float(composite):.3f}" if composite is not None else "n/a"
+    rows: list of (ticker, bias, confidence, reasoning, composite_vix_adj,
+                   vix_regime, vix_trend, vol_environment)
+    """
+    bullish = [r for r in rows if r[1] == "bullish"]
+    bearish = [r for r in rows if r[1] == "bearish"]
 
-    rsi = current_signal.get("rsi_14")
-    rsi_str = f"{float(rsi):.1f}" if rsi is not None else "n/a"
+    def _row_line(r) -> str:
+        ticker, bias, conf, reasoning, cvxa, vix_r, vix_tr, vol_e = r
+        return f"  {ticker} | conf={float(conf):.2f} | score={float(cvxa):.3f} | {reasoning}"
 
-    trend = calc.signal_trend(signal_history)
+    sections = [f"DATE: {target_dt}", f"TOTAL ANALYZED: {count} tickers"]
+    if bullish:
+        sections += ["", "BULLISH SIGNALS:"] + [_row_line(r) for r in bullish]
+    if bearish:
+        sections += ["", "BEARISH SIGNALS:"] + [_row_line(r) for r in bearish]
 
-    lines = [
-        f"Ticker: {ticker} | Date: {target_date} | Close: {close_str}",
-        "",
-        f"COMPOSITE SIGNAL: current={composite_str} | RSI={rsi_str} | trend={trend}",
-        f"VIX: close={_fmt(current_signal.get('vix_close'))} | "
-        f"regime={current_signal.get('vix_regime', 'n/a')} | "
-        f"trend={current_signal.get('vix_trend', 'n/a')}",
-        f"VVIX: close={_fmt(current_signal.get('vvix_close'))} | "
-        f"vol_env={current_signal.get('vol_environment', 'n/a')}",
-    ]
+    vix_regime = rows[0][5] or "unknown"
+    vol_env = rows[0][7] or "unknown"
+    sections += ["", f"MARKET CONTEXT: VIX regime={vix_regime} | vol_environment={vol_env}"]
 
-    if len(signal_history) > 1:
-        lines += ["", f"SIGNAL HISTORY (last {len(signal_history)} trading days):"]
-        for row in signal_history:
-            score = row.get("composite_vix_adj")
-            macd_h = row.get("macd_hist")
-            lines.append(
-                f"  {row.get('date', '?')}: "
-                f"composite_vix_adj={_fmt(score)} "
-                f"macd_hist={_fmt(macd_h, 5)}"
-            )
-
-    lines += ["", "KEY LEVEL CANDIDATES (prices to classify):"]
-    if key_candidates:
-        for kl in key_candidates:
-            lines.append(f"  {kl['type']}: {kl['price']:.4f}")
-    else:
-        lines.append("  (none available)")
-
-    lines += ["", "TOP PEERS (90-day Pearson r ≥ threshold):"]
-    if peers:
-        for p in peers:
-            lines.append(f"  {p['peer']}: r={p['pearson_r']:.3f}")
-    else:
-        lines.append("  (no peer data)")
-
-    return "\n".join(lines)
-
-
-def _fmt(val, precision: int = 2) -> str:
-    if val is None:
-        return "n/a"
-    try:
-        return f"{float(val):.{precision}f}"
-    except (TypeError, ValueError):
-        return "n/a"
+    return "\n".join(sections)

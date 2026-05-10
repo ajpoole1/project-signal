@@ -164,90 +164,213 @@ class TestSignalTrend:
 
 
 # ---------------------------------------------------------------------------
-# build_user_message
+# classify_bias
 # ---------------------------------------------------------------------------
 
 
-class TestBuildUserMessage:
-    def _make_message(self, **kwargs):
-        signal = _signal_row(**kwargs)
-        candidates = calc.build_key_level_candidates(signal, _price_rows(30))
-        return prompt_builder.build_user_message(
-            ticker="AAPL",
-            target_date="2024-06-01",
-            current_signal=signal,
-            signal_history=[signal] * 5,
-            key_candidates=candidates,
-            peers=[{"peer": "MSFT", "pearson_r": 0.82}],
-        )
+class TestClassifyBias:
+    def test_positive_score_is_bullish(self):
+        assert calc.classify_bias(0.6) == "bullish"
 
-    def test_contains_ticker(self):
-        msg = self._make_message()
-        assert "AAPL" in msg
+    def test_negative_score_is_bearish(self):
+        assert calc.classify_bias(-0.6) == "bearish"
+
+    def test_zero_score_is_neutral(self):
+        assert calc.classify_bias(0.0) == "neutral"
+
+    def test_none_score_is_neutral(self):
+        assert calc.classify_bias(None) == "neutral"
+
+    def test_small_positive_is_bullish(self):
+        assert calc.classify_bias(0.001) == "bullish"
+
+    def test_small_negative_is_bearish(self):
+        assert calc.classify_bias(-0.001) == "bearish"
+
+
+# ---------------------------------------------------------------------------
+# classify_confidence
+# ---------------------------------------------------------------------------
+
+
+class TestClassifyConfidence:
+    def test_none_score_returns_zero(self):
+        assert calc.classify_confidence(None, "flat") == 0.0
+
+    def test_base_from_abs_score(self):
+        result = calc.classify_confidence(0.7, "flat")
+        assert result == 0.7
+
+    def test_aligned_bullish_boosts_confidence(self):
+        base = calc.classify_confidence(0.7, "flat")
+        boosted = calc.classify_confidence(0.7, "improving")
+        assert boosted > base
+
+    def test_aligned_bearish_boosts_confidence(self):
+        base = calc.classify_confidence(-0.7, "flat")
+        boosted = calc.classify_confidence(-0.7, "deteriorating")
+        assert boosted > base
+
+    def test_opposed_trend_dampens_confidence(self):
+        base = calc.classify_confidence(0.7, "flat")
+        dampened = calc.classify_confidence(0.7, "deteriorating")
+        assert dampened < base
+
+    def test_clamped_at_one(self):
+        result = calc.classify_confidence(1.0, "improving")
+        assert result <= 1.0
+
+    def test_clamped_at_zero(self):
+        result = calc.classify_confidence(0.05, "deteriorating")
+        assert result >= 0.0
+
+    def test_score_above_one_clamped_before_boost(self):
+        result = calc.classify_confidence(1.5, "improving")
+        assert result == 1.0
+
+
+# ---------------------------------------------------------------------------
+# classify_key_levels
+# ---------------------------------------------------------------------------
+
+
+class TestClassifyKeyLevels:
+    def test_level_below_price_is_support(self):
+        candidates = [{"price": 90.0, "type": "sma_200"}]
+        levels = calc.classify_key_levels(candidates, current_price=100.0)
+        assert levels[0]["role"] == "support"
+
+    def test_level_above_price_is_resistance(self):
+        candidates = [{"price": 110.0, "type": "sma_200"}]
+        levels = calc.classify_key_levels(candidates, current_price=100.0)
+        assert levels[0]["role"] == "resistance"
+
+    def test_significance_from_lookup(self):
+        candidates = [{"price": 90.0, "type": "sma_200"}]
+        levels = calc.classify_key_levels(candidates, current_price=100.0)
+        assert levels[0]["significance"] == "high"
+
+    def test_unknown_type_defaults_to_low_significance(self):
+        candidates = [{"price": 90.0, "type": "custom_level"}]
+        levels = calc.classify_key_levels(candidates, current_price=100.0)
+        assert levels[0]["significance"] == "low"
+
+    def test_note_is_string(self):
+        candidates = [{"price": 90.0, "type": "sma_50"}]
+        levels = calc.classify_key_levels(candidates, current_price=100.0)
+        assert isinstance(levels[0]["note"], str)
+        assert len(levels[0]["note"]) > 0
+
+    def test_all_fields_present(self):
+        candidates = [{"price": 105.0, "type": "bb_upper"}]
+        levels = calc.classify_key_levels(candidates, current_price=100.0)
+        level = levels[0]
+        assert {"price", "type", "role", "significance", "note"}.issubset(level.keys())
+
+    def test_empty_candidates_returns_empty(self):
+        assert calc.classify_key_levels([], current_price=100.0) == []
+
+
+# ---------------------------------------------------------------------------
+# build_reasoning
+# ---------------------------------------------------------------------------
+
+
+class TestBuildReasoning:
+    def test_none_score_returns_fallback(self):
+        signal = _signal_row(composite_vix_adj=None)
+        result = calc.build_reasoning(signal, "flat")
+        assert "insufficient" in result.lower()
+
+    def test_bullish_direction_in_output(self):
+        signal = _signal_row(composite_vix_adj=0.6, rsi_14=55.0, vix_regime="normal")
+        result = calc.build_reasoning(signal, "flat")
+        assert "bullish" in result.lower()
+
+    def test_bearish_direction_in_output(self):
+        signal = _signal_row(composite_vix_adj=-0.6, rsi_14=55.0, vix_regime="normal")
+        result = calc.build_reasoning(signal, "flat")
+        assert "bearish" in result.lower()
+
+    def test_rsi_oversold_mentioned(self):
+        signal = _signal_row(composite_vix_adj=0.6, rsi_14=25.0, vix_regime="normal")
+        result = calc.build_reasoning(signal, "flat")
+        assert "oversold" in result.lower()
+
+    def test_rsi_overbought_mentioned(self):
+        signal = _signal_row(composite_vix_adj=-0.6, rsi_14=75.0, vix_regime="normal")
+        result = calc.build_reasoning(signal, "flat")
+        assert "overbought" in result.lower()
+
+    def test_high_vix_mentioned(self):
+        signal = _signal_row(composite_vix_adj=0.6, rsi_14=55.0, vix_regime="high")
+        result = calc.build_reasoning(signal, "flat")
+        assert "vix" in result.lower()
+
+    def test_improving_trend_in_output(self):
+        signal = _signal_row(composite_vix_adj=0.6, rsi_14=55.0, vix_regime="normal")
+        result = calc.build_reasoning(signal, "improving")
+        assert "strengthening" in result.lower()
+
+    def test_result_is_string_ending_with_period(self):
+        signal = _signal_row()
+        result = calc.build_reasoning(signal, "flat")
+        assert isinstance(result, str)
+        assert result.endswith(".")
+
+
+# ---------------------------------------------------------------------------
+# build_brief_message
+# ---------------------------------------------------------------------------
+
+
+class TestBuildBriefMessage:
+    def _make_rows(self):
+        return [
+            (
+                "AAPL",
+                "bullish",
+                0.82,
+                "Strengthening bullish signal (0.82).",
+                0.82,
+                "normal",
+                "stable",
+                "clean_fear",
+            ),
+            (
+                "TSLA",
+                "bearish",
+                0.75,
+                "Weakening bearish signal (0.75).",
+                -0.75,
+                "elevated",
+                "expanding",
+                "elevated",
+            ),
+        ]
 
     def test_contains_date(self):
-        msg = self._make_message()
+        msg = prompt_builder.build_brief_message(self._make_rows(), 10, "2024-06-01")
         assert "2024-06-01" in msg
 
-    def test_contains_key_level_types(self):
-        msg = self._make_message()
-        assert "sma_50" in msg
-        assert "sma_200" in msg
+    def test_contains_total_count(self):
+        msg = prompt_builder.build_brief_message(self._make_rows(), 10, "2024-06-01")
+        assert "10" in msg
 
-    def test_contains_peer(self):
-        msg = self._make_message()
-        assert "MSFT" in msg
+    def test_bullish_section_present(self):
+        msg = prompt_builder.build_brief_message(self._make_rows(), 10, "2024-06-01")
+        assert "BULLISH" in msg
+        assert "AAPL" in msg
 
-    def test_contains_vix_regime(self):
-        msg = self._make_message()
-        assert "normal" in msg
+    def test_bearish_section_present(self):
+        msg = prompt_builder.build_brief_message(self._make_rows(), 10, "2024-06-01")
+        assert "BEARISH" in msg
+        assert "TSLA" in msg
 
-    def test_no_candidates_shows_placeholder(self):
-        signal = _signal_row(sma_50=None, sma_200=None, bb_upper=None, bb_lower=None)
-        msg = prompt_builder.build_user_message(
-            ticker="XYZ",
-            target_date="2024-06-01",
-            current_signal=signal,
-            signal_history=[signal],
-            key_candidates=[],
-            peers=[],
-        )
-        assert "none available" in msg.lower()
+    def test_market_context_present(self):
+        msg = prompt_builder.build_brief_message(self._make_rows(), 10, "2024-06-01")
+        assert "MARKET CONTEXT" in msg
 
-    def test_no_peers_shows_placeholder(self):
-        signal = _signal_row()
-        msg = prompt_builder.build_user_message(
-            ticker="XYZ",
-            target_date="2024-06-01",
-            current_signal=signal,
-            signal_history=[signal],
-            key_candidates=[],
-            peers=[],
-        )
-        assert "no peer data" in msg.lower()
-
-
-# ---------------------------------------------------------------------------
-# prompt_builder constants
-# ---------------------------------------------------------------------------
-
-
-class TestPromptBuilderConstants:
-    def test_cached_system_has_cache_control(self):
-        assert len(prompt_builder.CACHED_SYSTEM) == 1
-        block = prompt_builder.CACHED_SYSTEM[0]
-        assert block["type"] == "text"
-        assert block["cache_control"] == {"type": "ephemeral"}
-        assert len(block["text"]) > 50
-
-    def test_analysis_tool_has_required_fields(self):
-        tool = prompt_builder.ANALYSIS_TOOL
-        assert tool["name"] == "record_analysis"
-        schema = tool["input_schema"]
-        required = schema["required"]
-        assert set(required) == {"bias", "confidence", "key_levels", "reasoning"}
-
-    def test_analysis_tool_bias_enum(self):
-        tool = prompt_builder.ANALYSIS_TOOL
-        bias_prop = tool["input_schema"]["properties"]["bias"]
-        assert set(bias_prop["enum"]) == {"bullish", "bearish", "neutral"}
+    def test_brief_system_is_non_empty_string(self):
+        assert isinstance(prompt_builder.BRIEF_SYSTEM, str)
+        assert len(prompt_builder.BRIEF_SYSTEM) > 50
