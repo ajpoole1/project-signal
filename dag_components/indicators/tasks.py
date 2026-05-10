@@ -165,7 +165,7 @@ def compute_indicators(price_history: dict[str, list[dict]]) -> list[dict]:
                 "bb_lower": bb_lower_val,
                 "vix_close": vix_close,
                 "vvix_close": vvix_close,
-                "vix_source": config.VIX_SOURCE,
+                "vix_source": "eodhd",
                 "vix_regime": vix_regime,
                 "vix_trend": vix_trend,
                 "vol_environment": vol_environment,

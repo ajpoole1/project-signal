@@ -38,13 +38,13 @@ def select_tickers() -> list[str]:
         parameters=(target_dt, config.LLM_SIGNAL_THRESHOLD),
     )
     tickers = [r[0] for r in rows]
-    log.info("Selected %d tickers for LLM analysis on %s", len(tickers), target_dt)
+    log.info("Selected %d tickers for analysis on %s", len(tickers), target_dt)
     return tickers
 
 
 @task()
 def analyze_and_upsert(tickers: list[str]) -> int:
-    """Call Haiku for each selected ticker, upsert results to llm_analysis."""
+    """Compute per-ticker bias, confidence, key levels, and reasoning algorithmically."""
     if not tickers:
         log.info("No tickers to analyze.")
         return 0
@@ -56,11 +56,12 @@ def analyze_and_upsert(tickers: list[str]) -> int:
 
     hook = PostgresHook(postgres_conn_id="signal_postgres")
 
-    # --- batch-load signal history -------------------------------------------
+    # batch-load signal history (includes close via raw_prices join)
     sig_rows = hook.get_records(
         """
         SELECT ss.ticker, ss.date, rp.close, ss.composite_vix_adj, ss.rsi_14, ss.macd_hist,
-               ss.vix_close, ss.vvix_close, ss.vix_regime, ss.vix_trend, ss.vol_environment
+               ss.vix_close, ss.vvix_close, ss.vix_regime, ss.vix_trend, ss.vol_environment,
+               ss.sma_50, ss.sma_200, ss.bb_upper, ss.bb_lower
         FROM stock_signals ss
         JOIN raw_prices rp ON rp.ticker = ss.ticker AND rp.date = ss.date
         WHERE ss.ticker = ANY(%s)
@@ -71,7 +72,23 @@ def analyze_and_upsert(tickers: list[str]) -> int:
     )
     signals_by_ticker: dict[str, list[dict]] = {}
     for row in sig_rows:
-        t, dt, close, cvxa, rsi, macd_h, vix_c, vvix_c, vix_r, vix_tr, vol_e = row
+        (
+            t,
+            dt,
+            close,
+            cvxa,
+            rsi,
+            macd_h,
+            vix_c,
+            vvix_c,
+            vix_r,
+            vix_tr,
+            vol_e,
+            s50,
+            s200,
+            bbu,
+            bbl,
+        ) = row
         signals_by_ticker.setdefault(t, []).append(
             {
                 "date": str(dt),
@@ -84,10 +101,14 @@ def analyze_and_upsert(tickers: list[str]) -> int:
                 "vix_regime": vix_r,
                 "vix_trend": vix_tr,
                 "vol_environment": vol_e,
+                "sma_50": float(s50) if s50 is not None else None,
+                "sma_200": float(s200) if s200 is not None else None,
+                "bb_upper": float(bbu) if bbu is not None else None,
+                "bb_lower": float(bbl) if bbl is not None else None,
             }
         )
 
-    # --- batch-load raw prices (high/low for key level extremes) -------------
+    # batch-load raw prices (high/low for key level extremes)
     price_rows = hook.get_records(
         """
         SELECT ticker, date, high, low
@@ -109,37 +130,8 @@ def analyze_and_upsert(tickers: list[str]) -> int:
             }
         )
 
-    # --- batch-load peer correlations ----------------------------------------
-    peer_rows = hook.get_records(
-        """
-        SELECT ticker_a, ticker_b, pearson_r
-        FROM relatedness_matrix
-        WHERE window_days = 90
-          AND pearson_r >= %s
-          AND (ticker_a = ANY(%s) OR ticker_b = ANY(%s))
-        ORDER BY pearson_r DESC
-        """,
-        parameters=(config.LLM_PEER_CORRELATION_MIN_R, tickers, tickers),
-    )
-    ticker_set = set(tickers)
-    peers_by_ticker: dict[str, list[dict]] = {}
-    for ta, tb, r in peer_rows:
-        r_val = float(r)
-        if ta in ticker_set:
-            peers_by_ticker.setdefault(ta, []).append({"peer": tb, "pearson_r": r_val})
-        if tb in ticker_set:
-            peers_by_ticker.setdefault(tb, []).append({"peer": ta, "pearson_r": r_val})
-
-    # Trim to top-N peers per ticker
-    for t in peers_by_ticker:
-        peers_by_ticker[t] = sorted(peers_by_ticker[t], key=lambda x: x["pearson_r"], reverse=True)[
-            : config.LLM_PEER_COUNT
-        ]
-
-    # --- call LLM per ticker -------------------------------------------------
-    client = anthropic.Anthropic()
+    # compute algorithmically
     results: list[tuple] = []
-
     for ticker in tickers:
         signal_history = signals_by_ticker.get(ticker, [])
         if not signal_history:
@@ -147,58 +139,31 @@ def analyze_and_upsert(tickers: list[str]) -> int:
             continue
 
         current_signal = signal_history[-1]
+        close_val = current_signal.get("close")
+        if close_val is None:
+            log.info("%s: no close price, skipping", ticker)
+            continue
+
+        trend = calc.signal_trend(signal_history)
         candidates = calc.build_key_level_candidates(
             current_signal, prices_by_ticker.get(ticker, [])
         )
-        user_msg = prompt_builder.build_user_message(
-            ticker=ticker,
-            target_date=str(target_dt),
-            current_signal=current_signal,
-            signal_history=signal_history,
-            key_candidates=candidates,
-            peers=peers_by_ticker.get(ticker, []),
-        )
-
-        try:
-            response = client.messages.create(
-                model=config.ANTHROPIC_MODEL_CLASSIFICATION,
-                max_tokens=config.LLM_MAX_TOKENS,
-                system=prompt_builder.CACHED_SYSTEM,
-                tools=[prompt_builder.ANALYSIS_TOOL],
-                tool_choice={"type": "tool", "name": "record_analysis"},
-                messages=[{"role": "user", "content": user_msg}],
-            )
-        except anthropic.APIError as exc:
-            log.warning("%s: API error — %s", ticker, exc)
-            continue
-
-        analysis = None
-        for block in response.content:
-            if block.type == "tool_use":
-                analysis = block.input
-                break
-
-        if analysis is None:
-            log.warning("%s: no tool_use block in response", ticker)
-            continue
+        key_levels = calc.classify_key_levels(candidates, float(close_val))
+        bias = calc.classify_bias(current_signal.get("composite_vix_adj"))
+        confidence = calc.classify_confidence(current_signal.get("composite_vix_adj"), trend)
+        reasoning = calc.build_reasoning(current_signal, trend)
 
         results.append(
             (
                 ticker,
                 str(target_dt),
-                analysis.get("bias"),
-                analysis.get("confidence"),
-                json.dumps(analysis.get("key_levels", [])),
-                analysis.get("reasoning"),
-                config.ANTHROPIC_MODEL_CLASSIFICATION,
-                response.usage.input_tokens,
+                bias,
+                confidence,
+                json.dumps(key_levels),
+                reasoning,
+                "algorithmic",
+                0,
             )
-        )
-        log.debug(
-            "%s: bias=%s confidence=%.2f",
-            ticker,
-            analysis.get("bias"),
-            analysis.get("confidence", 0),
         )
 
     if not results:
@@ -227,7 +192,7 @@ def analyze_and_upsert(tickers: list[str]) -> int:
     )
     conn.commit()
     cur.close()
-    log.info("Upserted %d LLM analysis rows for %s", len(results), target_dt)
+    log.info("Upserted %d algorithmic analysis rows for %s", len(results), target_dt)
     return len(results)
 
 
@@ -242,8 +207,6 @@ def generate_brief(count: int) -> str | None:
     target_dt = context["data_interval_start"].date()
 
     hook = PostgresHook(postgres_conn_id="signal_postgres")
-
-    # Top N non-neutral tickers by confidence, joined with composite score
     rows = hook.get_records(
         """
         SELECT la.ticker, la.bias, la.confidence, la.reasoning,
@@ -262,54 +225,17 @@ def generate_brief(count: int) -> str | None:
         log.info("generate_brief: no non-neutral results for %s", target_dt)
         return None
 
-    # Build the briefing prompt
-    bullish = [r for r in rows if r[1] == "bullish"]
-    bearish = [r for r in rows if r[1] == "bearish"]
-
-    def _row_line(r) -> str:
-        ticker, bias, conf, reasoning, cvxa, vix_r, vix_tr, vol_e = r
-        return (
-            f"  {ticker} | conf={conf:.2f} | composite_vix_adj={float(cvxa):.3f} | "
-            f"vix={vix_r}/{vix_tr} | {reasoning}"
-        )
-
-    sections = [f"DATE: {target_dt}", f"TOTAL ANALYZED: {count} tickers"]
-    if bullish:
-        sections += ["", "BULLISH SIGNALS:"] + [_row_line(r) for r in bullish]
-    if bearish:
-        sections += ["", "BEARISH SIGNALS:"] + [_row_line(r) for r in bearish]
-
-    # First row's VIX context represents the day (same for all tickers)
-    vix_regime = rows[0][5] or "unknown"
-    vol_env = rows[0][7] or "unknown"
-    sections += [
-        "",
-        f"MARKET CONTEXT: VIX regime={vix_regime} | vol_environment={vol_env}",
-    ]
-
-    user_content = "\n".join(sections)
-
-    system = (
-        "You are a market analyst producing a concise morning brief for a systematic "
-        "trading pipeline. You receive the top-conviction signals from a nightly "
-        "technical analysis run. Produce a brief with:\n"
-        "1. Two or three bullet points for the strongest bullish setups\n"
-        "2. Two or three bullet points for the strongest bearish setups\n"
-        "3. One sentence on market context (VIX regime, vol environment)\n"
-        "Be specific: name the ticker, the key driver, and one actionable price level "
-        "if relevant. Total length: under 200 words."
-    )
+    user_content = prompt_builder.build_brief_message(rows, count, target_dt)
 
     client = anthropic.Anthropic()
     response = client.messages.create(
         model=config.ANTHROPIC_MODEL_ANALYSIS,
         max_tokens=500,
-        system=system,
+        system=prompt_builder.BRIEF_SYSTEM,
         messages=[{"role": "user", "content": user_content}],
     )
     brief_text = response.content[0].text
 
-    # Persist to daily_brief
     conn = hook.get_conn()
     cur = conn.cursor()
     cur.execute(

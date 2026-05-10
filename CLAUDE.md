@@ -126,6 +126,11 @@ docker compose exec airflow-scheduler python /opt/airflow/scripts/backfill_indic
 ```
 Postgres is native Windows; Docker containers reach it via `host.docker.internal`. The `POSTGRES_HOST` env var is pre-set in docker-compose — running inside a container is the correct execution context for scripts.
 
+**After editing `config/config.py`:** always restart the scheduler to flush Python's module cache — WSL2 volume mounts have low-resolution mtimes that can leave stale `.pyc` files active in worker subprocesses.
+```bash
+docker compose restart airflow-scheduler
+```
+
 ---
 
 ## Indicator Logic (Phase 3 — complete)
