@@ -72,7 +72,23 @@ def analyze_and_upsert(tickers: list[str]) -> int:
     )
     signals_by_ticker: dict[str, list[dict]] = {}
     for row in sig_rows:
-        t, dt, close, cvxa, rsi, macd_h, vix_c, vvix_c, vix_r, vix_tr, vol_e, s50, s200, bbu, bbl = row
+        (
+            t,
+            dt,
+            close,
+            cvxa,
+            rsi,
+            macd_h,
+            vix_c,
+            vvix_c,
+            vix_r,
+            vix_tr,
+            vol_e,
+            s50,
+            s200,
+            bbu,
+            bbl,
+        ) = row
         signals_by_ticker.setdefault(t, []).append(
             {
                 "date": str(dt),
