@@ -9,7 +9,7 @@ Portfolio-grade open source project. Logic is public; API keys and personal watc
 
 - **Single data source** — All market data (US equities, TSX/TSX-V, VIX/VVIX) flows through EODHD via `plugins/eodhdclient.py`. No multi-source routing complexity.
 - **Idempotent writes** — Every DB write uses `INSERT ... ON CONFLICT DO UPDATE`. Tasks are safe to re-run.
-- **Separation of concerns** — Four independent DAGs: ingest → indicators → relatedness → LLM. Each can fail and retry without corrupting the others.
+- **Separation of concerns** — Six independent DAGs: ingest → indicators → relatedness → LLM → outcome tracker → parameter review. Each can fail and retry without corrupting the others.
 - **Rate limit compliance** — All EODHD calls go through `eodhdclient.py`. The `@rate_limited_call` decorator in `base_client.py` is the single throttling point.
 - **Security by design** — Secrets via `.env` only. No hardcoded credentials. No personal data in logs.
 
@@ -24,9 +24,11 @@ Portfolio-grade open source project. Logic is public; API keys and personal watc
 | `dag_stock_ingest` | `0 5 * * 1-5` | midnight | Fetch OHLCV + VIX/VVIX from EODHD |
 | `dag_stock_indicators` | `0 8 * * 1-5` | 3 AM | SMA, MACD, RSI, Bollinger, VIX regime, composite score |
 | `dag_stock_relatedness` | `0 10 * * 0` | 5 AM Sun | Pearson correlation matrix, sector beta, peer clusters |
-| `dag_llm_analysis` | `0 9 * * 1-5` | 4 AM | Claude API: per-ticker signal analysis |
+| `dag_llm_analysis` | `0 9 * * 1-5` | 4 AM | Algorithmic bias/confidence/key levels + Sonnet daily brief |
+| `dag_outcome_tracker` | `0 6 * * 1-5` | 1 AM | Populate predictions, resolve outcomes, weekly accuracy rollup |
+| `dag_parameter_review` | `0 11 * * 0` | 6 AM Sun | Sonnet-generated weekly parameter health report |
 
-**Ordering:** Ingest runs first (midnight). Indicators runs 3 hours later (3 AM). EODHD with basic plan: ingest finishes in a few minutes. The 3-hour buffer is comfortable slack.
+**Ordering:** Ingest runs first (midnight). Indicators runs 3 hours later (3 AM). Outcome tracker runs after ingest (1 AM) to capture that day's signals. Parameter review runs after relatedness on Sundays.
 
 ### Key Design Decisions — Do not revisit without good reason
 
@@ -50,7 +52,9 @@ project-signal/
 │   ├── dag_stock_ingest.py
 │   ├── dag_stock_indicators.py
 │   ├── dag_stock_relatedness.py
-│   └── dag_llm_analysis.py
+│   ├── dag_llm_analysis.py
+│   ├── dag_outcome_tracker.py   # Phase 6
+│   └── dag_parameter_review.py  # Phase 6
 ├── dag_components/              # Task implementations imported by DAGs
 │   ├── dag_builder.py           # OOP DAG constructor (DAGBuilder base + SignalDAG)
 │   ├── ingest/
@@ -61,10 +65,13 @@ project-signal/
 │   ├── relatedness/
 │   │   ├── calculations.py      # Pearson r, beta — pure pandas, no Airflow imports
 │   │   └── tasks.py             # @task functions for dag_stock_relatedness
-│   └── llm/
-│       ├── calculations.py      # Key-level candidates, signal trend — pure functions
-│       ├── prompt_builder.py    # System prompt, tool schema, user message builder
-│       └── tasks.py             # @task functions for dag_llm_analysis
+│   ├── llm/
+│   │   ├── calculations.py      # Key-level candidates, signal trend — pure functions
+│   │   ├── prompt_builder.py    # BRIEF_SYSTEM + build_brief_message for Sonnet
+│   │   └── tasks.py             # @task functions for dag_llm_analysis
+│   └── outcome_tracker/         # Phase 6
+│       ├── calculations.py      # Pure functions: is_correct(), nth_trading_day_price(), accuracy rollup
+│       └── tasks.py             # @task functions for dag_outcome_tracker + dag_parameter_review
 ├── plugins/                     # Shared library: provider clients, routing
 │   ├── base_client.py           # BaseMarketClient + rate_limited_call decorator
 │   ├── eodhdclient.py           # EODHDClient — all market data (US, TSX/TSX-V, indices)
@@ -72,22 +79,30 @@ project-signal/
 │   ├── yfinance_client.py       # YFinanceClient — retained for reference, not active
 │   └── routing.py               # get_client_for_ticker(), resolve_vix_tickers()
 ├── config/
-│   ├── config.py                # All tunable values: weights, thresholds, model names
+│   ├── config.py                # All tunable values: weights, thresholds, model names, SIGNAL_VERSION
 │   ├── watchlist.py             # Loads from ticker_universe.json; sector ETFs hardcoded
-│   └── ticker_universe.json     # 650-ticker personal universe (has_data flags, exchange labels)
+│   ├── ticker_universe.json     # 650-ticker personal universe (has_data flags, exchange labels)
+│   └── parameter_overrides.json # Approved parameter changes only — starts as {}; never edit manually
+├── docs/
+│   └── phase6_prediction_tracking.md  # Full Phase 6 spec
 ├── sql/
 │   ├── schema.sql               # All CREATE TABLE + indexes — run once on fresh Postgres
-│   └── migrations/              # ALTER TABLE scripts for live database upgrades
+│   └── migrations/              # ALTER TABLE scripts for live schema changes
+│       ├── 002_add_daily_brief.sql
+│       └── 003_phase6_prediction_tracking.sql  # Phase 6
 ├── scripts/                     # Manual utility scripts — run inside Docker
 │   ├── backfill_eodhd.py        # Full OHLCV history backfill via EODHD (5 years)
-│   └── backfill_indicators.py   # Full indicator backfill over raw_prices history
+│   ├── backfill_indicators.py   # Full indicator backfill over raw_prices history
+│   ├── backfill_predictions.py  # Phase 6: retroactive signal_predictions from llm_analysis history
+│   └── optimize_parameters.py  # Phase 6: grid search → parameter_proposals (never auto-applies)
 └── tests/                       # One test file per plugin/component module
     ├── test_eodhd_client.py
     ├── test_polygon_client.py
     ├── test_yfinance_client.py
     ├── test_indicators.py
     ├── test_relatedness.py
-    └── test_llm_analysis.py
+    ├── test_llm_analysis.py
+    └── test_outcome_tracker.py  # Phase 6
 ```
 
 **Every plugin and dag_components module must have a corresponding test file.**
@@ -215,8 +230,9 @@ EODHD returns `adjusted_close` for the close field. O/H/L are scaled by `adjuste
 | Phase 2 | ✅ Complete | Ingest DAG live, `raw_prices` populating via EODHD (US + TSX/TSX-V + VIX/VVIX) |
 | Phase 3 | ✅ Complete | Indicators DAG live, `stock_signals` populating. Full 5-year backfill complete. |
 | Phase 4 | ✅ Complete | Relatedness DAG live, `relatedness_matrix` + `sector_beta` populating |
-| Phase 5 | 🔄 Implemented | LLM Analysis DAG implemented, `llm_analysis` table. Pending prod validation. |
-| Phase 6 | 🔲 Not started | Jarvis integration: daily brief endpoint, alert triggers |
+| Phase 5 | ✅ Complete | LLM Analysis DAG live, `llm_analysis` + `daily_brief` populating. Algorithmic classification, Sonnet brief. |
+| Phase 6 | 🔲 Not started | Self-improving signal layer: prediction tracking, outcome evaluation, parameter optimization |
+| Phase 7 | 🔲 Not started | Jarvis integration: daily brief endpoint, alert triggers |
 
 Update this table as phases complete.
 
@@ -224,22 +240,20 @@ Update this table as phases complete.
 
 ## Phase 5 Context (LLM Analysis)
 
-**Goal:** `dag_llm_analysis` — reads `stock_signals` + `raw_prices` + `relatedness_matrix`, writes `llm_analysis`.
+**Goal:** `dag_llm_analysis` — reads `stock_signals` + `raw_prices`, writes `llm_analysis` + `daily_brief`.
 
 **Key design decisions:**
-- Haiku for per-ticker analysis (cost), Sonnet reserved for future briefing generation
-- Forced structured output via `tool_choice={"type": "tool", "name": "record_analysis"}` — no free-text parsing
-- Prompt caching on the static system block (saves ~60% of input tokens at scale)
-- Option C key levels: 8 rule-based candidates pre-computed (sma_50/200, bb_upper/lower, 52w/20d high/low from raw_prices); LLM only assigns role/significance/note — prices never LLM-generated
-- `LLM_SIGNAL_THRESHOLD = 0.5` in config.py — only tickers above this `abs(composite_vix_adj)` are analyzed. Raised from 0.3 once the 5-year backfill populated SMA-200 for all tickers.
-- `llm_analysis` stores output as JSONB (`analysis` column) — flexible schema for future expansion
+- Per-ticker classification is **fully algorithmic** — no LLM calls per ticker, zero per-ticker cost. `classify_bias`, `classify_confidence`, `classify_key_levels`, `build_reasoning` are pure functions in `dag_components/llm/calculations.py`.
+- One Sonnet call per day (`generate_brief`) synthesises the top `LLM_BRIEF_TOP_N=12` non-neutral signals into an actionable morning brief stored in `daily_brief`.
+- `LLM_SIGNAL_THRESHOLD = 0.5` in config.py — only tickers above this `abs(composite_vix_adj)` are analyzed.
+- `model = "algorithmic"`, `prompt_tokens = 0` stored on every `llm_analysis` row.
 
-**Output schema (per ticker):**
+**Output schema (per ticker in `llm_analysis`):**
 ```json
 {
   "bias": "bullish|bearish|neutral",
   "confidence": 0.0-1.0,
-  "key_levels": [{"price": float, "type": str, "role": "support|resistance|neutral", "significance": "high|medium|low", "note": str}],
+  "key_levels": [{"price": float, "type": str, "role": "support|resistance", "significance": "high|medium|low", "note": str}],
   "reasoning": "string"
 }
 ```
@@ -260,6 +274,33 @@ Branch strategy: `feature/phase-N-name` → `develop` → `main` (protected)
 
 ---
 
-## Jarvis Integration (Phase 6)
+## Phase 6 Context (Prediction Tracking & Parameter Optimization)
 
-Project Signal feeds Project Jarvis via a shared DB table or webhook. The `push_to_jarvis` task in `dag_llm_analysis` is stubbed as a no-op until Phase 6. Do not implement the integration until Phase 5 is complete and validated.
+**Full spec:** `docs/phase6_prediction_tracking.md`
+
+**Goal:** Close the feedback loop — record every signal as a prediction, evaluate outcomes against actual price movement, aggregate accuracy by regime, and propose config improvements via grid search.
+
+**New tables:** `signal_predictions`, `signal_accuracy`, `parameter_proposals`
+
+**New DAGs:**
+- `dag_outcome_tracker` (`0 6 * * 1-5`) — populate predictions from today's `llm_analysis`, resolve matured outcomes, weekly accuracy rollup
+- `dag_parameter_review` (`0 11 * * 0`) — Sonnet weekly parameter health report from `signal_accuracy` + pending proposals
+
+**New scripts:**
+- `scripts/backfill_predictions.py` — retroactively populate `signal_predictions` from all historical `llm_analysis` rows; immediately resolve outcomes since prices are available. **Run this first** to establish the accuracy baseline.
+- `scripts/optimize_parameters.py` — grid search over signal weights and VIX multipliers; writes proposals to `parameter_proposals`; never touches config files.
+
+**Key rules:**
+- `parameter_overrides.json` starts as `{}`. Never pre-populate it. Only approved proposals go in, committed to git.
+- `SIGNAL_VERSION = "v1.0"` in config.py tags every live prediction. Backfill uses `"v1.0-backfill"`.
+- Trading day counting uses row offset from `raw_prices`, never calendar arithmetic.
+- `ON CONFLICT DO NOTHING` on `populate_predictions` — re-runnable without corrupting resolved outcomes.
+- `optimize_parameters.py` is a manual script, not a scheduled task. Run it, review the proposals, approve in `parameter_overrides.json` by hand.
+
+**Build order:** schema + config → calculations.py + tests → populate_predictions → resolve_matured → accuracy rollup → backfill_predictions → optimize_parameters → dag_parameter_review
+
+---
+
+## Jarvis Integration (Phase 7)
+
+Project Signal feeds Project Jarvis via a shared DB table or webhook. The `push_to_jarvis` task in `dag_llm_analysis` is stubbed as a no-op until Phase 7. Do not implement the integration until Phase 6 is complete.

@@ -14,15 +14,19 @@ Four independent DAGs run in sequence each night:
 EODHD (US + TSX/TSX-V + VIX/VVIX)
         │
         ▼
-dag_stock_ingest        →  raw_prices + ticker_metadata     (midnight EST)
+dag_stock_ingest        →  raw_prices + ticker_metadata          (midnight EST)
         │
         ▼
-dag_stock_indicators    →  stock_signals                     (3 AM EST)
+dag_stock_indicators    →  stock_signals                          (3 AM EST)
         │
         ├──────────────►
         │              dag_stock_relatedness  →  relatedness_matrix + sector_beta  (Sundays 5 AM EST)
+        │              dag_parameter_review   →  daily_brief (parameter_review)    (Sundays 6 AM EST)
         ▼
-dag_llm_analysis        →  llm_analysis + daily_brief       (4 AM EST)
+dag_llm_analysis        →  llm_analysis + daily_brief            (4 AM EST)
+        │
+        ▼
+dag_outcome_tracker     →  signal_predictions + signal_accuracy  (1 AM EST)
 ```
 
 | DAG | Schedule | Purpose |
@@ -30,7 +34,9 @@ dag_llm_analysis        →  llm_analysis + daily_brief       (4 AM EST)
 | `dag_stock_ingest` | Midnight EST, weekdays | Fetch OHLCV + VIX/VVIX from EODHD |
 | `dag_stock_indicators` | 3 AM EST, weekdays | Compute all technical indicators and composite signal score |
 | `dag_stock_relatedness` | Sundays 5 AM EST | Pearson correlation matrix, sector beta, peer clusters |
-| `dag_llm_analysis` | 4 AM EST, weekdays | Claude API: per-ticker bias + confidence + key levels, then a Sonnet-generated daily brief |
+| `dag_llm_analysis` | 4 AM EST, weekdays | Algorithmic per-ticker bias + confidence + key levels; Sonnet daily brief |
+| `dag_outcome_tracker` | 1 AM EST, weekdays | Record signal predictions; resolve matured outcomes; weekly accuracy rollup |
+| `dag_parameter_review` | Sundays 6 AM EST | Sonnet weekly parameter health report and proposal recommendations |
 
 ---
 
@@ -71,7 +77,7 @@ VVIX classifies the volatility-of-volatility into: `complacent` / `clean_fear` /
 | Orchestration | Apache Airflow 2.9 |
 | Database | Postgres (native Windows, accessed via host.docker.internal) |
 | Market data | EODHD basic plan ($20/mo) — US equities, TSX/TSX-V, VIX/VVIX in a single API |
-| LLM | Anthropic Claude (Haiku for per-ticker analysis, Sonnet for daily brief) |
+| LLM | Anthropic Claude (Sonnet for daily brief + weekly parameter review; Haiku for proposal rationale) |
 | Infrastructure | Docker Compose |
 
 ---
@@ -84,7 +90,9 @@ project-signal/
 │   ├── dag_stock_ingest.py
 │   ├── dag_stock_indicators.py
 │   ├── dag_stock_relatedness.py
-│   └── dag_llm_analysis.py
+│   ├── dag_llm_analysis.py
+│   ├── dag_outcome_tracker.py
+│   └── dag_parameter_review.py
 ├── dag_components/              # Task implementations imported by DAGs
 │   ├── dag_builder.py           # SignalDAG constructor
 │   ├── ingest/tasks.py          # @task functions for dag_stock_ingest
@@ -94,10 +102,13 @@ project-signal/
 │   ├── relatedness/
 │   │   ├── calculations.py      # Pearson r, beta — pure pandas
 │   │   └── tasks.py             # @task functions for dag_stock_relatedness
-│   └── llm/
-│       ├── calculations.py      # Key-level candidates, signal trend
-│       ├── prompt_builder.py    # Cached system prompt, tool schema, message builder
-│       └── tasks.py             # @task functions for dag_llm_analysis
+│   ├── llm/
+│   │   ├── calculations.py      # Algorithmic bias/confidence/key levels/reasoning
+│   │   ├── prompt_builder.py    # Sonnet brief system prompt + message builder
+│   │   └── tasks.py             # @task functions for dag_llm_analysis
+│   └── outcome_tracker/
+│       ├── calculations.py      # is_correct(), nth_trading_day_price(), accuracy rollup
+│       └── tasks.py             # @task functions for dag_outcome_tracker + dag_parameter_review
 ├── plugins/                     # Shared library — clients, routing
 │   ├── base_client.py           # BaseMarketClient + @rate_limited_call
 │   ├── eodhdclient.py           # EODHDClient — all market data (US, TSX/TSX-V, indices)
@@ -105,22 +116,28 @@ project-signal/
 │   ├── yfinance_client.py       # Retained for reference — not active
 │   └── routing.py               # get_client_for_ticker(), resolve_vix_tickers()
 ├── config/
-│   ├── config.py                # All tunable values: weights, thresholds, model names
+│   ├── config.py                # All tunable values: weights, thresholds, SIGNAL_VERSION
 │   ├── watchlist.py             # Loads from ticker_universe.json; sector ETFs hardcoded
-│   └── ticker_universe.json     # 650-ticker personal universe with exchange + has_data flags
+│   ├── ticker_universe.json     # 650-ticker personal universe with exchange + has_data flags
+│   └── parameter_overrides.json # Approved parameter changes — starts as {}
+├── docs/
+│   └── phase6_prediction_tracking.md
 ├── sql/
 │   ├── schema.sql               # All CREATE TABLE statements with indexes
-│   └── migrations/              # ALTER TABLE scripts for live schema changes
+│   └── migrations/              # Schema migration scripts
 ├── scripts/
 │   ├── backfill_eodhd.py        # Full OHLCV history backfill via EODHD (5 years)
-│   └── backfill_indicators.py   # Full indicator backfill over raw_prices history
+│   ├── backfill_indicators.py   # Full indicator backfill over raw_prices history
+│   ├── backfill_predictions.py  # Retroactive signal_predictions from llm_analysis history
+│   └── optimize_parameters.py  # Grid search → parameter_proposals (never auto-applies)
 └── tests/
     ├── test_eodhd_client.py
     ├── test_polygon_client.py
     ├── test_yfinance_client.py
     ├── test_indicators.py
     ├── test_relatedness.py
-    └── test_llm_analysis.py
+    ├── test_llm_analysis.py
+    └── test_outcome_tracker.py
 ```
 
 ---
@@ -159,7 +176,7 @@ Then unpause the DAGs in the Airflow UI in order: ingest → indicators → rela
 
 ## Database schema
 
-Seven tables in Postgres. All writes are idempotent (`INSERT ... ON CONFLICT DO UPDATE`).
+Ten tables in Postgres. All writes are idempotent (`INSERT ... ON CONFLICT DO UPDATE`).
 
 | Table | Key | Contents |
 |---|---|---|
@@ -168,8 +185,11 @@ Seven tables in Postgres. All writes are idempotent (`INSERT ... ON CONFLICT DO 
 | `stock_signals` | `(ticker, date)` | All indicators + VIX regime + composite scores |
 | `relatedness_matrix` | `(ticker_a, ticker_b, window_days)` | Pearson r at 30/90/365-day windows |
 | `sector_beta` | `(ticker, etf_proxy, window_days)` | Beta vs SPY/QQQ/sector ETFs |
-| `llm_analysis` | `(ticker, date)` | Claude Haiku output: bias, confidence, key levels, reasoning |
-| `daily_brief` | `date` | Claude Sonnet synthesis of top convictions into an actionable morning brief |
+| `llm_analysis` | `(ticker, date)` | Algorithmic bias, confidence, key levels, reasoning |
+| `daily_brief` | `date` | Sonnet-generated morning brief from top conviction signals |
+| `signal_predictions` | `(ticker, signal_date)` | Signal snapshot + forward price outcomes (5/10/20d) |
+| `signal_accuracy` | `(signal_version, vix_regime, vol_environment, bias, horizon_days)` | Weekly accuracy rollup by regime |
+| `parameter_proposals` | `id` | LLM-generated parameter change proposals pending human review |
 
 ---
 
@@ -197,8 +217,9 @@ Branch strategy: `feature/phase-N-name` → `develop` → `main`
 | Phase 2 — Ingest DAG | ✅ Done | `dag_stock_ingest` running nightly via EODHD, `raw_prices` populating |
 | Phase 3 — Indicators DAG | ✅ Done | `dag_stock_indicators` running nightly, `stock_signals` populating, 5-year backfill complete |
 | Phase 4 — Relatedness DAG | ✅ Done | `dag_stock_relatedness` running weekly, `relatedness_matrix` + `sector_beta` populating |
-| Phase 5 — LLM Analysis DAG | 🔄 Live | `dag_llm_analysis` running nightly, `llm_analysis` + `daily_brief` populating |
-| Phase 6 — Jarvis integration | 🔲 Not started | Daily brief endpoint, alert triggers |
+| Phase 5 — LLM Analysis DAG | ✅ Done | `dag_llm_analysis` running nightly, `llm_analysis` + `daily_brief` populating |
+| Phase 6 — Prediction Tracking | 🔲 Not started | Signal feedback loop: outcome evaluation, accuracy by regime, parameter optimization |
+| Phase 7 — Jarvis integration | 🔲 Not started | Daily brief endpoint, alert triggers |
 
 ---
 
