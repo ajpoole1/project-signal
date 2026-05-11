@@ -231,7 +231,7 @@ EODHD returns `adjusted_close` for the close field. O/H/L are scaled by `adjuste
 | Phase 3 | ✅ Complete | Indicators DAG live, `stock_signals` populating. Full 5-year backfill complete. |
 | Phase 4 | ✅ Complete | Relatedness DAG live, `relatedness_matrix` + `sector_beta` populating |
 | Phase 5 | ✅ Complete | LLM Analysis DAG live, `llm_analysis` + `daily_brief` populating. Algorithmic classification, Sonnet brief. |
-| Phase 6 | 🔲 Not started | Self-improving signal layer: prediction tracking, outcome evaluation, parameter optimization |
+| Phase 6 | 🔄 In progress | Self-improving signal layer: prediction tracking, outcome evaluation, parameter optimization |
 | Phase 7 | 🔲 Not started | Jarvis integration: daily brief endpoint, alert triggers |
 
 Update this table as phases complete.
@@ -283,7 +283,7 @@ Branch strategy: `feature/phase-N-name` → `develop` → `main` (protected)
 **New tables:** `signal_predictions`, `signal_accuracy`, `parameter_proposals`
 
 **New DAGs:**
-- `dag_outcome_tracker` (`0 6 * * 1-5`) — populate predictions from today's `llm_analysis`, resolve matured outcomes, weekly accuracy rollup
+- `dag_outcome_tracker` (`0 6 * * 0-5`) — populate predictions from today's `llm_analysis`, resolve matured outcomes, weekly accuracy rollup (rollup runs Sundays only, guarded inside task)
 - `dag_parameter_review` (`0 11 * * 0`) — Sonnet weekly parameter health report from `signal_accuracy` + pending proposals
 
 **New scripts:**

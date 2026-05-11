@@ -1,15 +1,31 @@
 """All tunable values for Project Signal. Nothing is hardcoded in DAG or plugin files."""
 
+import json
+from pathlib import Path
+
+# --- Parameter overrides (Phase 6) ---
+# Approved proposals from parameter_proposals are committed here; never edited manually.
+_OVERRIDES_PATH = Path(__file__).parent / "parameter_overrides.json"
+_OVERRIDES: dict = {}
+if _OVERRIDES_PATH.exists():
+    with open(_OVERRIDES_PATH) as _f:
+        _OVERRIDES = json.load(_f)
+
+
+def _get(key: str, default):
+    return _OVERRIDES.get(key, default)
+
+
 # --- Data source ---
 # All market data (US, TSX/TSX-V, VIX/VVIX) is sourced from EODHD.
 # PolygonClient and YFinanceClient are retained in plugins/ for reference only.
 
 # --- Signal weights (must sum to 1.0) ---
 SIGNAL_WEIGHTS = {
-    "sma_200": 0.30,
-    "sma_50": 0.25,
-    "macd": 0.25,
-    "rsi": 0.20,
+    "sma_200": _get("sma_200_weight", 0.30),
+    "sma_50":  _get("sma_50_weight",  0.25),
+    "macd":    _get("macd_weight",    0.25),
+    "rsi":     _get("rsi_weight",     0.20),
 }
 
 # --- RSI thresholds ---
@@ -74,3 +90,20 @@ BB_STD = 2
 VIX_SMA_WINDOW = 20
 PRICE_HISTORY_DAYS = 250  # enough for SMA_200 + buffer
 RELATEDNESS_HISTORY_DAYS = 400  # enough for 365-day correlation window + buffer
+
+# --- Signal versioning (Phase 6) ---
+# Increment on any change to SIGNAL_WEIGHTS or VIX/VVIX thresholds.
+# Format: "vMAJOR.MINOR" — major for weight changes, minor for threshold changes.
+SIGNAL_VERSION = "v1.0"
+
+# --- Outcome evaluation (Phase 6) ---
+PREDICTION_HORIZONS = [5, 10, 20]      # trading days
+CORRECT_SIGNAL_THRESHOLD = 0.01        # min return magnitude to count as confirmed (1%)
+
+# --- Accuracy aggregation (Phase 6) ---
+ACCURACY_MIN_SAMPLE_SIZE = 30          # min signals required before reporting accuracy
+
+# --- Optimization (Phase 6) ---
+OPTIMIZATION_TARGET_HORIZON = 10       # primary horizon for parameter scoring
+OPTIMIZATION_TARGET_BIAS = "bullish"   # primary bias to optimize for
+OPTIMIZATION_MIN_ACCURACY_DELTA = 0.03 # min projected improvement to generate a proposal
