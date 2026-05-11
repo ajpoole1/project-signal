@@ -291,14 +291,6 @@ def main() -> None:
 
     # --- Signal weight optimization ---
     print(f"\nEvaluating signal weight combinations ({len(_generate_weight_combos())} valid combos)...")
-    weight_combos = _generate_weight_combos()
-    current_weights = config.SIGNAL_WEIGHTS
-    current_combo = {
-        "sma_200_weight": current_weights["sma_200"],
-        "sma_50_weight": current_weights["sma_50"],
-        "macd_weight": current_weights["macd"],
-        "rsi_weight": current_weights["rsi"],
-    }
 
     # For weight optimization: approximate by checking if shifting weight toward
     # the most-predictive indicator improves the separation of correct/incorrect signals.

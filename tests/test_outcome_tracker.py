@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pandas as pd
-import pytest
 
 from dag_components.outcome_tracker import calculations as calc
 
@@ -17,7 +16,7 @@ THRESHOLD = 0.01  # mirrors config.CORRECT_SIGNAL_THRESHOLD
 def _price_rows(closes: list[float]) -> list[dict]:
     """Build price_rows dicts from a list of close prices (ascending by date)."""
     dates = pd.date_range("2024-01-01", periods=len(closes), freq="B")
-    return [{"date": str(d.date()), "close": c} for d, c in zip(dates, closes)]
+    return [{"date": str(d.date()), "close": c} for d, c in zip(dates, closes, strict=True)]
 
 
 def _prediction(**kwargs) -> dict:

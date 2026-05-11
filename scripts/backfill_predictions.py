@@ -272,7 +272,7 @@ def main() -> None:
     conn.close()
 
     print()
-    print(f"Done.")
+    print("Done.")
     print(f"  Inserted:  {total_inserted:,} predictions")
     print(f"  Resolved:  {total_resolved:,} outcomes ({total_resolved/total_inserted:.0%})" if total_inserted else "  Resolved:  0")
     print(f"  Skipped:   {skipped} tickers (no data)")
