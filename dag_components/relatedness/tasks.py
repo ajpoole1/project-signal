@@ -56,7 +56,12 @@ def fetch_price_history() -> dict[str, list[dict]]:
 
 @task()
 def compute_and_upsert_correlations(price_history: dict[str, list[dict]]) -> int:
-    """Compute Pearson r for all equity pairs × all windows, upsert to relatedness_matrix."""
+    """Compute Pearson r for all equity pairs × all windows, write to relatedness_matrix.
+
+    Only pairs with |pearson_r| >= RELATEDNESS_MIN_R are kept. The table is fully
+    replaced each run (TRUNCATE then INSERT in one transaction) so stale rows from
+    previously-correlated pairs that have since diverged are never left behind.
+    """
     equity_tickers = get_equity_tickers()
     all_tickers = equity_tickers + _ETF_TICKERS
 
@@ -65,36 +70,44 @@ def compute_and_upsert_correlations(price_history: dict[str, list[dict]]) -> int
         log.warning("No return data available — skipping correlation computation.")
         return 0
 
+    # Compute all pairs across all windows in memory before touching the DB
+    all_pairs: list[tuple] = []
+    for window in config.CORRELATION_WINDOWS:
+        pairs = calc.correlation_pairs(returns, window, equity_tickers)
+        above_threshold = [p for p in pairs if abs(p[3]) >= config.RELATEDNESS_MIN_R]
+        log.info(
+            "Window %d: %d total pairs, %d above |r|=%.2f threshold",
+            window,
+            len(pairs),
+            len(above_threshold),
+            config.RELATEDNESS_MIN_R,
+        )
+        all_pairs.extend(above_threshold)
+
+    if not all_pairs:
+        log.warning("No pairs above threshold — skipping DB write.")
+        return 0
+
+    # TRUNCATE then INSERT in a single transaction — atomic full replacement.
+    # relatedness_matrix is a fully-recomputed derived table; stale rows from
+    # pairs that no longer meet the threshold must not persist between runs.
     hook = PostgresHook(postgres_conn_id="signal_postgres")
     conn = hook.get_conn()
     cur = conn.cursor()
-
-    total = 0
-    for window in config.CORRELATION_WINDOWS:
-        pairs = calc.correlation_pairs(returns, window, equity_tickers)
-        if not pairs:
-            log.info("Window %d: no correlation pairs computed.", window)
-            continue
-
-        execute_values(
-            cur,
-            """
-            INSERT INTO relatedness_matrix (ticker_a, ticker_b, window_days, pearson_r)
-            VALUES %s
-            ON CONFLICT (ticker_a, ticker_b, window_days) DO UPDATE SET
-                pearson_r   = EXCLUDED.pearson_r,
-                computed_at = NOW()
-            """,
-            pairs,
-            page_size=10_000,
-        )
-        total += len(pairs)
-        log.info("Window %d: upserted %d correlation pairs.", window, len(pairs))
-
+    cur.execute("TRUNCATE TABLE relatedness_matrix")
+    execute_values(
+        cur,
+        """
+        INSERT INTO relatedness_matrix (ticker_a, ticker_b, window_days, pearson_r)
+        VALUES %s
+        """,
+        all_pairs,
+        page_size=10_000,
+    )
     conn.commit()
     cur.close()
-    log.info("Total correlation rows upserted: %d", total)
-    return total
+    log.info("relatedness_matrix replaced: %d rows written", len(all_pairs))
+    return len(all_pairs)
 
 
 @task()
