@@ -223,8 +223,16 @@ class TestComputeAccuracyRollup:
         preds = self._make_predictions(30)
         rows = calc.compute_accuracy_rollup(preds, [10], min_sample_size=30)
         required = {
-            "signal_version", "vix_regime", "vol_environment", "bias", "horizon_days",
-            "total_signals", "correct_signals", "accuracy_rate",
-            "avg_return", "avg_return_correct", "avg_return_wrong",
+            "signal_version",
+            "vix_regime",
+            "vol_environment",
+            "bias",
+            "horizon_days",
+            "total_signals",
+            "correct_signals",
+            "accuracy_rate",
+            "avg_return",
+            "avg_return_correct",
+            "avg_return_wrong",
         }
         assert required.issubset(rows[0].keys())

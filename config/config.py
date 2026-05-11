@@ -23,9 +23,9 @@ def _get(key: str, default):
 # --- Signal weights (must sum to 1.0) ---
 SIGNAL_WEIGHTS = {
     "sma_200": _get("sma_200_weight", 0.30),
-    "sma_50":  _get("sma_50_weight",  0.25),
-    "macd":    _get("macd_weight",    0.25),
-    "rsi":     _get("rsi_weight",     0.20),
+    "sma_50": _get("sma_50_weight", 0.25),
+    "macd": _get("macd_weight", 0.25),
+    "rsi": _get("rsi_weight", 0.20),
 }
 
 # --- RSI thresholds ---
@@ -97,13 +97,13 @@ RELATEDNESS_HISTORY_DAYS = 400  # enough for 365-day correlation window + buffer
 SIGNAL_VERSION = "v1.0"
 
 # --- Outcome evaluation (Phase 6) ---
-PREDICTION_HORIZONS = [5, 10, 20]      # trading days
-CORRECT_SIGNAL_THRESHOLD = 0.01        # min return magnitude to count as confirmed (1%)
+PREDICTION_HORIZONS = [5, 10, 20]  # trading days
+CORRECT_SIGNAL_THRESHOLD = 0.01  # min return magnitude to count as confirmed (1%)
 
 # --- Accuracy aggregation (Phase 6) ---
-ACCURACY_MIN_SAMPLE_SIZE = 30          # min signals required before reporting accuracy
+ACCURACY_MIN_SAMPLE_SIZE = 30  # min signals required before reporting accuracy
 
 # --- Optimization (Phase 6) ---
-OPTIMIZATION_TARGET_HORIZON = 10       # primary horizon for parameter scoring
-OPTIMIZATION_TARGET_BIAS = "bullish"   # primary bias to optimize for
-OPTIMIZATION_MIN_ACCURACY_DELTA = 0.03 # min projected improvement to generate a proposal
+OPTIMIZATION_TARGET_HORIZON = 10  # primary horizon for parameter scoring
+OPTIMIZATION_TARGET_BIAS = "bullish"  # primary bias to optimize for
+OPTIMIZATION_MIN_ACCURACY_DELTA = 0.03  # min projected improvement to generate a proposal

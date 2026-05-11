@@ -54,6 +54,7 @@ def populate_predictions() -> int:
         return 0
 
     from config import config as cfg  # read version at execution time
+
     signal_version = cfg.SIGNAL_VERSION
 
     conn = hook.get_conn()
@@ -211,16 +212,16 @@ def compute_accuracy_rollup(resolved_count: int) -> int:
 
     predictions = [
         {
-            "signal_version":  r[0],
-            "vix_regime":      r[1],
+            "signal_version": r[0],
+            "vix_regime": r[1],
             "vol_environment": r[2],
-            "bias":            r[3],
-            "return_5d":       float(r[4]) if r[4] is not None else None,
-            "return_10d":      float(r[5]) if r[5] is not None else None,
-            "return_20d":      float(r[6]) if r[6] is not None else None,
-            "correct_5d":      r[7],
-            "correct_10d":     r[8],
-            "correct_20d":     r[9],
+            "bias": r[3],
+            "return_5d": float(r[4]) if r[4] is not None else None,
+            "return_10d": float(r[5]) if r[5] is not None else None,
+            "return_20d": float(r[6]) if r[6] is not None else None,
+            "correct_5d": r[7],
+            "correct_10d": r[8],
+            "correct_20d": r[9],
         }
         for r in rows
     ]

@@ -233,8 +233,12 @@ def _print_running_stats(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Backfill signal predictions from llm_analysis history")
-    parser.add_argument("--start", metavar="YYYY-MM-DD", help="Only backfill records on/after this date")
+    parser = argparse.ArgumentParser(
+        description="Backfill signal predictions from llm_analysis history"
+    )
+    parser.add_argument(
+        "--start", metavar="YYYY-MM-DD", help="Only backfill records on/after this date"
+    )
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parents[1]
@@ -267,17 +271,25 @@ def main() -> None:
         total_resolved += resolved
 
         if i % 25 == 0 or i == len(tickers):
-            _print_running_stats(i, len(tickers), ticker, inserted, resolved, total_inserted, total_resolved)
+            _print_running_stats(
+                i, len(tickers), ticker, inserted, resolved, total_inserted, total_resolved
+            )
 
     conn.close()
 
     print()
     print("Done.")
     print(f"  Inserted:  {total_inserted:,} predictions")
-    print(f"  Resolved:  {total_resolved:,} outcomes ({total_resolved/total_inserted:.0%})" if total_inserted else "  Resolved:  0")
+    print(
+        f"  Resolved:  {total_resolved:,} outcomes ({total_resolved/total_inserted:.0%})"
+        if total_inserted
+        else "  Resolved:  0"
+    )
     print(f"  Skipped:   {skipped} tickers (no data)")
     if total_inserted > total_resolved:
-        print(f"  Pending:   {total_inserted - total_resolved:,} predictions (not yet matured — run again after {max(_HORIZONS)} more trading days)")
+        print(
+            f"  Pending:   {total_inserted - total_resolved:,} predictions (not yet matured — run again after {max(_HORIZONS)} more trading days)"
+        )
 
 
 if __name__ == "__main__":

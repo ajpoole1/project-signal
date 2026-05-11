@@ -27,14 +27,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config import config
 
 PARAM_GRID = {
-    "sma_200_weight":    [0.20, 0.25, 0.30, 0.35, 0.40],
-    "sma_50_weight":     [0.15, 0.20, 0.25, 0.30],
-    "macd_weight":       [0.15, 0.20, 0.25, 0.30],
-    "rsi_weight":        [0.10, 0.15, 0.20, 0.25],
-    "vix_high_mult":     [1.10, 1.15, 1.20, 1.25, 1.30],
+    "sma_200_weight": [0.20, 0.25, 0.30, 0.35, 0.40],
+    "sma_50_weight": [0.15, 0.20, 0.25, 0.30],
+    "macd_weight": [0.15, 0.20, 0.25, 0.30],
+    "rsi_weight": [0.10, 0.15, 0.20, 0.25],
+    "vix_high_mult": [1.10, 1.15, 1.20, 1.25, 1.30],
     "vix_elevated_mult": [1.05, 1.08, 1.10, 1.12, 1.15],
-    "vix_low_mult":      [0.75, 0.80, 0.85, 0.90],
-    "signal_threshold":  [0.35, 0.40, 0.45, 0.50, 0.55, 0.60],
+    "vix_low_mult": [0.75, 0.80, 0.85, 0.90],
+    "signal_threshold": [0.35, 0.40, 0.45, 0.50, 0.55, 0.60],
 }
 
 # Weights must sum to 1.0 (within floating-point tolerance)
@@ -77,27 +77,30 @@ def _load_resolved_predictions(conn) -> list[dict]:
         rows = cur.fetchall()
     return [
         {
-            "signal_version":  r[0],
-            "vix_regime":      r[1],
+            "signal_version": r[0],
+            "vix_regime": r[1],
             "vol_environment": r[2],
-            "bias":            r[3],
+            "bias": r[3],
             "composite_vix_adj": float(r[4]) if r[4] is not None else None,
-            "correct_5d":      r[5],
-            "correct_10d":     r[6],
-            "correct_20d":     r[7],
-            "return_5d":       float(r[8]) if r[8] is not None else None,
-            "return_10d":      float(r[9]) if r[9] is not None else None,
-            "return_20d":      float(r[10]) if r[10] is not None else None,
+            "correct_5d": r[5],
+            "correct_10d": r[6],
+            "correct_20d": r[7],
+            "return_5d": float(r[8]) if r[8] is not None else None,
+            "return_10d": float(r[9]) if r[9] is not None else None,
+            "return_20d": float(r[10]) if r[10] is not None else None,
         }
         for r in rows
     ]
 
 
-def _baseline_accuracy(predictions: list[dict], horizon: int, bias: str, vix_regimes: list[str] | None = None) -> float | None:
+def _baseline_accuracy(
+    predictions: list[dict], horizon: int, bias: str, vix_regimes: list[str] | None = None
+) -> float | None:
     """Compute accuracy rate for a subset of resolved predictions."""
     field = f"correct_{horizon}d"
     subset = [
-        p for p in predictions
+        p
+        for p in predictions
         if p["bias"] == bias
         and p[field] is not None
         and (vix_regimes is None or p["vix_regime"] in vix_regimes)
@@ -107,11 +110,14 @@ def _baseline_accuracy(predictions: list[dict], horizon: int, bias: str, vix_reg
     return sum(1 for p in subset if p[field]) / len(subset)
 
 
-def _evaluate_threshold(predictions: list[dict], threshold: float, horizon: int, bias: str) -> float | None:
+def _evaluate_threshold(
+    predictions: list[dict], threshold: float, horizon: int, bias: str
+) -> float | None:
     """Accuracy if we only kept predictions above abs(composite_vix_adj) >= threshold."""
     field = f"correct_{horizon}d"
     subset = [
-        p for p in predictions
+        p
+        for p in predictions
         if p["bias"] == bias
         and p[field] is not None
         and p["composite_vix_adj"] is not None
@@ -132,11 +138,20 @@ def _generate_weight_combos() -> list[dict]:
         PARAM_GRID["rsi_weight"],
     ):
         if abs(w200 + w50 + wmacd + wrsi - 1.0) <= _WEIGHT_TOL:
-            combos.append({"sma_200_weight": w200, "sma_50_weight": w50, "macd_weight": wmacd, "rsi_weight": wrsi})
+            combos.append(
+                {
+                    "sma_200_weight": w200,
+                    "sma_50_weight": w50,
+                    "macd_weight": wmacd,
+                    "rsi_weight": wrsi,
+                }
+            )
     return combos
 
 
-def _generate_rationale(param_name: str, current: float, proposed: float, accuracy_delta: float, sample_size: int) -> str:
+def _generate_rationale(
+    param_name: str, current: float, proposed: float, accuracy_delta: float, sample_size: int
+) -> str:
     """Generate a concise rationale string using Haiku."""
     import anthropic
 
@@ -155,9 +170,17 @@ def _generate_rationale(param_name: str, current: float, proposed: float, accura
     return response.content[0].text.strip()
 
 
-def _insert_proposal(conn, param_name: str, current: float, proposed: float, rationale: str,
-                     accuracy_delta: float, sample_size: int,
-                     vix_regime_scope: str | None = None, vol_env_scope: str | None = None) -> None:
+def _insert_proposal(
+    conn,
+    param_name: str,
+    current: float,
+    proposed: float,
+    rationale: str,
+    accuracy_delta: float,
+    sample_size: int,
+    vix_regime_scope: str | None = None,
+    vol_env_scope: str | None = None,
+) -> None:
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -166,7 +189,16 @@ def _insert_proposal(conn, param_name: str, current: float, proposed: float, rat
                  accuracy_delta, sample_size, vix_regime_scope, vol_env_scope)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """,
-            (param_name, current, proposed, rationale, accuracy_delta, sample_size, vix_regime_scope, vol_env_scope),
+            (
+                param_name,
+                current,
+                proposed,
+                rationale,
+                accuracy_delta,
+                sample_size,
+                vix_regime_scope,
+                vol_env_scope,
+            ),
         )
     conn.commit()
 
@@ -180,7 +212,9 @@ def main() -> None:
 
     print(f"optimize_parameters: {len(predictions):,} resolved predictions loaded")
     if len(predictions) < config.ACCURACY_MIN_SAMPLE_SIZE * 10:
-        print(f"WARNING: fewer than {config.ACCURACY_MIN_SAMPLE_SIZE * 10} predictions — proposals may be unreliable.")
+        print(
+            f"WARNING: fewer than {config.ACCURACY_MIN_SAMPLE_SIZE * 10} predictions — proposals may be unreliable."
+        )
     print()
 
     horizon = config.OPTIMIZATION_TARGET_HORIZON
@@ -189,7 +223,9 @@ def main() -> None:
 
     baseline = _baseline_accuracy(predictions, horizon, bias)
     if baseline is None:
-        print(f"Not enough resolved predictions to compute baseline ({bias}, {horizon}d). Run backfill first.")
+        print(
+            f"Not enough resolved predictions to compute baseline ({bias}, {horizon}d). Run backfill first."
+        )
         conn.close()
         return
 
@@ -212,7 +248,8 @@ def main() -> None:
         if acc is None:
             continue
         subset_n = sum(
-            1 for p in predictions
+            1
+            for p in predictions
             if p["bias"] == bias
             and p[f"correct_{horizon}d"] is not None
             and p["composite_vix_adj"] is not None
@@ -225,16 +262,32 @@ def main() -> None:
 
     delta = best_threshold_acc - baseline
     if best_threshold != current_threshold and delta >= min_delta:
-        print(f"  Proposing signal_threshold: {current_threshold} → {best_threshold} (+{delta:.1%}, n={best_threshold_n})")
-        rationale = _generate_rationale("signal_threshold", current_threshold, best_threshold, delta, best_threshold_n)
-        _insert_proposal(conn, "signal_threshold", current_threshold, best_threshold, rationale, delta, best_threshold_n)
+        print(
+            f"  Proposing signal_threshold: {current_threshold} → {best_threshold} (+{delta:.1%}, n={best_threshold_n})"
+        )
+        rationale = _generate_rationale(
+            "signal_threshold", current_threshold, best_threshold, delta, best_threshold_n
+        )
+        _insert_proposal(
+            conn,
+            "signal_threshold",
+            current_threshold,
+            best_threshold,
+            rationale,
+            delta,
+            best_threshold_n,
+        )
         proposals_generated += 1
     else:
         print(f"  No improvement found (best delta={delta:+.1%})")
 
     # --- VIX multiplier optimization ---
-    vix_high_current = next((mult for _, label, mult in config.VIX_REGIMES if label == "high"), 1.20)
-    vix_elevated_current = next((mult for _, label, mult in config.VIX_REGIMES if label == "elevated"), 1.10)
+    vix_high_current = next(
+        (mult for _, label, mult in config.VIX_REGIMES if label == "high"), 1.20
+    )
+    vix_elevated_current = next(
+        (mult for _, label, mult in config.VIX_REGIMES if label == "elevated"), 1.10
+    )
     vix_low_current = next((mult for _, label, mult in config.VIX_REGIMES if label == "low"), 0.85)
 
     for vix_label, current_mult, grid_key in [
@@ -247,11 +300,17 @@ def main() -> None:
             print(f"  {grid_key}: insufficient data for '{vix_label}' regime — skipping")
             continue
 
-        print(f"Evaluating {grid_key} (current={current_mult}, regime baseline={regime_baseline:.1%})...")
+        print(
+            f"Evaluating {grid_key} (current={current_mult}, regime baseline={regime_baseline:.1%})..."
+        )
         # VIX multipliers affect composite_vix_adj magnitude; we approximate improvement
         # by checking if higher multipliers correlate with accuracy in that regime
         # (directional heuristic: if signals in this regime are already accurate, multiplier tuning helps)
-        regime_preds = [p for p in predictions if p["vix_regime"] == vix_label and p[f"correct_{horizon}d"] is not None]
+        regime_preds = [
+            p
+            for p in predictions
+            if p["vix_regime"] == vix_label and p[f"correct_{horizon}d"] is not None
+        ]
         regime_n = len(regime_preds)
         if regime_n < config.ACCURACY_MIN_SAMPLE_SIZE:
             print(f"  {grid_key}: sample too small ({regime_n}) — skipping")
@@ -269,7 +328,8 @@ def main() -> None:
             scale = candidate / current_mult
             # Estimate: shift marginal predictions in/out of threshold
             adjusted = [
-                p for p in regime_preds
+                p
+                for p in regime_preds
                 if p["composite_vix_adj"] is not None
                 and abs(p["composite_vix_adj"]) * scale >= config.LLM_SIGNAL_THRESHOLD
             ]
@@ -282,44 +342,73 @@ def main() -> None:
 
         delta = best_mult_acc - regime_baseline
         if best_mult != current_mult and delta >= min_delta:
-            print(f"  Proposing {grid_key}: {current_mult} → {best_mult} (+{delta:.1%}, n={regime_n})")
+            print(
+                f"  Proposing {grid_key}: {current_mult} → {best_mult} (+{delta:.1%}, n={regime_n})"
+            )
             rationale = _generate_rationale(grid_key, current_mult, best_mult, delta, regime_n)
-            _insert_proposal(conn, grid_key, current_mult, best_mult, rationale, delta, regime_n, vix_regime_scope=vix_label)
+            _insert_proposal(
+                conn,
+                grid_key,
+                current_mult,
+                best_mult,
+                rationale,
+                delta,
+                regime_n,
+                vix_regime_scope=vix_label,
+            )
             proposals_generated += 1
         else:
             print(f"  {grid_key}: no improvement found (best delta={delta:+.1%})")
 
     # --- Signal weight optimization ---
-    print(f"\nEvaluating signal weight combinations ({len(_generate_weight_combos())} valid combos)...")
+    print(
+        f"\nEvaluating signal weight combinations ({len(_generate_weight_combos())} valid combos)..."
+    )
 
     # For weight optimization: approximate by checking if shifting weight toward
     # the most-predictive indicator improves the separation of correct/incorrect signals.
     # Use composite_vix_adj distribution as a proxy: higher |composite_vix_adj| correlates
     # with accuracy, so weights that produce higher scores on correct predictions win.
     correct_preds = [
-        p for p in predictions
-        if p["bias"] == bias and p[f"correct_{horizon}d"] is True and p["composite_vix_adj"] is not None
+        p
+        for p in predictions
+        if p["bias"] == bias
+        and p[f"correct_{horizon}d"] is True
+        and p["composite_vix_adj"] is not None
     ]
     wrong_preds = [
-        p for p in predictions
-        if p["bias"] == bias and p[f"correct_{horizon}d"] is False and p["composite_vix_adj"] is not None
+        p
+        for p in predictions
+        if p["bias"] == bias
+        and p[f"correct_{horizon}d"] is False
+        and p["composite_vix_adj"] is not None
     ]
 
     if len(correct_preds) < 10 or len(wrong_preds) < 10:
         print("  Insufficient correct/wrong predictions for weight optimization — skipping")
     else:
-        avg_correct_score = sum(abs(p["composite_vix_adj"]) for p in correct_preds) / len(correct_preds)
+        avg_correct_score = sum(abs(p["composite_vix_adj"]) for p in correct_preds) / len(
+            correct_preds
+        )
         avg_wrong_score = sum(abs(p["composite_vix_adj"]) for p in wrong_preds) / len(wrong_preds)
         separation = avg_correct_score - avg_wrong_score
-        print(f"  Score separation (correct={avg_correct_score:.3f}, wrong={avg_wrong_score:.3f}, gap={separation:.3f})")
-        print("  Weight grid search requires per-signal re-scoring; using accuracy-by-regime proxy instead.")
-        print("  (Full weight optimization requires recomputing composite_score per candidate — run after backfill_indicators.)")
+        print(
+            f"  Score separation (correct={avg_correct_score:.3f}, wrong={avg_wrong_score:.3f}, gap={separation:.3f})"
+        )
+        print(
+            "  Weight grid search requires per-signal re-scoring; using accuracy-by-regime proxy instead."
+        )
+        print(
+            "  (Full weight optimization requires recomputing composite_score per candidate — run after backfill_indicators.)"
+        )
 
     conn.close()
     print()
     if proposals_generated:
         print(f"Done. {proposals_generated} proposal(s) written to parameter_proposals.")
-        print("Review with: SELECT * FROM parameter_proposals WHERE status = 'pending' ORDER BY proposed_at DESC;")
+        print(
+            "Review with: SELECT * FROM parameter_proposals WHERE status = 'pending' ORDER BY proposed_at DESC;"
+        )
         print("Approve by adding the parameter to config/parameter_overrides.json and committing.")
     else:
         print("Done. No proposals met the minimum accuracy delta threshold.")

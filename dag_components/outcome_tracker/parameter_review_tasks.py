@@ -121,7 +121,9 @@ def _build_review_prompt(data: dict, report_date: str) -> str:
         lines.append("No pending proposals.")
         lines.append("")
 
-    lines.append("Please provide your analysis and approve/reject recommendation for each proposal.")
+    lines.append(
+        "Please provide your analysis and approve/reject recommendation for each proposal."
+    )
     return "\n".join(lines)
 
 
@@ -172,6 +174,8 @@ def generate_review_brief(data: dict) -> str | None:
 def push_review_to_jarvis(brief: str | None) -> None:
     """Stub — Phase 7 will push the parameter review to Jarvis."""
     if brief:
-        log.info("push_review_to_jarvis: review ready (%d chars) — Phase 7 will deliver this", len(brief))
+        log.info(
+            "push_review_to_jarvis: review ready (%d chars) — Phase 7 will deliver this", len(brief)
+        )
     else:
         log.info("push_review_to_jarvis: no review generated this week")
