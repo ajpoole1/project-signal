@@ -75,12 +75,19 @@ _SKIP_SUFFIXES = (
 # EODHD Type values that are equity-like and should be included
 _EQUITY_TYPES = {"Common Stock", "Ordinary Shares"}
 
+# Name substrings that indicate non-equity instruments even when typed as "Common Stock"
+# (EODHD mislabels many SPAC warrants/units/rights as Common Stock)
+_SKIP_NAME_SUBSTRINGS = ("Warrant", " Rights", " Units", " Unit Trust")
+
+# Name substrings that indicate SPACs — blank-check companies with no operating business
+_SPAC_NAME_SUBSTRINGS = ("Acquisition Corp", "Acquisition Co ", "SPAC")
+
 
 def fetch_exchange_symbols(exchange_code: str, api_key: str) -> list[dict]:
     url = f"{EODHD_BASE}/exchange-symbol-list/{exchange_code}"
     resp = requests.get(
         url,
-        params={"api_token": api_key, "fmt": "json", "type": "cs"},
+        params={"api_token": api_key, "fmt": "json"},
         timeout=60,
     )
     resp.raise_for_status()
@@ -106,6 +113,17 @@ def is_quality_common_stock(symbol: dict, config: dict) -> bool:
     # Skip warrants, rights, preferred shares by suffix
     for skip in _SKIP_SUFFIXES:
         if code.upper().endswith(skip.upper()):
+            return False
+
+    # Skip instruments that EODHD mislabels as Common Stock (warrants, rights, units)
+    name = symbol.get("Name", "")
+    for substr in _SKIP_NAME_SUBSTRINGS:
+        if substr.lower() in name.lower():
+            return False
+
+    # Skip SPACs (blank-check acquisition vehicles)
+    for substr in _SPAC_NAME_SUBSTRINGS:
+        if substr.lower() in name.lower():
             return False
 
     return True
