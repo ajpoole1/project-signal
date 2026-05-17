@@ -33,6 +33,7 @@ webserver_config.py
 data/
 *.db
 *.sqlite
+*.bak
 
 # IDE
 .idea/

@@ -78,15 +78,19 @@ def fetch_metadata(tickers: list[str]) -> None:
             meta = client.fetch_metadata(ticker)
             hook.run(
                 """
-                INSERT INTO ticker_metadata (ticker, name, sector, industry, market_cap, exchange, updated_at)
-                VALUES (%s, %s, %s, %s, %s, %s, NOW())
+                INSERT INTO ticker_metadata
+                    (ticker, name, sector, industry, market_cap, exchange,
+                     eodhd_sector, eodhd_industry, updated_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW())
                 ON CONFLICT (ticker) DO UPDATE SET
-                    name       = EXCLUDED.name,
-                    sector     = EXCLUDED.sector,
-                    industry   = EXCLUDED.industry,
-                    market_cap = EXCLUDED.market_cap,
-                    exchange   = EXCLUDED.exchange,
-                    updated_at = NOW()
+                    name          = EXCLUDED.name,
+                    sector        = EXCLUDED.sector,
+                    industry      = EXCLUDED.industry,
+                    market_cap    = EXCLUDED.market_cap,
+                    exchange      = EXCLUDED.exchange,
+                    eodhd_sector  = EXCLUDED.eodhd_sector,
+                    eodhd_industry = EXCLUDED.eodhd_industry,
+                    updated_at    = NOW()
                 """,
                 parameters=(
                     ticker,
@@ -95,6 +99,8 @@ def fetch_metadata(tickers: list[str]) -> None:
                     meta.get("industry"),
                     meta.get("market_cap"),
                     meta.get("exchange"),
+                    meta.get("sector"),
+                    meta.get("industry"),
                 ),
             )
             log.info("%s: metadata upserted", ticker)
