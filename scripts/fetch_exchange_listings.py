@@ -66,10 +66,19 @@ EXCHANGE_CONFIG = {
 
 # Code suffixes that indicate non-equity instruments — skip these
 _SKIP_SUFFIXES = (
-    ".WT", ".WA", ".WB", ".WS",   # warrants
-    ".RT", ".RH",                  # rights
-    ".PR", ".PRA", ".PRB", ".PRC", ".PRD", ".PRE",  # preferred shares
-    ".U",                          # USD-denominated unit
+    ".WT",
+    ".WA",
+    ".WB",
+    ".WS",  # warrants
+    ".RT",
+    ".RH",  # rights
+    ".PR",
+    ".PRA",
+    ".PRB",
+    ".PRC",
+    ".PRD",
+    ".PRE",  # preferred shares
+    ".U",  # USD-denominated unit
 )
 
 # EODHD Type values that are equity-like and should be included
