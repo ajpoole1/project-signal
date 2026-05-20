@@ -54,15 +54,15 @@ def correlation_pairs(
     if len(cols) < 2:
         return []
 
-    corr = window[cols].corr()
+    corr_arr = window[cols].corr().to_numpy()
 
     r_idx_arr, c_idx_arr = np.triu_indices(len(cols), k=1)
-    result: list[tuple[str, str, int, float]] = []
-    for r_idx, c_idx in zip(r_idx_arr, c_idx_arr, strict=False):
-        r_val = corr.iat[r_idx, c_idx]
-        if pd.notna(r_val):
-            result.append((cols[r_idx], cols[c_idx], window_days, round(float(r_val), 6)))
-    return result
+    r_vals = corr_arr[r_idx_arr, c_idx_arr]
+    valid = ~np.isnan(r_vals)
+    return [
+        (cols[r], cols[c], window_days, round(float(v), 6))
+        for r, c, v in zip(r_idx_arr[valid], c_idx_arr[valid], r_vals[valid])
+    ]
 
 
 def beta_values(

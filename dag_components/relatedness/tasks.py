@@ -54,7 +54,7 @@ def fetch_price_history() -> dict[str, list[dict]]:
     return history
 
 
-@task()
+@task(execution_timeout=timedelta(hours=2))
 def compute_and_upsert_correlations(price_history: dict[str, list[dict]]) -> int:
     """Compute Pearson r for all equity pairs × all windows, write to relatedness_matrix.
 
