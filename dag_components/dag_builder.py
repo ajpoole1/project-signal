@@ -52,6 +52,7 @@ class DAGBuilder:
         default_args: dict | None = None,
         tags: list[str] | None = None,
         catchup: bool = False,
+        max_active_runs: int = 1,
     ) -> None:
         self.dag_id = dag_id
         self.schedule = schedule
@@ -59,6 +60,7 @@ class DAGBuilder:
         self.default_args = default_args or {}
         self.tags = tags or []
         self.catchup = catchup
+        self.max_active_runs = max_active_runs
 
     def build(self, func):
         """
@@ -74,6 +76,7 @@ class DAGBuilder:
             catchup=self.catchup,
             default_args=self.default_args,
             tags=self.tags,
+            max_active_runs=self.max_active_runs,
         )(func)
         return dag_factory()
 

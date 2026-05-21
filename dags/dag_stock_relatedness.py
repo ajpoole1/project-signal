@@ -25,6 +25,6 @@ builder = SignalDAG(
 
 @builder.build
 def dag_stock_relatedness():
-    history = fetch_price_history()
-    compute_and_upsert_correlations(history)
-    compute_and_upsert_betas(history)
+    ticker_count = fetch_price_history()
+    compute_and_upsert_correlations(ticker_count)
+    compute_and_upsert_betas(ticker_count)
