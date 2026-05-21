@@ -75,7 +75,7 @@ def correlation_pairs(
         valid &= np.abs(r_vals) >= min_r
     return [
         (cols[r], cols[c], window_days, round(float(v), 6))
-        for r, c, v in zip(r_idx_arr[valid], c_idx_arr[valid], r_vals[valid])
+        for r, c, v in zip(r_idx_arr[valid], c_idx_arr[valid], r_vals[valid], strict=False)
     ]
 
 
@@ -140,7 +140,7 @@ def _correlation_pairs_chunked(
                 mask = enough & ~np.isnan(corr_block)
 
             bi_idx, bj_idx = np.where(mask)
-            for bi, bj in zip(bi_idx, bj_idx):
+            for bi, bj in zip(bi_idx, bj_idx, strict=False):
                 result.append((
                     cols[i_start + bi],
                     cols[j_start + bj],
