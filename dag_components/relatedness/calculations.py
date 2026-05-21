@@ -118,14 +118,14 @@ def _correlation_pairs_chunked(
     for i_start in range(0, n, chunk_size):
         i_end = min(i_start + chunk_size, n)
         block_i = arr_std[:, i_start:i_end]  # T × ci
-        obs_i = obs[:, i_start:i_end]        # T × ci
+        obs_i = obs[:, i_start:i_end]  # T × ci
 
         for j_start in range(i_start + 1, n, chunk_size):
             j_end = min(j_start + chunk_size, n)
             block_j = arr_std[:, j_start:j_end]  # T × cj
-            obs_j = obs[:, j_start:j_end]         # T × cj
+            obs_j = obs[:, j_start:j_end]  # T × cj
 
-            obs_count = obs_i.T @ obs_j   # ci × cj, float32
+            obs_count = obs_i.T @ obs_j  # ci × cj, float32
             raw_corr = block_i.T @ block_j  # ci × cj, float64
 
             # Require at least 10 overlapping observations; normalise
@@ -141,12 +141,14 @@ def _correlation_pairs_chunked(
 
             bi_idx, bj_idx = np.where(mask)
             for bi, bj in zip(bi_idx, bj_idx, strict=False):
-                result.append((
-                    cols[i_start + bi],
-                    cols[j_start + bj],
-                    window_days,
-                    round(float(corr_block[bi, bj]), 6),
-                ))
+                result.append(
+                    (
+                        cols[i_start + bi],
+                        cols[j_start + bj],
+                        window_days,
+                        round(float(corr_block[bi, bj]), 6),
+                    )
+                )
 
     return result
 

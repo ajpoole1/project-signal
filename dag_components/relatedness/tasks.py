@@ -141,12 +141,16 @@ def compute_and_upsert_correlations(ticker_count: int) -> int:
     total = 0
     for window in config.CORRELATION_WINDOWS:
         pairs = calc.correlation_pairs(
-            returns, window, equity_tickers,
+            returns,
+            window,
+            equity_tickers,
             min_r=config.RELATEDNESS_MIN_R,
             chunk_size=config.CORRELATION_CHUNK_SIZE,
         )
         if not pairs:
-            log.info("Window %d: no pairs above |r|=%.2f threshold", window, config.RELATEDNESS_MIN_R)
+            log.info(
+                "Window %d: no pairs above |r|=%.2f threshold", window, config.RELATEDNESS_MIN_R
+            )
             continue
 
         log.info(
