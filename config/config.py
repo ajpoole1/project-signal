@@ -57,6 +57,7 @@ CORRELATION_WINDOWS = [30, 90, 365]
 PEER_CLUSTER_THRESHOLD = 0.65
 BETA_WINDOWS = [90, 365]
 RELATEDNESS_MIN_R = 0.20  # pairs below this |pearson_r| are not written to relatedness_matrix
+CORRELATION_CHUNK_SIZE = 500  # tickers per block in chunked corr; smaller = less CPU spike
 
 # --- LLM ---
 ANTHROPIC_MODEL_ANALYSIS = "claude-sonnet-4-6"
