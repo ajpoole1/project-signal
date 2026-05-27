@@ -51,7 +51,7 @@ services:
     command: webserver
     ports:
       - "8080:8080"
-    restart: unless-stopped
+    restart: on-failure
     depends_on:
       airflow-init:
         condition: service_completed_successfully
@@ -59,7 +59,7 @@ services:
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
-    restart: unless-stopped
+    restart: on-failure
     depends_on:
       airflow-init:
         condition: service_completed_successfully
