@@ -1,6 +1,6 @@
 """
-dag_stock_ingest — Nightly OHLCV + metadata ingest from Polygon.io.
-Schedule: midnight EST (05:00 UTC), weekdays.
+dag_stock_ingest — Nightly OHLCV + metadata ingest from EODHD.
+Triggered by dag_orchestrator. Run ad-hoc via Airflow UI as needed.
 
 Task flow:
     validate_watchlist → fetch_ohlcv  → validate_raw → upsert_raw_prices
@@ -20,7 +20,7 @@ from dag_components.ingest.tasks import (
 
 builder = SignalDAG(
     dag_id="dag_stock_ingest",
-    schedule="0 5 * * 1-5",
+    schedule=None,
     tags=["ingest"],
 )
 

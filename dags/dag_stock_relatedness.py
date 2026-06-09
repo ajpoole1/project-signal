@@ -1,6 +1,6 @@
 """
 dag_stock_relatedness — Weekly correlation and beta computation.
-Schedule: 10:00 UTC Sundays (05:00 EST) — no market activity, full week of data available.
+Triggered by dag_orchestrator on Sundays. Run ad-hoc via Airflow UI as needed.
 
 Task flow:
     fetch_price_history → compute_and_upsert_correlations
@@ -18,13 +18,13 @@ from dag_components.relatedness.tasks import (
 
 builder = SignalDAG(
     dag_id="dag_stock_relatedness",
-    schedule="0 10 * * 0",  # 10:00 UTC = 05:00 EST, Sundays
+    schedule=None,
     tags=["relatedness"],
 )
 
 
 @builder.build
 def dag_stock_relatedness():
-    history = fetch_price_history()
-    compute_and_upsert_correlations(history)
-    compute_and_upsert_betas(history)
+    ticker_count = fetch_price_history()
+    compute_and_upsert_correlations(ticker_count)
+    compute_and_upsert_betas(ticker_count)
