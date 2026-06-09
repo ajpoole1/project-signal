@@ -19,16 +19,22 @@ Portfolio-grade open source project. Logic is public; API keys and personal watc
 
 ### DAG Pipeline
 
-| DAG | UTC Schedule | EST | Purpose |
-|---|---|---|---|
-| `dag_stock_ingest` | `0 5 * * 1-5` | midnight | Fetch OHLCV + VIX/VVIX from EODHD |
-| `dag_stock_indicators` | `0 8 * * 1-5` | 3 AM | SMA, MACD, RSI, Bollinger, VIX regime, composite score |
-| `dag_stock_relatedness` | `0 10 * * 0` | 5 AM Sun | Pearson correlation matrix, sector beta, peer clusters |
-| `dag_llm_analysis` | `0 9 * * 1-5` | 4 AM | Algorithmic bias/confidence/key levels + Sonnet daily brief |
-| `dag_outcome_tracker` | `0 6 * * 1-5` | 1 AM | Populate predictions, resolve outcomes, weekly accuracy rollup |
-| `dag_parameter_review` | `0 11 * * 0` | 6 AM Sun | Sonnet-generated weekly parameter health report |
+All pipelines are driven by `dag_orchestrator`. Sub-DAGs have `schedule=None` and only run when triggered.
 
-**Ordering:** Ingest runs first (midnight). Indicators runs 3 hours later (3 AM). Outcome tracker runs after ingest (1 AM) to capture that day's signals. Parameter review runs after relatedness on Sundays.
+| DAG | Schedule | Purpose |
+|---|---|---|
+| `dag_orchestrator` | `0 5 * * 0-5` (5am UTC, Sun–Fri) | Master sequencer — triggers all sub-DAGs in order |
+| `dag_stock_ingest` | triggered | Fetch OHLCV + VIX/VVIX from EODHD |
+| `dag_stock_indicators` | triggered | SMA, MACD, RSI, Bollinger, VIX regime, composite score |
+| `dag_stock_relatedness` | triggered (Sundays only) | Pearson correlation matrix, sector beta, peer clusters |
+| `dag_llm_analysis` | triggered | Algorithmic bias/confidence/key levels + Sonnet daily brief |
+| `dag_outcome_tracker` | triggered | Populate predictions, resolve outcomes, weekly accuracy rollup |
+| `dag_parameter_review` | triggered (Sundays only) | Sonnet-generated weekly parameter health report |
+
+**Weekday chain:** ingest → indicators → llm_analysis → outcome_tracker
+**Sunday chain:** ingest → indicators → relatedness → llm_analysis → outcome_tracker → parameter_review
+
+`dag_orchestrator` uses `catchup=False` — a Docker restart triggers at most one missed run, never a backlog. Each stage blocks until the previous completes, preventing CPU pile-up.
 
 ### Key Design Decisions — Do not revisit without good reason
 
@@ -49,6 +55,7 @@ Portfolio-grade open source project. Logic is public; API keys and personal watc
 ```
 project-signal/
 ├── dags/                        # Airflow DAG definitions — orchestration only, no logic
+│   ├── dag_orchestrator.py      # Master sequencer (catchup=False) — all sub-DAGs have schedule=None
 │   ├── dag_stock_ingest.py
 │   ├── dag_stock_indicators.py
 │   ├── dag_stock_relatedness.py

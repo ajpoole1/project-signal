@@ -1,7 +1,6 @@
 """
 dag_parameter_review — Weekly parameter health report via Sonnet.
-Schedule: 11:00 UTC Sundays — runs after dag_stock_relatedness (10:00 UTC)
-          and after dag_outcome_tracker accuracy rollup (06:00 UTC).
+Triggered by dag_orchestrator on Sundays after dag_outcome_tracker. Run ad-hoc via Airflow UI as needed.
 
 Task flow:
     read_pending_proposals → generate_review_brief → push_review_to_jarvis
@@ -18,7 +17,7 @@ from dag_components.outcome_tracker.parameter_review_tasks import (
 
 builder = SignalDAG(
     dag_id="dag_parameter_review",
-    schedule="0 11 * * 0",  # 11:00 UTC Sundays
+    schedule=None,
     retries=1,
     tags=["outcome", "parameter"],
 )

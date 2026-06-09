@@ -1,6 +1,6 @@
 """
 dag_stock_indicators — Nightly technical indicator computation.
-Schedule: 03:00 EST (08:00 UTC), weekdays — runs after dag_stock_ingest (05:00 UTC).
+Triggered by dag_orchestrator after dag_stock_ingest. Run ad-hoc via Airflow UI as needed.
 
 Task flow:
     fetch_price_history → compute_indicators → upsert_stock_signals
@@ -17,7 +17,7 @@ from dag_components.indicators.tasks import (
 
 builder = SignalDAG(
     dag_id="dag_stock_indicators",
-    schedule="0 8 * * 1-5",  # 08:00 UTC = 03:00 EST — runs after ingest (05:00 UTC, ~2hr runtime at free tier)
+    schedule=None,
     tags=["indicators"],
 )
 

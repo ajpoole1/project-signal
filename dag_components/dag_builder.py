@@ -47,7 +47,7 @@ class DAGBuilder:
     def __init__(
         self,
         dag_id: str,
-        schedule: str,
+        schedule: str | None,
         start_date: datetime,
         default_args: dict | None = None,
         tags: list[str] | None = None,
@@ -103,7 +103,7 @@ class SignalDAG(DAGBuilder):
     def __init__(
         self,
         dag_id: str,
-        schedule: str,
+        schedule: str | None,
         tags: list[str] | None = None,
         retries: int | None = None,
         retry_delay: timedelta | None = None,
