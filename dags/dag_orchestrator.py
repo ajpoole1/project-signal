@@ -64,11 +64,11 @@ builder = DAGBuilder(
 
 @builder.build
 def dag_orchestrator():
-    trigger_ingest      = _trigger("dag_stock_ingest")
-    trigger_indicators  = _trigger("dag_stock_indicators")
+    trigger_ingest = _trigger("dag_stock_ingest")
+    trigger_indicators = _trigger("dag_stock_indicators")
     trigger_relatedness = _trigger("dag_stock_relatedness", poke_interval=120)
-    trigger_llm         = _trigger("dag_llm_analysis", poke_interval=30)
-    trigger_outcome     = _trigger("dag_outcome_tracker", poke_interval=30)
+    trigger_llm = _trigger("dag_llm_analysis", poke_interval=30)
+    trigger_outcome = _trigger("dag_outcome_tracker", poke_interval=30)
     trigger_param_review = _trigger("dag_parameter_review", poke_interval=30)
 
     branch_sunday = BranchPythonOperator(

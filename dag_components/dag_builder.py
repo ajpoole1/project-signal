@@ -47,7 +47,7 @@ class DAGBuilder:
     def __init__(
         self,
         dag_id: str,
-        schedule: str,
+        schedule: str | None,
         start_date: datetime,
         default_args: dict | None = None,
         tags: list[str] | None = None,
