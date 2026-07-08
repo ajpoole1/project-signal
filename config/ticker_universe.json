@@ -5,7 +5,7 @@
     "us_listed": 6065,
     "tsx_listed": 912,
     "tsx_venture_listed": 6,
-    "no_data_tickers": 34,
+    "no_data_tickers": 207,
     "category_count": 21,
     "schema_version": "2.0"
   },
@@ -13116,7 +13116,7 @@
     },
     "ACHR-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -13124,7 +13124,7 @@
     },
     "ACHR-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -13228,7 +13228,7 @@
     },
     "ACONW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -13612,7 +13612,7 @@
     },
     "AERTW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -13676,7 +13676,7 @@
     },
     "AFJKR": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -13684,7 +13684,7 @@
     },
     "AFJKU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -14060,7 +14060,7 @@
     },
     "AIMDW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -14124,7 +14124,7 @@
     },
     "AIRJW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -14164,7 +14164,7 @@
     },
     "AISPW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -14796,7 +14796,7 @@
     },
     "AMODW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -14820,7 +14820,7 @@
     },
     "AMPGR": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -14860,7 +14860,7 @@
     },
     "AMPX-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -15844,7 +15844,7 @@
     },
     "ASBPW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -15948,7 +15948,7 @@
     },
     "ASPSW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -16844,7 +16844,7 @@
     },
     "BBAI-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -16868,7 +16868,7 @@
     },
     "BBBY-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -17156,7 +17156,7 @@
     },
     "BCSS-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -17196,7 +17196,7 @@
     },
     "BDMDW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -17260,7 +17260,7 @@
     },
     "BEBE-UN": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -17268,7 +17268,7 @@
     },
     "BEBE-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -17276,7 +17276,7 @@
     },
     "BEBE-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -17396,7 +17396,7 @@
     },
     "BETRW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -17684,7 +17684,7 @@
     },
     "BIII-UN": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -17692,7 +17692,7 @@
     },
     "BIII-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -17876,7 +17876,7 @@
     },
     "BKSY-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -18196,7 +18196,7 @@
     },
     "BNAIW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -18300,7 +18300,7 @@
     },
     "BNZIW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -18580,7 +18580,7 @@
     },
     "BRLSW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -18724,7 +18724,7 @@
     },
     "BSLKW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -18908,7 +18908,7 @@
     },
     "BTSGU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -19092,7 +19092,7 @@
     },
     "BWIV-UN": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -19244,7 +19244,7 @@
     },
     "BZFDW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -19772,7 +19772,7 @@
     },
     "CCIXU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -19908,7 +19908,7 @@
     },
     "CDIOW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -20060,7 +20060,7 @@
     },
     "CELUW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -20156,7 +20156,7 @@
     },
     "CEROW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -20284,7 +20284,7 @@
     },
     "CGCTU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -21324,7 +21324,7 @@
     },
     "COCHW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -21380,7 +21380,7 @@
     },
     "COEPW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -21484,7 +21484,7 @@
     },
     "COPL-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -22660,7 +22660,7 @@
     },
     "CXAIW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -22932,7 +22932,7 @@
     },
     "DBCAU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -23180,7 +23180,7 @@
     },
     "DFLIW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -23196,7 +23196,7 @@
     },
     "DFNSW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -23748,7 +23748,7 @@
     },
     "DSX-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -23852,7 +23852,7 @@
     },
     "DTSTW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -24036,7 +24036,7 @@
     },
     "DYNCU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -24044,7 +24044,7 @@
     },
     "DYNCW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -24276,7 +24276,7 @@
     },
     "EDBLW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -25316,7 +25316,7 @@
     },
     "ESLAW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -25420,7 +25420,7 @@
     },
     "ETHMU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -25492,7 +25492,7 @@
     },
     "EUDAW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -25508,7 +25508,7 @@
     },
     "EVAC-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -25556,7 +25556,7 @@
     },
     "EVEX-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -25596,7 +25596,7 @@
     },
     "EVLVW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -26004,7 +26004,7 @@
     },
     "FCRS-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -26196,7 +26196,7 @@
     },
     "FFAIW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -26268,7 +26268,7 @@
     },
     "FGMCU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -26660,7 +26660,7 @@
     },
     "FLYX-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -26868,7 +26868,7 @@
     },
     "FOXXW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -27268,7 +27268,7 @@
     },
     "FTW-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -27652,7 +27652,7 @@
     },
     "GCTS-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -28076,7 +28076,7 @@
     },
     "GIBOW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -28412,7 +28412,7 @@
     },
     "GME-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -28684,7 +28684,7 @@
     },
     "GPACU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -28868,7 +28868,7 @@
     },
     "GRMLW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -28964,7 +28964,7 @@
     },
     "GRRRW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -29204,7 +29204,7 @@
     },
     "GWH-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -29772,7 +29772,7 @@
     },
     "HLLY-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -29780,7 +29780,7 @@
     },
     "HLLY-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -29956,7 +29956,7 @@
     },
     "HOLOW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -30028,7 +30028,7 @@
     },
     "HOVRW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -30364,7 +30364,7 @@
     },
     "HUMAW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -30412,7 +30412,7 @@
     },
     "HVIIU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -31172,7 +31172,7 @@
     },
     "INFQ-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -31412,7 +31412,7 @@
     },
     "INVZW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -31436,7 +31436,7 @@
     },
     "IONQ-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -31444,7 +31444,7 @@
     },
     "IONQ-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -31612,7 +31612,7 @@
     },
     "IRAB-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -31676,7 +31676,7 @@
     },
     "IRS-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -32228,7 +32228,7 @@
     },
     "JOBY-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -32236,7 +32236,7 @@
     },
     "JOBY-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -32292,7 +32292,7 @@
     },
     "JSPRW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -32660,7 +32660,7 @@
     },
     "KITTW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -32908,7 +32908,7 @@
     },
     "KPET-UN": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -33060,7 +33060,7 @@
     },
     "KRSP-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -33356,7 +33356,7 @@
     },
     "LANV-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -33508,7 +33508,7 @@
     },
     "LCCCU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -33524,7 +33524,7 @@
     },
     "LCFYW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -33820,7 +33820,7 @@
     },
     "LIDRW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -34124,7 +34124,7 @@
     },
     "LNZAW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -34420,7 +34420,7 @@
     },
     "LTCHW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -34484,7 +34484,7 @@
     },
     "LUCYW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -34564,7 +34564,7 @@
     },
     "LVWR-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -34708,7 +34708,7 @@
     },
     "LZM-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -34836,7 +34836,7 @@
     },
     "MAPSW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -35220,7 +35220,7 @@
     },
     "MDAIW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -36100,7 +36100,7 @@
     },
     "MNTSW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -36132,7 +36132,7 @@
     },
     "MOBXW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -36428,7 +36428,7 @@
     },
     "MSAIW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -36548,7 +36548,7 @@
     },
     "MSPRW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -36668,7 +36668,7 @@
     },
     "MTNE-UN": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -36796,7 +36796,7 @@
     },
     "MVSTW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -36876,7 +36876,7 @@
     },
     "MYPSW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -36916,7 +36916,7 @@
     },
     "MZYX-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -36972,7 +36972,7 @@
     },
     "NAKAW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -37228,7 +37228,7 @@
     },
     "NCPLW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -37308,7 +37308,7 @@
     },
     "NE-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -37508,7 +37508,7 @@
     },
     "NEXRW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -37716,7 +37716,7 @@
     },
     "NIXXW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -37932,7 +37932,7 @@
     },
     "NOEMR": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -37940,7 +37940,7 @@
     },
     "NOEMU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -38060,7 +38060,7 @@
     },
     "NPWR-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -38180,7 +38180,7 @@
     },
     "NRXPW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -38436,7 +38436,7 @@
     },
     "NUVB-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -38564,7 +38564,7 @@
     },
     "NWAX-UN": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -38572,7 +38572,7 @@
     },
     "NWAX-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -38724,7 +38724,7 @@
     },
     "NXPLW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -39372,7 +39372,7 @@
     },
     "ONMDW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -39444,7 +39444,7 @@
     },
     "OPENW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -39468,7 +39468,7 @@
     },
     "OPFI-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -39476,7 +39476,7 @@
     },
     "OPFI-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -39548,7 +39548,7 @@
     },
     "OPTXW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -39748,7 +39748,7 @@
     },
     "OSRHW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -39948,7 +39948,7 @@
     },
     "OXY-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -40068,7 +40068,7 @@
     },
     "PAII-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -40524,7 +40524,7 @@
     },
     "PDYNW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -40612,7 +40612,7 @@
     },
     "PERF-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -40668,7 +40668,7 @@
     },
     "PEW-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -40900,7 +40900,7 @@
     },
     "PIIIW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -40996,7 +40996,7 @@
     },
     "PL-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -41908,7 +41908,7 @@
     },
     "PSNYW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -41932,7 +41932,7 @@
     },
     "PSQH-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -41980,7 +41980,7 @@
     },
     "PTIXW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -42748,7 +42748,7 @@
     },
     "RDAGU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -42860,7 +42860,7 @@
     },
     "RDZNW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -43020,7 +43020,7 @@
     },
     "REVBW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -43364,7 +43364,7 @@
     },
     "RMCOW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -43716,7 +43716,7 @@
     },
     "RSVRW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -44028,7 +44028,7 @@
     },
     "SABSW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -44068,7 +44068,7 @@
     },
     "SAGU-UN": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -44108,7 +44108,7 @@
     },
     "SAIHW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -44364,7 +44364,7 @@
     },
     "SBXD-UN": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -44372,7 +44372,7 @@
     },
     "SBXD-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -44388,7 +44388,7 @@
     },
     "SBXE-UN": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -44396,7 +44396,7 @@
     },
     "SBXE-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -44468,7 +44468,7 @@
     },
     "SCLXW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -44628,7 +44628,7 @@
     },
     "SDSTW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -44780,7 +44780,7 @@
     },
     "SES-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -45036,7 +45036,7 @@
     },
     "SHFSW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -45340,7 +45340,7 @@
     },
     "SKYH-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -45428,7 +45428,7 @@
     },
     "SLDPW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -45516,7 +45516,7 @@
     },
     "SLND-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -46116,7 +46116,7 @@
     },
     "SOUNW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -46324,7 +46324,7 @@
     },
     "SPWRW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -47052,7 +47052,7 @@
     },
     "SVCCU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -48276,7 +48276,7 @@
     },
     "TLSIW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -48596,7 +48596,7 @@
     },
     "TRAD-UN": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -49084,7 +49084,7 @@
     },
     "TVGNW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -49892,7 +49892,7 @@
     },
     "UWMC-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -49948,7 +49948,7 @@
     },
     "VACI-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -49964,7 +49964,7 @@
     },
     "VAL-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -50212,7 +50212,7 @@
     },
     "VGASW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -50444,7 +50444,7 @@
     },
     "VLN-WT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -50772,7 +50772,7 @@
     },
     "VSEEW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -51436,7 +51436,7 @@
     },
     "WLDSW": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -52236,7 +52236,7 @@
     },
     "YCY-WS": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -52308,7 +52308,7 @@
     },
     "YHNAR": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -52316,7 +52316,7 @@
     },
     "YHNAU": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -52652,7 +52652,7 @@
     },
     "ZJZZT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -52812,7 +52812,7 @@
     },
     "ZVZZT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -52828,7 +52828,7 @@
     },
     "ZWZZT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
@@ -52836,7 +52836,7 @@
     },
     "ZXZZT": {
       "exchange": "us",
-      "has_data": true,
+      "has_data": false,
       "cap_tier": null,
       "eodhd_sector": null,
       "eodhd_industry": null,
