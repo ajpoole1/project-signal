@@ -40,11 +40,8 @@ computes into memory and compares; never writes to stock_signals.
 from __future__ import annotations
 
 import json
-import os
 import sys
 from pathlib import Path
-
-import psycopg2
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -57,6 +54,7 @@ from dag_components.indicators.pipeline import (  # noqa: E402
     rss_mb,
 )
 from plugins.routing import resolve_vix_tickers  # noqa: E402
+from scripts._db import get_connection, load_env  # noqa: E402
 
 ABS_TOL = 1e-9
 NUMERIC_COLS = [
@@ -74,30 +72,6 @@ NUMERIC_COLS = [
     "composite_vix_adj",
 ]
 STR_COLS = ["ticker", "date", "vix_source", "vix_regime", "vix_trend", "vol_environment"]
-
-
-def _load_env(env_path: Path) -> None:
-    if not env_path.exists():
-        return
-    with open(env_path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, _, v = line.partition("=")
-            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
-
-
-def _conn():
-    # This gate runs from WSL against native Postgres, so it defaults to
-    # localhost — not host.docker.internal (that's the in-container value and
-    # doesn't resolve here). Override with POSTGRES_HOST for other environments.
-    return psycopg2.connect(
-        host=os.environ.get("POSTGRES_HOST", "localhost"),
-        dbname="signal",
-        user=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"],
-    )
 
 
 def _target_date(conn) -> str:
@@ -125,8 +99,8 @@ def _round_trip_json(rows: list[dict]) -> list[dict]:
 
 
 def main() -> int:
-    _load_env(REPO_ROOT / ".env")
-    conn = _conn()
+    load_env()
+    conn = get_connection()
 
     target_date = _target_date(conn)
     start_dt = None  # computed per path from config window below

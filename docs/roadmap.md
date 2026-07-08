@@ -82,6 +82,13 @@ Event study (`scripts/analyze_events.py`, 7M eligible ticker-dates, 11 event typ
 **2026-06-11 — Phase 3.5 regime-conditional weights archived unmerged.**
 Archived on branch `archive/phase-3-5-regime-weights` — premise retired by Phase 0/Phase 3 findings (v1 composite carries ~zero directional information; regimes modulate degree not direction). v1 frozen at v1.0 as the parallel-run baseline. The `signal_version` PK widening it introduced (needed by v2 for v1/v2 row coexistence) was extracted and re-issued as migration `010`, attributed to the v2 spec; the `regime_weight_set` column was dropped.
 
+**2026-07-08 — Relatedness trimmed for the AWS move; peer lookup flagged wire-or-retire.**
+AWS migration §7.3. `CORRELATION_WINDOWS` dropped the 30d window (kept 90d + 365d) and `RELATEDNESS_MIN_R` raised 0.20 → 0.50, cutting ~20M weekly rows ahead of the shared-RDS move (migration `011`, MANUAL-marked — contains DELETEs). **Finding F:** `relatedness_matrix` has **no wired production reader** today — the LLM peer-lookup consumer is designed (`LLM_PEER_CORRELATION_MIN_R`, `LLM_PEER_COUNT` in config) but **zero Python references either constant**. The trim is therefore behavior-neutral, but that is a statement about future code, not a live-verified invariant.
+> **⏳ Open decision — wire or retire the peer lookup (owner: Phase 4 feature selection).** Either the Phase 4 cross-sectional model consumes `relatedness_matrix` (peer / sector-relative features), justifying the DAG's nightly cost — or the DAG and table are retired deliberately. A table with no reader **and no decision date** is how the next Finding F happens; this is the decision date.
+
+**2026-07-08 — Wind-down mechanism recorded for PR 3 (do not build stale).**
+AWS migration §5/§7.5. When the run-summary + wind-down work lands (PR 3), the orchestrator wind-down task must **asynchronously invoke the `workbench-stop` Lambda and exit** — it must never stop RDS/EC2 directly, because stopping RDS from inside Airflow kills the scheduler's own metadata DB mid-task. Instance role gets `lambda:InvokeFunction` on workbench-stop, not raw `rds:Stop`. Ownership: Signal self-checks for other running DAGs while it is the sole tenant; a platform-global wind-down DAG replaces it at ≥2 tenants (plan open-Q10). Recorded now so PR 3 is designed to the resolved mechanism.
+
 ---
 
 ## Next actions

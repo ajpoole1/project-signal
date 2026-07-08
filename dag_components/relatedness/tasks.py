@@ -139,8 +139,15 @@ def compute_and_upsert_correlations(ticker_count: int) -> int:
 
     Reads price history directly from DB into a pandas DataFrame to avoid the
     memory cost of deserialising a large XCom dict. Only pairs with
-    |pearson_r| >= RELATEDNESS_MIN_R are kept. The table is fully replaced each
-    run (TRUNCATE then per-window INSERTs) so stale pairs never persist.
+    |pearson_r| >= RELATEDNESS_MIN_R are kept.
+
+    Stop-safety (migration §7.2): each window is refreshed with a per-window
+    DELETE-then-INSERT committed as one unit, rather than a single up-front
+    TRUNCATE of the whole table. The nightly box is hard-killed at ~5am; a kill
+    between an up-front TRUNCATE and the last window's INSERT would leave
+    relatedness_matrix empty or partial — indistinguishable from a clean run. With
+    per-window replace, a kill at any instant leaves every not-yet-processed
+    window's prior data intact, so the table is never globally empty.
     """
     context = get_current_context()
     target_dt = context["data_interval_start"].date()
@@ -160,12 +167,6 @@ def compute_and_upsert_correlations(ticker_count: int) -> int:
     conn = hook.get_conn()
     cur = conn.cursor()
 
-    # TRUNCATE before computing any window — clears stale pairs before new results
-    # arrive. Each window is then committed independently so peak memory stays
-    # bounded to one window's filtered pairs at a time.
-    cur.execute("TRUNCATE TABLE relatedness_matrix")
-    conn.commit()
-
     total = 0
     for window in config.CORRELATION_WINDOWS:
         pairs = calc.correlation_pairs(
@@ -175,22 +176,31 @@ def compute_and_upsert_correlations(ticker_count: int) -> int:
             min_r=config.RELATEDNESS_MIN_R,
             chunk_size=config.CORRELATION_CHUNK_SIZE,
         )
-        if not pairs:
-            log.info(
-                "Window %d: no pairs above |r|=%.2f threshold", window, config.RELATEDNESS_MIN_R
-            )
-            continue
 
-        log.info(
-            "Window %d: %d pairs above |r|=%.2f threshold",
-            window,
-            len(pairs),
-            config.RELATEDNESS_MIN_R,
-        )
-        execute_values(cur, _INSERT_CORRELATIONS, pairs, page_size=10_000)
+        # Per-window replace, committed as one unit: DELETE this window's stale rows
+        # then INSERT the fresh ones. A hard kill between windows leaves the other
+        # windows' prior data intact — the table is never globally empty (§7.2).
+        # An empty result still deletes: the correct new state for this window is
+        # "no pairs above threshold", not "last run's pairs left behind".
+        cur.execute("DELETE FROM relatedness_matrix WHERE window_days = %s", (window,))
+        if pairs:
+            execute_values(cur, _INSERT_CORRELATIONS, pairs, page_size=10_000)
         conn.commit()
         total += len(pairs)
-        log.info("Window %d: committed %d rows", window, len(pairs))
+
+        if pairs:
+            log.info(
+                "Window %d: replaced with %d pairs above |r|=%.2f",
+                window,
+                len(pairs),
+                config.RELATEDNESS_MIN_R,
+            )
+        else:
+            log.info(
+                "Window %d: no pairs above |r|=%.2f — window cleared",
+                window,
+                config.RELATEDNESS_MIN_R,
+            )
 
     cur.close()
     if total == 0:

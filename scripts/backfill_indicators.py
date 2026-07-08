@@ -18,12 +18,10 @@ Usage (run inside Docker):
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
 
 import pandas as pd
-import psycopg2
 from psycopg2.extras import execute_values
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -32,27 +30,7 @@ from config import config
 from config.watchlist import get_all_tickers
 from dag_components.indicators import calculations as calc
 from plugins.routing import resolve_vix_tickers
-
-
-def _load_env(env_path: Path) -> None:
-    if not env_path.exists():
-        return
-    with open(env_path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, val = line.partition("=")
-            os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
-
-
-def _get_connection():
-    return psycopg2.connect(
-        host=os.environ.get("POSTGRES_HOST", "host.docker.internal"),
-        dbname="signal",
-        user=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"],
-    )
+from scripts._db import get_connection, load_env
 
 
 def _f(series: pd.Series, i: int) -> float | None:
@@ -208,14 +186,13 @@ def _upsert(conn, rows: list[tuple]) -> None:
 
 
 def main() -> None:
-    root = Path(__file__).resolve().parents[1]
-    _load_env(root / ".env")
+    load_env()
 
     tickers = get_all_tickers()
     print(f"Indicator backfill: {len(tickers)} tickers")
     print()
 
-    conn = _get_connection()
+    conn = get_connection()
 
     print("Loading VIX/VVIX context...")
     vix_ctx = _load_vix_context(conn)

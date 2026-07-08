@@ -116,7 +116,7 @@ All tables defined in `sql/schema.sql`. Writes are idempotent (`ON CONFLICT DO U
 | `raw_prices` | `(ticker, date)` | Daily OHLCV bars; adjusted prices; source and currency tracking |
 | `ticker_metadata` | `ticker` | Company name, sector, industry, market cap, exchange |
 | `stock_signals` | `(ticker, date)` | All indicator values, VIX/VVIX context, composite scores |
-| `relatedness_matrix` | `(ticker_a, ticker_b, window_days)` | Pearson r at 30/90/365-day windows; only pairs with \|r\| ≥ 0.20 |
+| `relatedness_matrix` | `(ticker_a, ticker_b, window_days)` | Pearson r at 90/365-day windows; only pairs with \|r\| ≥ 0.50 (30d dropped, floor raised 0.20→0.50 in the 2026-07 AWS trim; no wired reader yet — see roadmap "wire or retire") |
 | `sector_beta` | `(ticker, etf_proxy, window_days)` | Beta vs SPY/QQQ/XLK/XLF/XLE/XLV/XLY at 90/365d windows |
 | `llm_analysis` | `(ticker, date)` | Algorithmic bias, confidence, key levels (JSONB), reasoning |
 | `daily_brief` | `date` | Sonnet-generated morning brief; one row per trading day |

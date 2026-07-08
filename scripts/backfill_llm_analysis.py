@@ -16,41 +16,18 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from datetime import date, timedelta
 from pathlib import Path
-
-import psycopg2
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from config import config
 from dag_components.llm import calculations as calc
+from scripts._db import get_connection, load_env
 
 BACKFILL_MODEL = "algorithmic"
 TREND_WINDOW = 3  # prior rows used to compute signal_trend
-
-
-def _load_env(env_path: Path) -> None:
-    if not env_path.exists():
-        return
-    with open(env_path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, val = line.partition("=")
-            os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
-
-
-def _get_connection():
-    return psycopg2.connect(
-        host=os.environ.get("POSTGRES_HOST", "host.docker.internal"),
-        dbname="signal",
-        user=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"],
-    )
 
 
 def _load_tickers(conn, start_date: str) -> list[str]:
@@ -189,10 +166,9 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    root = Path(__file__).resolve().parents[1]
-    _load_env(root / ".env")
+    load_env()
 
-    conn = _get_connection()
+    conn = get_connection()
 
     tickers = _load_tickers(conn, args.start)
     print(

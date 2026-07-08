@@ -16,39 +16,17 @@ from __future__ import annotations
 
 import argparse
 import math
-import os
 import sys
 from pathlib import Path
 
 import pandas as pd
-import psycopg2
 from psycopg2.extras import execute_values
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from config.watchlist import get_all_tickers
 from dag_components.features import calculations as calc
-
-
-def _load_env(env_path: Path) -> None:
-    if not env_path.exists():
-        return
-    with open(env_path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, val = line.partition("=")
-            os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
-
-
-def _get_connection():
-    return psycopg2.connect(
-        host=os.environ.get("POSTGRES_HOST", "host.docker.internal"),
-        dbname="signal",
-        user=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"],
-    )
+from scripts._db import get_connection, load_env
 
 
 def _load_prices(conn, ticker: str, start_date: str | None) -> pd.DataFrame:
@@ -199,10 +177,9 @@ def main() -> None:
     parser.add_argument("--start", metavar="YYYY-MM-DD", help="Only backfill from this date")
     args = parser.parse_args()
 
-    root = Path(__file__).resolve().parents[1]
-    _load_env(root / ".env")
+    load_env()
 
-    conn = _get_connection()
+    conn = get_connection()
     tickers = get_all_tickers()
     start_msg = f" (from {args.start})" if args.start else " (full history)"
     print(f"Feature backfill{start_msg}: {len(tickers)} tickers")
