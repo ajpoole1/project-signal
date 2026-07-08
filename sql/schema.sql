@@ -98,6 +98,15 @@ CREATE TABLE IF NOT EXISTS llm_analysis (
 CREATE INDEX IF NOT EXISTS idx_llm_analysis_date   ON llm_analysis (date);
 CREATE INDEX IF NOT EXISTS idx_llm_analysis_ticker ON llm_analysis (ticker);
 
+-- Sonnet-generated daily market brief (migration 002)
+CREATE TABLE IF NOT EXISTS daily_brief (
+    date            DATE            PRIMARY KEY,
+    brief_text      TEXT            NOT NULL,
+    ticker_count    INTEGER,
+    model           VARCHAR(100),
+    created_at      TIMESTAMPTZ     DEFAULT NOW()
+);
+
 -- Phase 6: prediction tracking, accuracy rollup, parameter proposals
 CREATE TABLE IF NOT EXISTS signal_predictions (
     ticker              VARCHAR(16)     NOT NULL,
