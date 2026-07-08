@@ -110,7 +110,7 @@ explicitly allows.
   for this reason — do not remove it.
 - CI must be green before merging: ruff lint + format, pytest (3.11/3.12),
   TruffleHog/gitleaks, `docker compose config`.
-  Branch flow: `feature/*` → `develop` → `main` (protected).
+  Branch flow: `feature/*` → `main` (protected; PR + green CI required).
 
 ## When finishing any task
 
