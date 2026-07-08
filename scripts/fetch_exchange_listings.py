@@ -25,6 +25,7 @@ Inside Docker (recommended):
 import argparse
 import json
 import os
+import re
 import shutil
 from datetime import date
 from pathlib import Path
@@ -65,6 +66,7 @@ EXCHANGE_CONFIG = {
 }
 
 # Code suffixes that indicate non-equity instruments — skip these
+# Dotted suffixes (e.g. EODHD internal codes for TSX warrants):
 _SKIP_SUFFIXES = (
     ".WT",
     ".WA",
@@ -80,6 +82,21 @@ _SKIP_SUFFIXES = (
     ".PRE",  # preferred shares
     ".U",  # USD-denominated unit
 )
+
+# Hyphenated suffixes (US market convention: TICKER-WT, TICKER-WS, TICKER-UN, TICKER-RT)
+# CRITICAL: -UN applies to US only. TSX trust units use -UN.TO (e.g. REI-UN.TO) and
+# are legitimate investable securities — they are excluded by the exchange check below.
+_SKIP_HYPHEN_SUFFIXES_US = ("-WT", "-WS", "-RT", "-UN")
+
+# Nasdaq 5th-character convention (US only): a 5-character code whose last character
+# is W (warrant), R (rights), or U (unit) and whose 4-character root also exists
+# on the same exchange. Bare trailing-W on tickers of other lengths is NOT used
+# (false positives: ITW, GLW, CDW, EW, etc. are S&P 500 companies).
+_NASDAQ5_WARRANT_CHARS = frozenset("WRU")
+
+# Nasdaq test symbols: synthetic instruments used for testing exchange systems.
+# Pattern covers ZVZZT, ZWZZT, ZXZZT, ZJZZT, ZBZZT, ZAZZT, ZCZZT and any future member.
+_NASDAQ_TEST_SYMBOL_RE = re.compile(r"^Z[A-Z]ZZT$")
 
 # EODHD Type values that are equity-like and should be included
 _EQUITY_TYPES = {"Common Stock", "Ordinary Shares"}
@@ -103,7 +120,9 @@ def fetch_exchange_symbols(exchange_code: str, api_key: str) -> list[dict]:
     return resp.json()
 
 
-def is_quality_common_stock(symbol: dict, config: dict) -> bool:
+def is_quality_common_stock(
+    symbol: dict, config: dict, existing_codes: set[str] | None = None
+) -> bool:
     """Return True if this symbol should be included in the universe."""
     sym_type = symbol.get("Type", "")
     if sym_type not in _EQUITY_TYPES:
@@ -119,9 +138,28 @@ def is_quality_common_stock(symbol: dict, config: dict) -> bool:
     if not code:
         return False
 
-    # Skip warrants, rights, preferred shares by suffix
+    is_us = config["internal"] == "us"
+
+    # Nasdaq test symbols (US only)
+    if is_us and _NASDAQ_TEST_SYMBOL_RE.match(code):
+        return False
+
+    # Skip dotted suffixes (warrants, rights, preferred, unit)
     for skip in _SKIP_SUFFIXES:
         if code.upper().endswith(skip.upper()):
+            return False
+
+    # Skip hyphenated warrant/unit suffixes (US only; TSX -UN.TO are legitimate)
+    if is_us:
+        for skip in _SKIP_HYPHEN_SUFFIXES_US:
+            if code.upper().endswith(skip.upper()):
+                return False
+
+    # Nasdaq 5th-character convention (US only): len==5, last char W/R/U, root exists
+    if is_us and len(code) == 5 and "-" not in code and code[-1] in _NASDAQ5_WARRANT_CHARS:
+        root = code[:4]
+        # existing_codes contains codes already accepted/present in this batch
+        if existing_codes is not None and root in existing_codes:
             return False
 
     # Skip instruments that EODHD mislabels as Common Stock (warrants, rights, units)
@@ -183,7 +221,9 @@ def main() -> None:
         symbols = fetch_exchange_symbols(config["exchange_code"], api_key)
         print(f"  {len(symbols):,} symbols returned")
 
-        quality = [s for s in symbols if is_quality_common_stock(s, config)]
+        # Build set of codes already accepted this pass (for Nasdaq5 root check)
+        accepted_codes: set[str] = set(tickers.keys())
+        quality = [s for s in symbols if is_quality_common_stock(s, config, accepted_codes)]
         print(f"  {len(quality):,} common stocks after filtering")
 
         internal = config["internal"]

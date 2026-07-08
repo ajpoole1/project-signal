@@ -44,3 +44,5 @@ data/
 # OS
 .DS_Store
 Thumbs.db
+config/watchlist_personal.py
+analysis/

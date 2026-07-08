@@ -73,6 +73,48 @@ class EODHDClient(BaseMarketClient):
             )
         return result
 
+    def fetch_splits(self, ticker: str, from_date: str) -> list[dict]:
+        """Fetch stock splits on or after from_date.
+
+        Returns list of {"date": str, "split": float} dicts (split ratio > 1 = forward split).
+        Empty list if no splits or ticker not found.
+        """
+        resp = self.session.get(
+            f"{_BASE_URL}/splits/{self._eodhd_symbol(ticker)}",
+            params={"api_token": self.api_key, "fmt": "json", "from": from_date},
+            timeout=30,
+        )
+        if resp.status_code == 404:
+            return []
+        resp.raise_for_status()
+        data = resp.json()
+        if not isinstance(data, list):
+            return []
+        return [
+            {"date": row["date"], "split": float(row["split"])} for row in data if "date" in row
+        ]
+
+    def fetch_dividends(self, ticker: str, from_date: str) -> list[dict]:
+        """Fetch dividends on or after from_date.
+
+        Returns list of {"date": str, "value": float} dicts.
+        Empty list if no dividends or ticker not found.
+        """
+        resp = self.session.get(
+            f"{_BASE_URL}/div/{self._eodhd_symbol(ticker)}",
+            params={"api_token": self.api_key, "fmt": "json", "from": from_date},
+            timeout=30,
+        )
+        if resp.status_code == 404:
+            return []
+        resp.raise_for_status()
+        data = resp.json()
+        if not isinstance(data, list):
+            return []
+        return [
+            {"date": row["date"], "value": float(row["value"])} for row in data if "date" in row
+        ]
+
     def fetch_metadata(self, ticker: str) -> dict:
         """Fetch company fundamentals (General filter only — one API call)."""
         resp = self.session.get(

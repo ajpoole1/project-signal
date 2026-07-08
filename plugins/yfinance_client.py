@@ -1,11 +1,8 @@
 """
-yfinance client — TSX equities (permanent) and VIX/VVIX (free-tier fallback).
+yfinance client — RETAINED FOR REFERENCE, not active.
 
-TSX tickers always route here regardless of Polygon tier.
-VIX/VVIX route here when POLYGON_TIER = "free" (controlled by config.VIX_SOURCE).
-
-No API key required. Uses 0.5s polite spacing between calls — not a rate
-limiter, just courteous pacing for an unofficial API.
+All market data (US, TSX/TSX-V, VIX/VVIX) is now served by EODHDClient.
+This file is kept for reference only and is not used by any active DAG or script.
 """
 
 from __future__ import annotations

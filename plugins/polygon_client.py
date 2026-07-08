@@ -1,9 +1,9 @@
 """
-Polygon.io API client — US equities, sector ETFs, and paid-tier indices.
+Polygon.io API client — RETAINED FOR REFERENCE, not active.
 
-Rate limiting and backoff session are inherited from BaseMarketClient.
-All throttling is config-driven: changing POLYGON_TIER in config.py is
-the only change needed to remove rate limits.
+All market data (US, TSX/TSX-V, VIX/VVIX) is now served by EODHDClient.
+This file is kept for reference only and is not used by any active DAG or script.
+Rate limiting uses the rate_limited_call decorator from base_client.py.
 """
 
 from __future__ import annotations

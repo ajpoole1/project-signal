@@ -25,6 +25,7 @@ x-airflow-common:
     - ./config:/opt/airflow/config
     - ./dag_components:/opt/airflow/dag_components
     - ./scripts:/opt/airflow/scripts
+    - ./tests:/opt/airflow/tests
     - airflow-logs:/opt/airflow/logs
   extra_hosts:
     - "host.docker.internal:host-gateway"
@@ -63,6 +64,28 @@ services:
     depends_on:
       airflow-init:
         condition: service_completed_successfully
+
+  signal-tools:
+    <<: *airflow-common
+    profiles: ["tools"]
+    entrypoint: ""
+    command: sleep infinity
+    restart: "no"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./plugins:/opt/airflow/plugins
+      - ./config:/opt/airflow/config
+      - ./dag_components:/opt/airflow/dag_components
+      - ./scripts:/opt/airflow/scripts
+      - ./tests:/opt/airflow/tests
+      - ./docs:/opt/airflow/docs
+      - ./analysis:/opt/airflow/analysis
+      - airflow-logs:/opt/airflow/logs
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: "8g"
 
 volumes:
   airflow-logs:

@@ -12,6 +12,7 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 from psycopg2.extras import execute_values
 
 from config.watchlist import get_all_tickers
+from plugins.eodhdclient import EODHDClient
 from plugins.routing import get_client_for_ticker, is_index_ticker, resolve_vix_tickers
 
 log = logging.getLogger(__name__)
@@ -132,6 +133,102 @@ def validate_raw(bars: list[dict], tickers: list[str]) -> list[dict]:
         len(missing),
     )
     return valid
+
+
+@task()
+def refresh_adjusted_history() -> int:
+    """Re-fetch full OHLCV history for any ticker with a new corporate action since yesterday.
+
+    Polls EODHD splits + dividends endpoints for each active ticker. If any action
+    is found dated within the last 2 days, a full OHLCV re-fetch is issued so all
+    stored rows share a single adjustment epoch (preventing price-seam return errors).
+
+    Skips index tickers (VIX/VVIX — no splits/dividends). Runs after upsert_raw_prices
+    so the normal nightly bar is already stored before any history re-fetch overwrites it.
+
+    Returns the number of tickers re-fetched.
+    """
+    context = get_current_context()
+    target_date = context["data_interval_start"].strftime("%Y-%m-%d")
+    api_key = os.environ["EODHD_API_KEY"]
+    client = EODHDClient(api_key)
+
+    vix_ticker, vvix_ticker = resolve_vix_tickers()
+    index_tickers = {vix_ticker, vvix_ticker}
+    tickers = [t for t in get_all_tickers() if t not in index_tickers]
+
+    hook = PostgresHook(postgres_conn_id="signal_postgres")
+    conn = hook.get_conn()
+    cur = conn.cursor()
+    refreshed = 0
+
+    for ticker in tickers:
+        try:
+            splits = client.fetch_splits(ticker, target_date)
+            dividends = client.fetch_dividends(ticker, target_date)
+        except Exception as exc:
+            log.warning("%s: corporate-action fetch failed — %s", ticker, exc)
+            continue
+
+        if not splits and not dividends:
+            continue
+
+        log.info(
+            "%s: corporate action detected (%d splits, %d divs) — re-fetching full history",
+            ticker,
+            len(splits),
+            len(dividends),
+        )
+
+        try:
+            bars = client.fetch_ohlcv(ticker, "2019-01-01", target_date)
+        except Exception as exc:
+            log.warning("%s: full history re-fetch failed — %s", ticker, exc)
+            continue
+
+        if not bars:
+            continue
+
+        rows = [
+            (
+                b["ticker"],
+                b["date"],
+                b["open"],
+                b["high"],
+                b["low"],
+                b["close"],
+                b["volume"],
+                b.get("currency", "USD"),
+                b.get("source", "eodhd"),
+            )
+            for b in bars
+        ]
+        from psycopg2.extras import execute_values
+
+        execute_values(
+            cur,
+            """
+            INSERT INTO raw_prices (ticker, date, open, high, low, close, volume, currency, source)
+            VALUES %s
+            ON CONFLICT (ticker, date) DO UPDATE SET
+                open       = EXCLUDED.open,
+                high       = EXCLUDED.high,
+                low        = EXCLUDED.low,
+                close      = EXCLUDED.close,
+                volume     = EXCLUDED.volume,
+                currency   = EXCLUDED.currency,
+                source     = EXCLUDED.source,
+                fetched_at = NOW()
+            """,
+            rows,
+        )
+        conn.commit()
+        refreshed += 1
+        log.info("%s: re-fetched %d bars", ticker, len(bars))
+
+    cur.close()
+    log.info("refresh_adjusted_history: re-fetched %d tickers with corporate actions", refreshed)
+    return refreshed
 
 
 @task()

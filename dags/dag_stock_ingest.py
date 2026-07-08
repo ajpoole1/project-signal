@@ -13,6 +13,7 @@ from dag_components.dag_builder import SignalDAG  # noqa: E402
 from dag_components.ingest.tasks import (
     fetch_metadata,
     fetch_ohlcv,
+    refresh_adjusted_history,
     upsert_raw_prices,
     validate_raw,
     validate_watchlist,
@@ -31,4 +32,5 @@ def dag_stock_ingest():
     bars = fetch_ohlcv(tickers)
     fetch_metadata(tickers)
     validated = validate_raw(bars, tickers)
-    upsert_raw_prices(validated)
+    upserted = upsert_raw_prices(validated)
+    upserted >> refresh_adjusted_history()

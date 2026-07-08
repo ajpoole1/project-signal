@@ -9,6 +9,7 @@ Task flow:
 from airflow.models.dag import DAG  # noqa: F401 — satisfies DagBag safe-mode file scan
 
 from dag_components.dag_builder import SignalDAG
+from dag_components.features.tasks import compute_features
 from dag_components.indicators.tasks import (
     compute_indicators,
     fetch_price_history,
@@ -26,4 +27,6 @@ builder = SignalDAG(
 def dag_stock_indicators():
     history = fetch_price_history()
     rows = compute_indicators(history)
-    upsert_stock_signals(rows)
+    upserted = upsert_stock_signals(rows)
+    # v2 features run after stock_signals are written (needs rsi_14, macd_hist, etc.)
+    upserted >> compute_features()
