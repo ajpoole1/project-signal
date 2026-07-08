@@ -10,6 +10,27 @@ import numpy as np
 import pandas as pd
 
 
+def mask_implausible_returns(returns: pd.DataFrame, max_daily_ratio: float) -> pd.DataFrame:
+    """Set to NaN any return whose implied 1-day price ratio is outside
+    [1/max_daily_ratio, max_daily_ratio].
+
+    A return r implies a price ratio of (1 + r). Seam days (reverse splits,
+    adjustment epoch mismatches) produce ratios of 10x–10,000x. These are
+    non-information; masking to NaN lets pandas cov/corr use pairwise-complete
+    observations, which excludes the seam day from both tickers in any pair.
+    Never clip — an extreme return is removed entirely, not moderated.
+
+    Uses config.V2_MAX_DAILY_RATIO (same constant as the outcome quarantine
+    guard) so "impossible" has one definition project-wide.
+    """
+    ratio = 1.0 + returns  # price ratio implied by each return
+    lo = 1.0 / max_daily_ratio
+    hi = max_daily_ratio
+    # Mask rows where ratio is outside [lo, hi]; NaN in returns → ratio=NaN → kept as-is
+    bad = (ratio < lo) | (ratio > hi)
+    return returns.where(~bad)
+
+
 def build_returns_matrix(price_history: dict[str, list[dict]], tickers: list[str]) -> pd.DataFrame:
     """Build a daily-returns DataFrame (columns=tickers, rows=DatetimeIndex).
 

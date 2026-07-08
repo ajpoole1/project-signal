@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -183,3 +184,112 @@ class TestBetaValues:
         assert etf == "SPY"
         assert window == 60
         assert isinstance(beta, float)
+
+    def test_insert_column_mapping_regression(self):
+        """Regression test: verify beta_values tuple order matches INSERT column order.
+
+        This test MUST FAIL if _INSERT_BETAS column order in tasks.py is ever
+        misaligned with beta_values() return tuple order (ticker, etf, window_days, beta).
+        The bug where columns were swapped caused betas to be truncated into
+        the window_days INTEGER column and window_days to overflow into beta.
+        """
+        prices = [float(100 + i) for i in range(51)]
+        history = _price_history({"ABC": prices, "SPY": prices})
+        returns = calc.build_returns_matrix(history, ["ABC", "SPY"])
+        betas = calc.beta_values(returns, ["ABC"], ["SPY"], window_days=90)
+        assert len(betas) == 1
+
+        # Tuple order from beta_values: (ticker, etf, window_days, beta)
+        ticker, etf, window_days, beta = betas[0]
+
+        # Expected order in _INSERT_BETAS (tasks.py line 28):
+        # (ticker, etf_proxy, window_days, beta)
+        # If this assertion fails, the INSERT column order has regressed.
+        assert ticker == "ABC", "Position 0 must be ticker string"
+        assert etf == "SPY", "Position 1 must be etf string"
+        assert isinstance(window_days, int) and window_days == 90, (
+            "Position 2 must be window_days int"
+        )
+        assert isinstance(beta, float) and 0.9 < beta < 1.1, (
+            "Position 3 must be beta float (~1.0 for tracking)"
+        )
+
+
+# ---------------------------------------------------------------------------
+# mask_implausible_returns
+# ---------------------------------------------------------------------------
+
+
+class TestMaskImplausibleReturns:
+    def _make_returns(self, values: list[float], dates: list[str] | None = None) -> pd.DataFrame:
+        if dates is None:
+            dates = pd.date_range("2024-01-01", periods=len(values), freq="B").strftime("%Y-%m-%d")
+        return pd.DataFrame({"TICK": values}, index=pd.DatetimeIndex(dates))
+
+    def test_seam_day_masked_to_nan(self):
+        # A 10x return (ratio=11) with max_daily_ratio=3.0 must be NaN
+        returns = self._make_returns([0.01, 9.0, 0.01])  # middle day: +900%
+        masked = calc.mask_implausible_returns(returns, max_daily_ratio=3.0)
+        assert math.isnan(masked["TICK"].iloc[1])
+        # neighbouring days untouched
+        assert masked["TICK"].iloc[0] == pytest.approx(0.01)
+        assert masked["TICK"].iloc[2] == pytest.approx(0.01)
+
+    def test_large_but_plausible_return_kept(self):
+        # +50% return: ratio = 1.5, within [1/3, 3]
+        returns = self._make_returns([0.01, 0.50, 0.01])
+        masked = calc.mask_implausible_returns(returns, max_daily_ratio=3.0)
+        assert masked["TICK"].iloc[1] == pytest.approx(0.50)
+
+    def test_large_negative_seam_masked(self):
+        # -80% return: ratio = 0.20, below 1/3.0 = 0.333
+        returns = self._make_returns([0.01, -0.80, 0.01])
+        masked = calc.mask_implausible_returns(returns, max_daily_ratio=3.0)
+        assert math.isnan(masked["TICK"].iloc[1])
+
+    def test_existing_nan_preserved(self):
+        returns = self._make_returns([0.01, float("nan"), 0.01])
+        masked = calc.mask_implausible_returns(returns, max_daily_ratio=3.0)
+        assert math.isnan(masked["TICK"].iloc[1])
+        assert masked["TICK"].iloc[0] == pytest.approx(0.01)
+
+    def test_empty_dataframe_returns_empty(self):
+        masked = calc.mask_implausible_returns(pd.DataFrame(), max_daily_ratio=3.0)
+        assert masked.empty
+
+    def test_beta_with_seam_matches_clean_series(self):
+        """Beta computed on a dirty series with a masked seam day must equal
+        beta computed on the same series with that day set to NaN explicitly.
+
+        The dirty series has a +500% seam at position 30. After masking, that
+        row becomes NaN. The clean baseline is the same data with position 30
+        already NaN — so both computations use identical observation sets.
+        """
+        rng = np.random.default_rng(42)
+        n = 60
+        etf_rets = rng.normal(0.001, 0.01, n)
+        tick_rets = 1.5 * etf_rets + rng.normal(0, 0.005, n)
+
+        dates = pd.DatetimeIndex(pd.date_range("2024-01-01", periods=n, freq="B"))
+
+        # Dirty: position 30 has a seam (+500% on TICK)
+        dirty_tick = tick_rets.copy()
+        dirty_tick[30] = 5.0
+        dirty = pd.DataFrame({"TICK": dirty_tick, "SPY": etf_rets}, index=dates)
+
+        # Clean baseline: same data but position 30 already NaN (simulates masked series)
+        clean_tick = tick_rets.copy().astype(float)
+        clean_tick[30] = float("nan")
+        clean = pd.DataFrame({"TICK": clean_tick, "SPY": etf_rets}, index=dates)
+
+        masked = calc.mask_implausible_returns(dirty, max_daily_ratio=3.0)
+
+        betas_clean = calc.beta_values(clean, ["TICK"], ["SPY"], window_days=90)
+        betas_masked = calc.beta_values(masked, ["TICK"], ["SPY"], window_days=90)
+
+        assert len(betas_clean) == 1
+        assert len(betas_masked) == 1
+        _, _, _, beta_clean = betas_clean[0]
+        _, _, _, beta_masked = betas_masked[0]
+
+        assert beta_masked == pytest.approx(beta_clean, rel=1e-9)

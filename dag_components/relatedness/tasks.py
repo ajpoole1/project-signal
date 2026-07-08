@@ -25,7 +25,7 @@ _INSERT_CORRELATIONS = """
 """
 
 _INSERT_BETAS = """
-    INSERT INTO sector_beta (ticker, etf_proxy, beta, window_days)
+    INSERT INTO sector_beta (ticker, etf_proxy, window_days, beta)
     VALUES %s
     ON CONFLICT (ticker, etf_proxy, window_days) DO UPDATE SET
         beta        = EXCLUDED.beta,
@@ -39,11 +39,16 @@ def _read_returns(
     start_dt,
     target_dt,
 ) -> pd.DataFrame:
-    """Read raw_prices from DB directly into a wide-format daily-returns DataFrame.
+    """Read raw_prices from DB into a masked, eligibility-filtered returns DataFrame.
 
-    Reads via pd.read_sql_query (streams rows into a DataFrame) rather than
-    building a Python dict-of-dicts, keeping peak memory proportional to
-    n_tickers × n_days rather than n_tickers × n_days × Python-object-overhead.
+    Two filters applied before returning:
+    1. Implausible-return mask (config.V2_MAX_DAILY_RATIO): seam days → NaN.
+       Applied as a pure column op on the returns matrix so pairwise cov/corr
+       simply excludes those days rather than being contaminated by them.
+    2. Median-price eligibility (config.V2_MIN_PRICE): tickers whose median close
+       over the window is below the floor are dropped entirely. This removes
+       sub-$1 micro-caps and zero-price gaps that inflate covariance estimates.
+       ETF tickers are exempt from the eligibility filter.
     """
     conn = hook.get_conn()
     raw = pd.read_sql_query(
@@ -66,7 +71,30 @@ def _read_returns(
     prices.index = pd.to_datetime(prices.index)
     prices = prices.sort_index().astype(float)
     prices.columns.name = None
-    return prices.pct_change(fill_method=None)
+
+    # Eligibility filter: drop non-ETF tickers below median-price floor
+    etf_set = set(_ETF_TICKERS)
+    median_prices = prices.median(axis=0)
+    eligible = [
+        t
+        for t in prices.columns
+        if t in etf_set or median_prices.get(t, 0.0) >= config.V2_MIN_PRICE
+    ]
+    prices = prices[eligible]
+    dropped = prices.shape[1] - len(eligible)
+    if dropped > 0:
+        log.info(
+            "_read_returns: dropped %d tickers below V2_MIN_PRICE=%.2f",
+            dropped,
+            config.V2_MIN_PRICE,
+        )
+
+    returns = prices.pct_change(fill_method=None)
+
+    # Implausible-return mask: seam days → NaN (never clip)
+    returns = calc.mask_implausible_returns(returns, config.V2_MAX_DAILY_RATIO)
+
+    return returns
 
 
 @task()
