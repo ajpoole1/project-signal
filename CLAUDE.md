@@ -1,120 +1,61 @@
-# Project Signal — Agent Operating Guide
+# Project Signal — Author Overlay
 
-Nightly stock intelligence pipeline. Airflow + Postgres + EODHD + Anthropic API.
-Portfolio-grade open source: logic is public; API keys and personal watchlists are local-only.
+**This is the at-desk authoring session.** The operator (AJ) driving via Claude Code.
+This repo is stood up on the shared dev-standards framework (see
+`../project-jarvis/docs/dev-standards/ROLLOUT.md`).
 
-This file is the contract for how to work in this repo. Architecture, history, and
-reference detail live in `docs/` — load them when the task needs them, not by default.
+## Contract
 
-## Doc map — read before assuming
+Inherit `../project-jarvis/docs/dev-standards/DEV_BASE.md` (§5 — Author role) + `CHARTER.md`.
 
-| Need | Read |
+This file is the **overlay only**: identity, verbs, safety, navigation. It states no code
+convention and no charter value. Conventions are enforced as lenses declared in
+`CHARTER.md → ## QA Lenses`; repo values (stack, check command, QA params) live in `CHARTER.md`.
+If you are about to add a rule here, it belongs in `docs/SIGNAL_GUIDE.md` or the charter instead.
+
+**The verbs:**
+- `/ship` — the only exit ramp: checks → `/qa` → commit+push → PR
+- `/qa` — lens review before any PR (also runs inside `/ship`)
+- `/handoff` — scaffold session entry in `CONTEXT.md`; run at every session end
+
+## Safety essentials (non-negotiable, never skip)
+
+- **Secrets never hardcoded.** All credentials via `.env` (local) or environment variables.
+  `.env.example` is committed with placeholders.
+- **Personal data / secrets never staged.** Before any commit: verify no `.env`, `data/`,
+  `logs/`, `.db`, or personal watchlist files are staged.
+- **Push is always a human action.** `/ship` opens the PR; merge is the operator's action.
+- **STOP conditions are real stops.** Implausible data and ~100%-firing fallbacks halt the
+  session for review — never documented-around. Defined in `docs/SIGNAL_GUIDE.md`.
+
+## Doc map
+
+Load these when the task needs them, not by default.
+
+| What you need | Where to look |
 |---|---|
-| Writing or modifying any code | `docs/design_patterns.md` (mandatory) |
+| Dev contract (all roles) | `../project-jarvis/docs/dev-standards/DEV_BASE.md` |
+| QA lens definitions | `../project-jarvis/docs/dev-standards/QA_LENSES.md` |
+| Repo goal, stack, check command, QA params, declared lenses | `CHARTER.md` |
+| **Signal conventions + environment gotchas** | `docs/SIGNAL_GUIDE.md` |
+| Shared Python / SQL / Airflow / API-client conventions | `@std/…` lenses declared in `CHARTER.md` |
+| Writing or modifying any code | `docs/design_patterns.md` |
 | Pipeline structure, schema, data flow, why decisions were made | `docs/architecture.md` |
 | Phase status, current focus, what's in flight | `docs/roadmap.md` |
 | EODHD endpoints, model selection, universe stats | `docs/reference.md` |
 | Signal v2 workstream spec and amendments | `docs/signal_v2_rebuild.md` |
 | Empirical findings (what the data has shown) | `docs/signal_v2_phase0_findings.md`, `_phase3_`, `_event_study` |
+| Session handoff log | `CONTEXT.md` |
 
-If this file and a `docs/` file conflict, this file wins; flag the conflict.
+**Precedence.** For *review criteria*, the declared lenses bind (`CHARTER.md → ## QA Lenses`);
+where `docs/SIGNAL_GUIDE.md` conflicts with a shared lens, the guide wins and must declare the
+override (QA_LENSES §3 — see the guide's override table). For *navigation and repo facts*, this
+file and `CHARTER.md` win over `docs/`; flag any conflict you find.
 
-## Non-negotiable rules
+## Finishing a task
 
-**Security**
-- Never hardcode secrets. All credentials via `.env` (local) or environment variables.
-- Never commit: `.env`, `data/`, `logs/`, any `.db` file, personal watchlist extensions.
-- Always commit `.env.example` with placeholders. Verify no secrets staged before any PR.
+`DEV_BASE.md` §2.3 (green before commit), §2.4 (never fail silent — report what was actually
+verified, with real outputs), and §2.5 (doc hygiene — code and its docs land together; stale
+docs are a bug) bind. Run the check command from `CHARTER.md`, then `/ship`.
 
-**Database**
-- All tables defined in `sql/schema.sql`; all changes via numbered `sql/migrations/` files.
-  Never create or alter tables from Python.
-- DAG-task writes are idempotent: `ON CONFLICT DO UPDATE` (or `DO NOTHING` where the
-  spec says outcomes must never be overwritten). Never `DELETE`/`TRUNCATE` in DAG tasks —
-  destructive data operations live only in migration files, with a comment explaining why.
-- DAG tasks connect via the Airflow Postgres hook (`signal_postgres`). Standalone
-  `scripts/` connect via psycopg2 with `dbname="signal"` and `.env` credentials.
-- Time-series PKs are `(ticker, date)`; trading-day counting is by row offset from
-  `raw_prices`, never calendar arithmetic.
-
-**Data plausibility — STOP conditions**
-Any value implausible on its face is a STOP condition, not a documentation item:
-betas outside [−2, 5]; returns > 100x on names ≥ $1; counts that should be zero but
-aren't; a median that contradicts its own distribution's direction statistics; a column
-holding values that belong to a different column. When hit: stop, state the finding and
-most likely root cause, wait for review. Do not classify surprises as acceptable, do not
-absorb them with fallbacks, do not proceed past them. (Three historical
-"document-and-proceed" calls on this project all traced to real production defects.)
-
-**Fallbacks must be loud.** Any fallback path (default beta, skipped ticker, missing
-benchmark) logs its usage count per run. A fallback that fires for >10% of rows is a
-warning; one that fires for ~100% is a STOP condition — it means the primary path is broken.
-
-**Workstream isolation.** v1 scoring logic is frozen during the Signal v2 build
-(see `docs/signal_v2_rebuild.md` ground rules). Do not modify it except where the spec
-explicitly allows.
-
-## Design principles
-
-- **Single data source.** All market data flows through EODHD via `plugins/eodhdclient.py`.
-- **Adjusted prices are epoch-sensitive.** Stored adjusted prices are valid only as of
-  fetch time; corporate actions retroactively change the basis. The corporate-actions
-  refresh task re-bases affected tickers; never compute returns across an un-refreshed
-  split seam (the quarantine guard enforces this — respect it).
-- **Separation of concerns.** Independent DAGs sequenced by `dag_orchestrator`; each can
-  fail and retry without corrupting the others. DAG files contain orchestration only.
-- **Single throttle point.** All API rate limiting lives in `plugins/base_client.py`.
-- **Config-driven everything.** All tunables in `config/config.py`. Nothing numeric or
-  behavioral is hardcoded in DAG, plugin, or calculation files.
-- **Pure-pandas math.** No indicator/stat libraries (no pandas-ta). sklearn is permitted
-  only inside `scripts/` for offline fitting; runtime scoring is pandas/numpy.
-- **Humans commit artifacts.** Optimizers and trainers write proposals/coefficients;
-  a human reviews and commits them. Nothing self-applies to config.
-- **Robust statistics.** All reported return metrics use median and winsorized (1%/99%)
-  mean — never raw means. Sample counts distinguish raw rows from independent episodes.
-
-## Code patterns (summary — full versions in docs/design_patterns.md)
-
-- **calc/tasks split:** pure functions in `dag_components/<area>/calculations*.py`
-  (no Airflow imports, no DB, no network); `@task` wrappers in `tasks.py`. TaskFlow API
-  only — no classic operators for Python logic.
-- **Insert mapping:** every `execute_values`/INSERT must have a test asserting tuple
-  field order matches the SQL column list (mapping test, not just math test). This class
-  of bug has occurred; the tests are the fence.
-- **Every module has a test file.** Math tests AND seam tests. Edge cases from the spec
-  are mandatory, not optional.
-- **Backfill scripts:** standalone, per-ticker commits, kill-safe, re-runnable, `--start`
-  flag, run inside Docker.
-- **Versioning:** predictions tagged with `SIGNAL_VERSION` / `SIGNAL_VERSION_V2`;
-  backfills append `-backfill`.
-
-## Environment gotchas
-
-- Postgres is native Windows; containers reach it via `host.docker.internal`.
-- **Two execution contexts for scripts:**
-  - DAG-related scripts (backfill_*.py, one-off data fixes): use the scheduler:
-    `docker compose exec airflow-scheduler python /opt/airflow/scripts/<name>.py`
-  - **Heavy analysis scripts** (analyze_*.py, train_*.py, anything loading the
-    full universe into memory): use the dedicated tools container:
-    `docker compose run --rm signal-tools python /opt/airflow/scripts/<name>.py`
-    The `signal-tools` service (profile: `tools`) has `mem_limit: 8g, cpus: 4`
-    and runs independently — an OOM in it cannot kill the scheduler.
-    Start it with: `docker compose --profile tools up -d signal-tools`
-- After editing `config/config.py`, restart the scheduler — WSL2 mounts have
-  low-resolution mtimes and workers can run stale `.pyc`:
-  `docker compose restart airflow-scheduler`
-  **Only do this when no DAG run or backfill is active** — check
-  `docker compose ps` and the Airflow UI first.
-- DAG files must contain the literal strings "dag" and "airflow" for DagBag safe-mode;
-  the `from airflow.models.dag import DAG  # noqa: F401` import in each DAG file exists
-  for this reason — do not remove it.
-- CI must be green before merging: ruff lint + format, pytest (3.11/3.12),
-  TruffleHog/gitleaks, `docker compose config`.
-  Branch flow: `feature/*` → `main` (protected; PR + green CI required).
-
-## When finishing any task
-
-1. Run `ruff check .`, `ruff format --check .`, `pytest` — all green.
-2. Run the task's verification gates and report actual outputs against expected values.
-3. Update `docs/roadmap.md` status and any `docs/` file your change made stale.
-   Doc drift misleads future agent sessions — treat stale docs as a bug.
+End every session with `/handoff`.
