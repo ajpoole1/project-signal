@@ -2,8 +2,9 @@
 Base HTTP client for Project Signal data providers.
 
 BaseMarketClient  — shared backoff session, extended by all provider clients.
-rate_limited_call — decorator applied to PolygonClient methods only.
-                    Config-driven: no-op on paid tiers, enforces 5 req/min on free.
+                    EODHDClient is the only active client; session is pre-configured
+                    with exponential backoff on 429/5xx.
+rate_limited_call — decorator wired to the inactive PolygonClient; retained for reference.
 """
 
 from __future__ import annotations
