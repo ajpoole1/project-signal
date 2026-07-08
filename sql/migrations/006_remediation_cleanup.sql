@@ -1,3 +1,7 @@
+-- MANUAL
+-- ^ Destructive (contains DELETE). deploy.sh skips-and-warns; apply by hand only.
+--   Retroactive marker (§7.6): already applied historically — the marker exists so
+--   boot-time automation never re-runs its deletes.
 -- Remediation cleanup — post Phase 0 data-quality findings
 -- Applied: 2026-06-09
 --

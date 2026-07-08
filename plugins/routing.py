@@ -3,9 +3,6 @@ Ticker routing for Project Signal.
 
 DAG tasks never inspect ticker format directly — they call these functions.
 Single data source: EODHDClient handles US equities, TSX/TSX-V, and indices.
-
-Legacy PolygonClient and YFinanceClient are retained in plugins/ for reference
-but are no longer used by the active pipeline.
 """
 
 from __future__ import annotations

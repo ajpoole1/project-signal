@@ -18,7 +18,6 @@ def _get(key: str, default):
 
 # --- Data source ---
 # All market data (US, TSX/TSX-V, VIX/VVIX) is sourced from EODHD.
-# PolygonClient and YFinanceClient are retained in plugins/ for reference only.
 
 # --- Signal weights (must sum to 1.0) ---
 SIGNAL_WEIGHTS = {

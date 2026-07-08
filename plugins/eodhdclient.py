@@ -1,7 +1,6 @@
 """
 EODHD client — single source for US equities, TSX/TSX-V, and indices.
 
-Replaces both PolygonClient (US) and YFinanceClient (TSX/VIX).
 Ticker format mapping:
   US equities / ETFs   → TICKER.US   (e.g. AAPL → AAPL.US)
   TSX                  → TICKER.TO   (passed through, already correct)
@@ -9,8 +8,8 @@ Ticker format mapping:
   VIX / VVIX           → VIX.INDX / VVIX.INDX
 
 OHLCV always uses adjusted_close for the close field, and scales open/high/low
-by the same adjustment factor so all four are consistent (matching yfinance
-auto_adjust=True behaviour).
+by the same adjustment factor so all four are consistent (fully split- and
+dividend-adjusted, i.e. auto-adjust behaviour).
 """
 
 from __future__ import annotations
@@ -27,7 +26,7 @@ class EODHDClient(BaseMarketClient):
         self.session = self._get_session()
 
     # ------------------------------------------------------------------
-    # Public interface  (same shape as PolygonClient / YFinanceClient)
+    # Public interface  (normalized OHLCV shape)
     # ------------------------------------------------------------------
 
     def fetch_ohlcv(self, ticker: str, start: str, end: str) -> list[dict]:

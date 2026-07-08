@@ -1,3 +1,8 @@
+-- MANUAL
+-- ^ Destructive (contains TRUNCATE/DELETE). deploy.sh skips-and-warns; apply by hand.
+--   Retroactive marker (§7.6): already applied historically. Note the filename says
+--   "bugfix" but the body is destructive — this is exactly why the deploy guard greps
+--   file CONTENTS for the marker, never trusts the filename.
 -- BUGFIX: sector_beta column order mismatch
 -- Applied: 2026-06-10
 --

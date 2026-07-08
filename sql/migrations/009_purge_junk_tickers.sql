@@ -1,3 +1,7 @@
+-- MANUAL
+-- ^ Destructive (bulk DELETE across production tables). deploy.sh skips-and-warns;
+--   apply by hand only. Retroactive marker (§7.6): already applied historically — the
+--   marker stops boot-time automation from re-running this purge every night.
 -- Purge warrant/rights/unit/test-symbol tickers from all production tables.
 -- Applied: 2026-06-11
 --

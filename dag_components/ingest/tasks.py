@@ -30,7 +30,7 @@ def validate_watchlist() -> list[str]:
 def fetch_ohlcv(tickers: list[str]) -> list[dict]:
     context = get_current_context()
     # data_interval_start = previous scheduled run time = the trading day that has closed.
-    # data_interval_end = now (midnight EST) — market hasn't opened yet, Polygon has no data.
+    # data_interval_end = now (midnight EST) — market hasn't opened yet, so no data for it.
     target_date = context["data_interval_start"].strftime("%Y-%m-%d")
 
     api_key = os.environ["EODHD_API_KEY"]
@@ -248,7 +248,7 @@ def upsert_raw_prices(bars: list[dict]) -> None:
             b["close"],
             b["volume"],
             b.get("currency", "USD"),
-            b.get("source", "polygon"),
+            b.get("source", "eodhd"),
         )
         for b in bars
     ]
