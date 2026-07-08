@@ -37,13 +37,11 @@ Bearish (E9-E11): death_cross, price_x_sma200_dn, low_52w_breakdown.
 from __future__ import annotations
 
 import math
-import os
 import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import psycopg2
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -51,6 +49,7 @@ from config import config
 from dag_components.outcome_tracker.calculations_v2 import (
     excess_return as calc_excess,
 )
+from scripts._db import get_connection, load_env
 
 # ---------------------------------------------------------------------------
 # Config
@@ -106,30 +105,6 @@ def _rss_mb() -> float:
     except OSError:
         pass
     return float("nan")
-
-
-# ---------------------------------------------------------------------------
-# DB helpers
-# ---------------------------------------------------------------------------
-def _load_env(env_path: Path) -> None:
-    if not env_path.exists():
-        return
-    with open(env_path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, _, v = line.partition("=")
-            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
-
-
-def _conn():
-    return psycopg2.connect(
-        host=os.environ.get("POSTGRES_HOST", "host.docker.internal"),
-        dbname="signal",
-        user=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"],
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -872,14 +847,14 @@ def main() -> None:
     t_start = time.time()
 
     root = Path(__file__).resolve().parents[1]
-    _load_env(root / ".env")
+    load_env()
     OUTPUT_DIR.mkdir(exist_ok=True)
 
     # Remove stale parquet file
     if _EVENTS_PQ.exists():
         _EVENTS_PQ.unlink()
 
-    conn = _conn()
+    conn = get_connection()
 
     print("Loading global data (SPY, betas, ticker list)...")
     spy = load_spy(conn)
@@ -1065,7 +1040,7 @@ def main() -> None:
 
     # Fetch dist_52w_high STATE analysis from DB (for E7 deep dive)
     print("Fetching dist_52w_high state analysis...")
-    conn2 = _conn()
+    conn2 = get_connection()
     with conn2.cursor() as cur:
         cur.execute("""
             SELECT

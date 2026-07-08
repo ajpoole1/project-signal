@@ -16,40 +16,17 @@ Usage (run inside Docker):
 from __future__ import annotations
 
 import argparse
-import os
 import sys
 from pathlib import Path
-
-import psycopg2
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from config import config
 from dag_components.outcome_tracker import calculations as calc
+from scripts._db import get_connection, load_env
 
 BACKFILL_VERSION = "v1.0-backfill"
 _HORIZONS = [5, 10, 20]
-
-
-def _load_env(env_path: Path) -> None:
-    if not env_path.exists():
-        return
-    with open(env_path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, val = line.partition("=")
-            os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
-
-
-def _get_connection():
-    return psycopg2.connect(
-        host=os.environ.get("POSTGRES_HOST", "host.docker.internal"),
-        dbname="signal",
-        user=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"],
-    )
 
 
 def _load_tickers(conn, start_date: str | None) -> list[str]:
@@ -255,10 +232,9 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    root = Path(__file__).resolve().parents[1]
-    _load_env(root / ".env")
+    load_env()
 
-    conn = _get_connection()
+    conn = get_connection()
 
     tickers = _load_tickers(conn, args.start)
     start_msg = f" (from {args.start})" if args.start else " (full history)"

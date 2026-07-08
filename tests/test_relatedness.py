@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import math
+import re
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 
 from dag_components.relatedness import calculations as calc
+
+_TASKS_SRC = Path(__file__).resolve().parents[1] / "dag_components" / "relatedness" / "tasks.py"
 
 
 def _price_history(
@@ -293,3 +297,42 @@ class TestMaskImplausibleReturns:
         _, _, _, beta_masked = betas_masked[0]
 
         assert beta_masked == pytest.approx(beta_clean, rel=1e-9)
+
+
+class TestRelatednessStopSafety:
+    """§7.2 — the nightly box is hard-killed at ~5am. The correlation write must
+    never globally empty relatedness_matrix, so the up-front TRUNCATE was replaced
+    with a per-window DELETE-then-INSERT committed as one unit. These are
+    static-source assertions (no Airflow import) guarding that the stop-safe shape
+    doesn't silently regress to a global truncate."""
+
+    def _src(self) -> str:
+        return _TASKS_SRC.read_text()
+
+    def test_no_unguarded_truncate_of_relatedness_matrix(self):
+        src = self._src()
+        # A TRUNCATE of the whole table is the interruption hazard §7.2 removes.
+        assert not re.search(
+            r"TRUNCATE\s+TABLE\s+relatedness_matrix", src, re.IGNORECASE
+        ), "compute_and_upsert_correlations must not TRUNCATE relatedness_matrix (§7.2 stop-safety)"
+
+    def test_per_window_delete_present(self):
+        src = self._src()
+        # The replacement shape: delete only the window being rewritten.
+        assert re.search(
+            r"DELETE\s+FROM\s+relatedness_matrix\s+WHERE\s+window_days\s*=\s*%s",
+            src,
+            re.IGNORECASE,
+        ), "expected a per-window 'DELETE FROM relatedness_matrix WHERE window_days = %s'"
+
+    def test_delete_and_insert_share_the_window_loop(self):
+        # Both the per-window DELETE and the execute_values INSERT must sit inside
+        # the `for window in ...CORRELATION_WINDOWS` loop, so each window is a
+        # self-contained replace. Assert the DELETE appears after the loop header.
+        src = self._src()
+        loop = src.find("for window in config.CORRELATION_WINDOWS")
+        delete = src.find("DELETE FROM relatedness_matrix WHERE window_days = %s")
+        insert = src.find("execute_values(cur, _INSERT_CORRELATIONS")
+        assert loop != -1 and delete != -1 and insert != -1
+        assert delete > loop, "per-window DELETE must be inside the window loop"
+        assert insert > loop, "INSERT must be inside the window loop"

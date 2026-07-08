@@ -17,34 +17,12 @@ Usage (run inside Docker):
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
 
-import psycopg2
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-
-def _load_env(env_path: Path) -> None:
-    if not env_path.exists():
-        return
-    with open(env_path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, val = line.partition("=")
-            os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
-
-
-def _get_connection():
-    return psycopg2.connect(
-        host=os.environ.get("POSTGRES_HOST", "host.docker.internal"),
-        dbname="signal",
-        user=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"],
-    )
+from scripts._db import get_connection, load_env
 
 
 def _run(conn, sql: str, params=None) -> list[tuple]:
@@ -61,9 +39,8 @@ def section(title: str) -> None:
 
 
 def main() -> None:
-    root = Path(__file__).resolve().parents[1]
-    _load_env(root / ".env")
-    conn = _get_connection()
+    load_env()
+    conn = get_connection()
 
     # ------------------------------------------------------------------
     # 1. Regime distribution — overall and by year

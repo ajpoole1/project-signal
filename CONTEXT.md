@@ -5,6 +5,59 @@ This file is the running memory across authoring sessions; keep entries tight an
 
 ---
 
+## Session — 2026-07-08
+
+**Context:** AWS-migration capacity review. Target box is a shared t4g.large (arm64,
+8 GiB, ~3h nightly window, shared RDS Postgres). Question: can Signal run nightly there,
+and if memory-bound, spread the DAG rather than pay for a bigger instance? Operator OK'd
+widening the window to 4–5h if needed.
+
+**Completed:**
+- **Landed the indicator batch-streaming refactor** (PR #16, merged → `main` `2954eba`).
+  - Root cause fixed: `dag_components/indicators/tasks.py` `fetch_price_history` returned a
+    universe-sized `dict[str, list[dict]]` (~7k tickers × ~280d OHLCV) **across a task
+    boundary → XCom** (built, pickled, written to metadata DB, read back — 2–3 copies
+    resident). That was the box's memory ceiling and the most likely 3am OOM.
+  - New `dag_components/indicators/pipeline.py` — pure, airflow-free helpers (`read_prices`,
+    `build_vix_context`, `compute_ticker_row`, `upsert_batch`, `rss_mb`). One source of truth
+    for DAG + gate; importable without Airflow so the gate runs from WSL.
+  - `tasks.py` now thin: `fetch_price_history` → `int` count-check (no bulk XCom);
+    `compute_and_upsert_indicators` streams the universe in `config.INDICATOR_BATCH_SIZE`
+    (=500) blocks: read → compute → upsert → release. Two-task topology preserved.
+  - `tests/test_stock_signals_insert.py` — insert-mapping fence for the moved 18-col
+    `stock_signals` INSERT (tuple order == column list; verified to have teeth).
+  - `scripts/verify_indicators_batch.py` — acceptance gate (parity + peak RSS + streaming).
+
+**Measured result (feeds AWS migration §6.1 / open Q7):**
+- Live 6,419-ticker universe (2026-07-07): **parity diff 0** (max |Δ| 0.00e+00), **peak RSS
+  224 MiB**, RSS flat across all 13 batches. The heaviest indicator run now fits in ~0.2 GiB
+  vs. the old whole-universe ceiling. **8 GiB is enough; no larger instance needed.** Relatedness
+  (Sunday) was already chunked — not a concern. Trade: wall-clock grows, memory ceiling flat.
+
+**Decisions worth remembering:**
+- The general lever for the rest of the migration if any stage is memory-bound: stream in
+  `config`-driven batches (read → compute → write → release), trading the widened window for a
+  flat RSS ceiling. XCom carries counts/refs only, never universe-sized payloads.
+- Process fix this session: `qa`/`ship`/`handoff` skills + `CHARTER.md` lived only on the
+  unmerged `feature/dev-standards-rollout` branch, so `/qa` couldn't resolve. Merged that first
+  (PR #15), rebased this branch onto it. Skills register at session start — needed the merge
+  before the verbs worked.
+
+**In progress:**
+- Nothing.
+
+**Blocked:**
+- Nothing.
+
+**Next:**
+- **`docker-compose.yml` still hardcodes `host.docker.internal` + `extra_hosts`** for the DB
+  (lines ~8/14/18/30). The migration spec says these must become the RDS endpoint (`extra_hosts`
+  gets dropped on the box). Env-driven `POSTGRES_HOST` swap — required migration change, not yet done.
+- Other nightly stages not yet measured against 8 GiB (ingest/llm are per-ticker loops, low risk;
+  relatedness already chunked). Batch-stream any that prove memory-bound using the pattern above.
+
+---
+
 ## Session — 2026-07-07
 
 **Completed:**

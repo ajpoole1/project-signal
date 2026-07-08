@@ -20,17 +20,15 @@ Usage (run inside Docker):
 from __future__ import annotations
 
 import argparse
-import os
 import sys
 from pathlib import Path
-
-import psycopg2
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from config import config
 from dag_components.outcome_tracker import calculations as calc
 from dag_components.outcome_tracker import calculations_v2 as calc_v2
+from scripts._db import get_connection, load_env
 
 HORIZONS = config.V2_PREDICTION_HORIZONS
 MAX_HORIZON = max(HORIZONS)
@@ -41,27 +39,6 @@ MAX_RATIO = config.V2_MAX_DAILY_RATIO
 MIN_PRICE = config.V2_MIN_PRICE
 EPISODE_GAP = config.V2_EPISODE_GAP_DAYS
 SHRINKAGE_W = config.V2_BETA_SHRINKAGE_W
-
-
-def _load_env(env_path: Path) -> None:
-    if not env_path.exists():
-        return
-    with open(env_path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, val = line.partition("=")
-            os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
-
-
-def _get_connection():
-    return psycopg2.connect(
-        host=os.environ.get("POSTGRES_HOST", "host.docker.internal"),
-        dbname="signal",
-        user=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"],
-    )
 
 
 def _load_tickers(conn, start_date: str | None) -> list[str]:
@@ -346,10 +323,9 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    root = Path(__file__).resolve().parents[1]
-    _load_env(root / ".env")
+    load_env()
 
-    conn = _get_connection()
+    conn = get_connection()
 
     print("Loading SPY prices...")
     spy_by_date, spy_dates = _load_spy(conn)

@@ -53,10 +53,16 @@ VVIX_SPIKE_THRESHOLD = 120
 VVIX_COMPLACENT_MAX = 85
 
 # --- Relatedness ---
-CORRELATION_WINDOWS = [30, 90, 365]
+# NOTE: relatedness_matrix has no wired production reader as of 2026-07-08 — the
+# LLM peer-lookup consumer is designed (LLM_PEER_* constants below) but not built.
+# The 30d window was dropped and MIN_R raised to 0.50 to trim ~20M weekly rows for
+# the AWS RDS move; the trim is behavior-neutral precisely because nothing reads the
+# table yet. "Wire or retire the peer lookup" is a Phase 4 feature-selection decision
+# (see docs/roadmap.md) — a table with no reader and no decision date is a latent bug.
+CORRELATION_WINDOWS = [90, 365]  # 30d dropped 2026-07-08 (AWS trim); migration 011 deletes its rows
 PEER_CLUSTER_THRESHOLD = 0.65
 BETA_WINDOWS = [90, 365]
-RELATEDNESS_MIN_R = 0.20  # pairs below this |pearson_r| are not written to relatedness_matrix
+RELATEDNESS_MIN_R = 0.50  # pairs below this |pearson_r| are not written; raised 0.20→0.50 (AWS trim, under the 0.6 consumption threshold)
 CORRELATION_CHUNK_SIZE = 500  # tickers per block in chunked corr; smaller = less CPU spike
 
 # --- LLM ---

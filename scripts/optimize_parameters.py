@@ -15,16 +15,14 @@ Usage (run inside Docker):
 
 from __future__ import annotations
 
-import os
 import sys
 from itertools import product
 from pathlib import Path
 
-import psycopg2
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from config import config
+from scripts._db import get_connection, load_env
 
 PARAM_GRID = {
     "sma_200_weight": [0.20, 0.25, 0.30, 0.35, 0.40],
@@ -40,27 +38,6 @@ PARAM_GRID = {
 # Weights must sum to 1.0 (within floating-point tolerance)
 _WEIGHT_KEYS = ["sma_200_weight", "sma_50_weight", "macd_weight", "rsi_weight"]
 _WEIGHT_TOL = 0.001
-
-
-def _load_env(env_path: Path) -> None:
-    if not env_path.exists():
-        return
-    with open(env_path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, val = line.partition("=")
-            os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
-
-
-def _get_connection():
-    return psycopg2.connect(
-        host=os.environ.get("POSTGRES_HOST", "host.docker.internal"),
-        dbname="signal",
-        user=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"],
-    )
 
 
 def _load_resolved_predictions(conn) -> list[dict]:
@@ -204,10 +181,9 @@ def _insert_proposal(
 
 
 def main() -> None:
-    root = Path(__file__).resolve().parents[1]
-    _load_env(root / ".env")
+    load_env()
 
-    conn = _get_connection()
+    conn = get_connection()
     predictions = _load_resolved_predictions(conn)
 
     print(f"optimize_parameters: {len(predictions):,} resolved predictions loaded")
