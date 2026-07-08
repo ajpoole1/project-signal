@@ -36,7 +36,7 @@ open source where the logic is public and API keys / personal watchlists stay lo
 Inherited from `../project-jarvis/docs/dev-standards/DEV_BASE.md`. Summary:
 
 - Spec-literal implementation on `feature/<id>` branches.
-- `scripts/dev-loop/checks.sh` green before every commit (single source of truth — identical to CI).
+- `scripts/checks.sh` green before every commit (single source of truth — CI runs the same file).
 - Two human gates (authorize + merge). No auto-merge.
 - Halt-and-ask on ambiguity — never guess.
 - Land work via `/ship`; run `/qa` before PR; scaffold handoff with `/handoff`.
@@ -65,7 +65,7 @@ passes or the operator explicitly overrides.
 
 | Parameter | Value |
 |---|---|
-| Check command | `scripts/dev-loop/checks.sh` (wraps ruff check + ruff format + pytest; identical to CI `quality.yml`) |
+| Check command | `scripts/checks.sh` (ruff check + ruff format + pytest --cov); invoked directly by CI `quality.yml` — one file, no drift |
 | QA model | Claude Sonnet 5 (local `/qa` fork) |
 | Reviewer entry point | `.github/workflows/quality.yml` (ruff + pytest) · `.github/workflows/security.yml` (TruffleHog + gitleaks) · `.github/workflows/docker.yml` (compose config) |
 

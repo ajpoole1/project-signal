@@ -1,8 +1,11 @@
 <!-- vendored-from: project-jarvis @ 2026-07-07 -->
+<!-- LOCAL DEVIATION: dev-loop-item branches (start-build.sh / open-pr.sh, spec-queue
+     authorization) removed — Signal has no dev-loop; those paths were unreachable.
+     Only the ad-hoc author path remains. Restore from the hub if a dev-loop lands here. -->
 ---
 name: ship
 description: The only exit ramp for repo changes — run canonical checks, local QA, commit and push to the feature branch, then open or update the PR. Invoke whenever work is ready to land, in full or as an incremental checkpoint.
-allowed-tools: Bash(git *), Bash(gh pr *), Bash(scripts/dev-loop/*)
+allowed-tools: Bash(git *), Bash(gh pr *), Bash(scripts/checks.sh)
 ---
 
 # /ship — checks → QA → commit+push → PR
@@ -16,16 +19,15 @@ This skill is the paved road: never perform these steps individually outside it.
    - On `main` with changes — STOP. Verify no other `feature/*` branch exists locally
      or on origin (one-live-branch rule, DEV_BASE §3.1). If one exists, halt and ask
      the operator whether this work rides it or waits. If none exists, cut
-     `feature/<id>` (dev-loop items: via `scripts/dev-loop/start-build.sh <id>`,
-     which enforces authorization; ad-hoc author work: `git checkout -b feature/<slug>`).
+     `git checkout -b feature/<slug>`.
    - On a feature branch — proceed.
 2. **Nothing staged that shouldn't be.** Review `git status` for personal-data paths,
    secrets, or files outside the work's scope before anything else.
 
 ## 1. Checks
 
-Run the repo's canonical check command — `scripts/dev-loop/checks.sh` (the single
-definition of green; identical to CI). Red — fix and re-run. Do not proceed red.
+Run the repo's canonical check command — `scripts/checks.sh` (the single
+definition of green; CI runs the same file). Red — fix and re-run. Do not proceed red.
 Do not narrow, skip, or reinterpret the command.
 
 ## 2. Local QA
@@ -46,10 +48,8 @@ Invoke `/qa`. Process its JSON verdict per `QA_LENSES.md` §5:
 
 - **PR already open for this branch** — the push in step 3 updated it. Append any
   new advisory notes to the PR description under `## Local QA notes`. Done.
-- **No PR yet, dev-loop item** — run `scripts/dev-loop/open-pr.sh <id>` (it sets
-  status, pushes, opens the PR against `main`).
-- **No PR yet, ad-hoc author work** — `gh pr create` against `main`, body containing
-  a summary, the advisory notes section, and what was verified (checks + QA passed).
+- **No PR yet** — `gh pr create` against `main`, body containing a summary, the
+  advisory notes section, and what was verified (checks + QA passed).
 
 ## 5. Close out
 
