@@ -48,12 +48,15 @@ jobs:
           python-version: "3.11"
 
       - name: Install Airflow + runtime deps
-        # Airflow 2.9.0 pinned to the box's version. anthropic is imported at module
-        # load by the llm / parameter_review task modules the DagBag scans, so it must
-        # be present for a clean parse. Constraint file keeps the Airflow install
-        # reproducible on py3.11.
+        # Airflow 2.9.0 pinned to the box's version, WITH the providers the DAGs
+        # import — the apache/airflow container image bundles providers, but a bare
+        # pip install does not, so the postgres provider (PostgresHook, imported by
+        # every task module) must be installed explicitly or the DagBag parse fails
+        # with ModuleNotFoundError. anthropic is imported at module load by the llm /
+        # parameter_review task modules. The constraint file keeps it reproducible.
         run: |
           pip install "apache-airflow==2.9.0" \
+            "apache-airflow-providers-postgres" \
             --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.9.0/constraints-3.11.txt"
           pip install -r requirements.txt
           pip install anthropic
