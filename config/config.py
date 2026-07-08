@@ -91,6 +91,7 @@ BB_WINDOW = 20
 BB_STD = 2
 VIX_SMA_WINDOW = 20
 PRICE_HISTORY_DAYS = 250  # enough for SMA_200 + buffer
+INDICATOR_BATCH_SIZE = 500  # equity tickers per batch; smaller = lower peak RSS
 RELATEDNESS_HISTORY_DAYS = 400  # enough for 365-day correlation window + buffer
 
 # --- Signal versioning (Phase 6) ---
