@@ -150,9 +150,10 @@ def _insert_predictions(conn, ticker: str, rows: list[dict]) -> int:
                 """
                 INSERT INTO signal_predictions
                     (ticker, signal_date, bias, confidence, composite_vix_adj,
-                     vix_regime, vix_trend, vol_environment, price_at_signal, signal_version)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                ON CONFLICT (ticker, signal_date) DO NOTHING
+                     vix_regime, vix_trend, vol_environment, price_at_signal,
+                     signal_version, regime_weight_set)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (ticker, signal_date, signal_version) DO NOTHING
                 """,
                 (
                     ticker,
@@ -165,6 +166,7 @@ def _insert_predictions(conn, ticker: str, rows: list[dict]) -> int:
                     row["vol_environment"],
                     row["price_at_signal"],
                     BACKFILL_VERSION,
+                    "default",
                 ),
             )
             inserted += cur.rowcount
@@ -208,9 +210,22 @@ def _resolve_predictions(conn, ticker: str, rows: list[dict], all_prices: list[d
                     correct_10d      = %s,
                     correct_20d      = %s,
                     resolved_at      = NOW()
-                WHERE ticker = %s AND signal_date = %s
+                WHERE ticker = %s AND signal_date = %s AND signal_version = %s
                 """,
-                (p5, p10, p20, r5, r10, r20, c5, c10, c20, ticker, row["signal_date"]),
+                (
+                    p5,
+                    p10,
+                    p20,
+                    r5,
+                    r10,
+                    r20,
+                    c5,
+                    c10,
+                    c20,
+                    ticker,
+                    row["signal_date"],
+                    BACKFILL_VERSION,
+                ),
             )
             resolved += cur.rowcount
     return resolved

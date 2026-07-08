@@ -6,8 +6,8 @@ SECTOR_ETF_TICKERS remain hardcoded — they are Phase 4 infrastructure (beta pr
 and are not part of the personal equity universe in the JSON.
 
 VIX/VVIX tickers are NOT listed here. They are resolved at runtime via
-plugins.routing.resolve_vix_tickers() based on config.VIX_SOURCE, so
-upgrading Polygon tiers never requires touching this file.
+plugins.routing.resolve_vix_tickers() (VIX.INDX and VVIX.INDX, hardcoded
+in routing.py since EODHD is the single data source).
 
 Personal or sensitive ticker additions go in config/watchlist_personal.py
 (gitignored). That file should define US_TICKERS_EXTRA and TSX_TICKERS_EXTRA
@@ -36,7 +36,7 @@ TSX_TICKERS: list[str] = [
     if info["has_data"] and info["exchange"] in ("tsx", "tsx_venture")
 ]
 
-# Sector ETFs stay hardcoded — Phase 4 beta proxy infrastructure, not in personal universe
+# Sector ETFs stay hardcoded — beta proxy infrastructure for dag_stock_relatedness, not in personal universe
 SECTOR_ETF_TICKERS: list[str] = [
     "SPY",
     "QQQ",
@@ -68,7 +68,7 @@ def get_all_tickers() -> list[str]:
 
 
 def get_equity_tickers() -> list[str]:
-    """US + TSX only — excludes sector ETFs. Used by Phase 4 relatedness DAG."""
+    """US + TSX only — excludes sector ETFs. Used by dag_stock_relatedness."""
     extra_us: list[str] = []
     extra_tsx: list[str] = []
 

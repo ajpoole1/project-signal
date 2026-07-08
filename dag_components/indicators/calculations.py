@@ -115,12 +115,17 @@ def compute_composite(
     macd_val: float | None,
     macd_sig: float | None,
     rsi_val: float | None,
+    regime: str | None = "default",
 ) -> float | None:
     """Weighted composite score in [-1, 1].
 
     Normalises by total weight present so missing indicators (None) don't
     drag the score toward zero — a ticker with only two valid indicators
     still gets a full [-1, 1] score from those two.
+
+    Phase 3.5: the weight set is selected by vix_regime. Untuned regimes
+    fall back to the "default" set, so this is backward-compatible — callers
+    that omit `regime` get the same scores as before.
     """
     scores: dict[str, float] = {}
 
@@ -136,7 +141,7 @@ def compute_composite(
     if not scores:
         return None
 
-    weights = config.SIGNAL_WEIGHTS
+    weights = config.get_regime_weights(regime)
     total_weight = sum(weights[k] for k in scores)
     raw = sum(scores[k] * weights[k] for k in scores) / total_weight
     return round(raw, 4)

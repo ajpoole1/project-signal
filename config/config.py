@@ -20,13 +20,59 @@ def _get(key: str, default):
 # All market data (US, TSX/TSX-V, VIX/VVIX) is sourced from EODHD.
 # PolygonClient and YFinanceClient are retained in plugins/ for reference only.
 
-# --- Signal weights (must sum to 1.0) ---
+# --- Signal weights (Phase 3.5: regime-conditional) ---
+# SIGNAL_WEIGHTS is keyed by vix_regime. compute_composite looks up the weight
+# set for the day's regime, falling back to "default" for untuned regimes.
+# Each set must sum to 1.0.
+#
+# Overrides in parameter_overrides.json use dotted notation to target a regime:
+#   "elevated.macd_weight": 0.30   → SIGNAL_WEIGHTS["elevated"]["macd"]
+# Unprefixed keys (e.g. "macd_weight") apply to the "default" set, preserving
+# backward compatibility with pre-3.5 overrides.
+
+# Sub-signal → override-key suffix (override keys are "<signal>_weight")
+_WEIGHT_SIGNALS = ("sma_200", "sma_50", "macd", "rsi")
+
+# Base (untuned) weights — same as the pre-3.5 global set.
+_BASE_WEIGHTS = {"sma_200": 0.30, "sma_50": 0.25, "macd": 0.25, "rsi": 0.20}
+
+# Regimes that get their own tuned set. Untuned regimes fall back to "default".
+_TUNABLE_REGIMES = ("default", "low", "normal", "elevated", "high", "extreme")
+
+
+def _regime_weight(regime: str, signal: str) -> float:
+    """Resolve one sub-signal weight for a regime, honoring overrides.
+
+    Lookup order:
+      1. regime-scoped override   "elevated.macd_weight"
+      2. for "default" only: unprefixed legacy override "macd_weight"
+      3. base default value
+    """
+    base = _BASE_WEIGHTS[signal]
+    scoped = _OVERRIDES.get(f"{regime}.{signal}_weight")
+    if scoped is not None:
+        return scoped
+    if regime == "default":
+        return _OVERRIDES.get(f"{signal}_weight", base)
+    return base
+
+
 SIGNAL_WEIGHTS = {
-    "sma_200": _get("sma_200_weight", 0.30),
-    "sma_50": _get("sma_50_weight", 0.25),
-    "macd": _get("macd_weight", 0.25),
-    "rsi": _get("rsi_weight", 0.20),
+    regime: {sig: _regime_weight(regime, sig) for sig in _WEIGHT_SIGNALS}
+    for regime in _TUNABLE_REGIMES
 }
+
+
+def get_regime_weights(regime: str | None) -> dict[str, float]:
+    """Return the weight set for a vix_regime, falling back to 'default'.
+
+    A regime present in SIGNAL_WEIGHTS but never overridden carries the base
+    weights — identical to 'default' until a proposal tunes it.
+    """
+    if regime and regime in SIGNAL_WEIGHTS:
+        return SIGNAL_WEIGHTS[regime]
+    return SIGNAL_WEIGHTS["default"]
+
 
 # --- RSI thresholds ---
 RSI_HEALTHY_LOW = 40
@@ -96,7 +142,9 @@ RELATEDNESS_HISTORY_DAYS = 400  # enough for 365-day correlation window + buffer
 # --- Signal versioning (Phase 6) ---
 # Increment on any change to SIGNAL_WEIGHTS or VIX/VVIX thresholds.
 # Format: "vMAJOR.MINOR" — major for weight changes, minor for threshold changes.
-SIGNAL_VERSION = "v1.0"
+# v1.1 (Phase 3.5): regime-conditional weights. Until a regime is tuned via
+# approved proposals it carries base weights, so live v1.1 scores match v1.0.
+SIGNAL_VERSION = "v1.1"
 
 # --- Outcome evaluation (Phase 6) ---
 PREDICTION_HORIZONS = [5, 10, 20]  # trading days
@@ -109,3 +157,40 @@ ACCURACY_MIN_SAMPLE_SIZE = 30  # min signals required before reporting accuracy
 OPTIMIZATION_TARGET_HORIZON = 10  # primary horizon for parameter scoring
 OPTIMIZATION_TARGET_BIAS = "bullish"  # primary bias to optimize for
 OPTIMIZATION_MIN_ACCURACY_DELTA = 0.03  # min projected improvement to generate a proposal
+
+# --- Signal v2 ---
+# All v2 tunables live here. v1 config above is untouched until Phase 6 cutover.
+V2_PREDICTION_HORIZONS = [5, 10, 20, 21, 42, 63]  # trading days; 5/10/20 kept for v1 comparability
+V2_PRIMARY_HORIZON = 42  # primary calibration/optimization target
+V2_VOL_LOOKBACK_DAYS = 20  # trailing window for daily vol estimate (pct returns)
+V2_THRESHOLD_VOL_MULT = 0.5  # move must exceed k * sigma_daily * sqrt(h)
+V2_BENCHMARK_TICKER = "SPY"
+V2_BETA_WINDOW = 90  # which sector_beta window to use for beta lookup
+V2_EPISODE_GAP_DAYS = 5  # trading-day gap that starts a new episode
+V2_MAX_DAILY_RATIO = 3.0  # quarantine guard: 1-day close ratio above this flags a corp-action seam
+V2_MIN_PRICE = 1.00  # USD/CAD nominal floor; sub-$1 tickers excluded from v2 eligibility
+SIGNAL_VERSION_V2 = "v2.0"
+
+# Phase 2 — continuous feature windows
+V2_FEATURE_SMA_SHORT = 50  # dist_sma50
+V2_FEATURE_SMA_LONG = 200  # dist_sma200, dist_sma200_z
+V2_FEATURE_SMA_LONG_Z_WINDOW = 252  # trailing window for dist_sma200_z z-score
+V2_FEATURE_BB_WINDOW = 20  # bb_pctb (reuses BB_STD=2 from v1)
+V2_FEATURE_52W_WINDOW = 252  # dist_52w_high, dist_52w_low
+V2_FEATURE_VOL_SMA_WINDOW = 20  # vol_ratio denominator
+V2_FEATURE_RET_MED_WINDOW = 21  # ret_21d
+V2_FEATURE_RET_LONG_WINDOW = 63  # ret_63d
+
+# Phase 3 — regime classification
+V2_ADX_WINDOW = 14  # ADX Wilder smoothing window
+V2_ADX_TREND_MIN = 25  # ADX >= this → trending
+V2_SLOPE_WINDOW = 63  # SMA200 slope look-back (trading days)
+V2_SLOPE_TREND_MIN = 0.02  # |sma200_slope| >= this → trending
+
+# Beta shrinkage — applied at usage in outcome resolver, NOT stored in sector_beta.
+# beta_used = W * beta_hat + (1 - W) * 1.0; shrinks extreme betas toward market beta.
+V2_BETA_SHRINKAGE_W = 0.67
+
+# Tools container batch size for memory-bounded analysis scripts.
+# At float32 + ~20 columns, 500 tickers × ~1300 rows ≈ 50 MB per batch.
+TOOLS_TICKER_BATCH = 500

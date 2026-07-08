@@ -143,9 +143,15 @@ def compute_indicators(price_history: dict[str, list[dict]]) -> list[dict]:
         bb_upper_val = _scalar(bb_upper_series, target_date)
         bb_lower_val = _scalar(bb_lower_series, target_date)
 
-        # Composite
+        # Composite — weight set selected by the day's VIX regime (Phase 3.5)
         composite = calc.compute_composite(
-            target_close, sma50_val, sma200_val, macd_val, macd_sig_val, rsi_val
+            target_close,
+            sma50_val,
+            sma200_val,
+            macd_val,
+            macd_sig_val,
+            rsi_val,
+            regime=vix_regime,
         )
         composite_adj = None
         if composite is not None and vix_mult is not None:

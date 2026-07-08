@@ -263,3 +263,62 @@ class TestCompositeScore:
             rsi_val=35.0,
         )
         assert score == pytest.approx(0.5)
+
+    def test_default_regime_backward_compatible(self):
+        # Omitting regime and passing regime="default" produce identical results.
+        kwargs = {
+            "close": 110.0,
+            "sma_50": 100.0,
+            "sma_200": 90.0,
+            "macd_val": 0.5,
+            "macd_sig": 0.1,
+            "rsi_val": 55.0,
+        }
+        assert calc.compute_composite(**kwargs) == calc.compute_composite(
+            **kwargs, regime="default"
+        )
+
+    def test_unknown_regime_falls_back_to_default(self):
+        # An unrecognised regime label must not raise — falls back to default weights.
+        kwargs = {
+            "close": 110.0,
+            "sma_50": 100.0,
+            "sma_200": 90.0,
+            "macd_val": 0.5,
+            "macd_sig": 0.1,
+            "rsi_val": 55.0,
+        }
+        assert calc.compute_composite(**kwargs, regime="nonexistent") == calc.compute_composite(
+            **kwargs, regime="default"
+        )
+
+    def test_custom_regime_weights_change_score(self, monkeypatch):
+        # When a regime carries different weights the composite changes.
+        # Patch "elevated" to heavily favour RSI (1.0) and zero the rest.
+        from config import config as cfg
+
+        custom = {"sma_200": 0.0, "sma_50": 0.0, "macd": 0.0, "rsi": 1.0}
+        monkeypatch.setitem(cfg.SIGNAL_WEIGHTS, "elevated", custom)
+
+        # close > sma_200, close > sma_50, macd bullish, RSI neutral (0)
+        # With custom weights → only RSI counts → score = 0.0
+        score_elevated = calc.compute_composite(
+            close=110.0,
+            sma_50=100.0,
+            sma_200=90.0,
+            macd_val=0.5,
+            macd_sig=0.1,
+            rsi_val=55.0,
+            regime="elevated",
+        )
+        score_default = calc.compute_composite(
+            close=110.0,
+            sma_50=100.0,
+            sma_200=90.0,
+            macd_val=0.5,
+            macd_sig=0.1,
+            rsi_val=55.0,
+            regime="default",
+        )
+        assert score_elevated == pytest.approx(0.0)
+        assert score_default != pytest.approx(0.0)
