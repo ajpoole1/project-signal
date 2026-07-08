@@ -7,7 +7,7 @@ and are not part of the personal equity universe in the JSON.
 
 VIX/VVIX tickers are NOT listed here. They are resolved at runtime via
 plugins.routing.resolve_vix_tickers() based on config.VIX_SOURCE, so
-upgrading Polygon tiers never requires touching this file.
+changing the VIX data source never requires touching this file.
 
 Personal or sensitive ticker additions go in config/watchlist_personal.py
 (gitignored). That file should define US_TICKERS_EXTRA and TSX_TICKERS_EXTRA

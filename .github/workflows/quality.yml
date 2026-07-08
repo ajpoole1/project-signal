@@ -32,3 +32,51 @@ jobs:
       # CI runs the same file agents run locally — do not restate its steps here.
       - name: Checks (ruff + pytest)
         run: scripts/checks.sh
+
+  dagbag-import:
+    name: DagBag import check (Airflow 2.9.0)
+    runs-on: ubuntu-latest
+    # With local Docker retired (Tier 2), this is the ONLY pre-production gate that
+    # catches a DAG that fails to parse — a broken DAG merged to main would silently
+    # vanish from the scheduler on the AWS box. Matches the container's python3.11.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Airflow + runtime deps
+        # Airflow 2.9.0 pinned to the box's version, WITH the providers the DAGs
+        # import — the apache/airflow container image bundles providers, but a bare
+        # pip install does not, so the postgres provider (PostgresHook, imported by
+        # every task module) must be installed explicitly or the DagBag parse fails
+        # with ModuleNotFoundError. anthropic is imported at module load by the llm /
+        # parameter_review task modules. The constraint file keeps it reproducible.
+        run: |
+          pip install "apache-airflow==2.9.0" \
+            "apache-airflow-providers-postgres" \
+            --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.9.0/constraints-3.11.txt"
+          pip install -r requirements.txt
+          pip install anthropic
+
+      - name: Assert DAGs import with zero errors
+        env:
+          AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python - <<'PY'
+          import sys
+          from airflow.models.dagbag import DagBag
+
+          bag = DagBag(dag_folder="dags/", include_examples=False)
+          if bag.import_errors:
+              print("DAG import errors:")
+              for path, err in bag.import_errors.items():
+                  print(f"\n=== {path} ===\n{err}")
+              sys.exit(1)
+          print(f"OK — {len(bag.dags)} DAG(s) imported cleanly:")
+          for dag_id in sorted(bag.dags):
+              print(f"  - {dag_id}")
+          PY

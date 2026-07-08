@@ -10,7 +10,7 @@ x-airflow-common:
     # No code branches: the same compose file runs both, parity via env only.
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-host.docker.internal}/${POSTGRES_DB}
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-    _PIP_ADDITIONAL_REQUIREMENTS: "yfinance>=0.2.40 pandas>=2.0.0 anthropic>=0.40.0"
+    _PIP_ADDITIONAL_REQUIREMENTS: "pandas>=2.0.0 anthropic>=0.40.0"
     PYTHONPATH: /opt/airflow
     AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
     # Registers the signal DB connection automatically — no manual UI setup needed
@@ -50,6 +50,28 @@ services:
           --lastname User \
           --role Admin \
           --email admin@example.com
+        # jarvis: least-privilege service account for the operator-of-record (§6.2).
+        # Custom role — read DAGs/DagRuns/TaskInstances/Logs + create DagRuns (to
+        # retrigger a failed DAG), and nothing else: no variable edits, no connection
+        # reads (connections hold DB credentials). Password from Secrets Manager via
+        # JARVIS_AIRFLOW_PASSWORD; skipped if unset so local dev needn't provision it.
+        airflow roles create jarvis || true
+        airflow roles add-perms jarvis \
+          -a can_read -r DAGs \
+          -a can_read -r "DAG Runs" -a can_create -r "DAG Runs" \
+          -a can_read -r "Task Instances" \
+          -a can_read -r "Task Logs"
+        if [ -n "$${JARVIS_AIRFLOW_PASSWORD:-}" ]; then
+          airflow users create \
+            --username jarvis \
+            --password "$${JARVIS_AIRFLOW_PASSWORD}" \
+            --firstname Jarvis \
+            --lastname Operator \
+            --role jarvis \
+            --email jarvis@example.com || true
+        else
+          echo "JARVIS_AIRFLOW_PASSWORD unset — skipping jarvis account creation (local dev)"
+        fi
     restart: "no"
 
   airflow-webserver:
@@ -90,7 +112,10 @@ services:
       resources:
         limits:
           cpus: "4.0"
-          memory: "8g"
+          # 8g → 4g (§7.7): the heaviest single task now peaks at ~224 MiB after the
+          # indicators batch-streaming refactor (PR #16), so 4g is ~18x headroom and
+          # leaves more of the box's 8 GiB for the scheduler+webserver and other tenants.
+          memory: "4g"
 
 volumes:
   airflow-logs:
