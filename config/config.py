@@ -109,3 +109,40 @@ ACCURACY_MIN_SAMPLE_SIZE = 30  # min signals required before reporting accuracy
 OPTIMIZATION_TARGET_HORIZON = 10  # primary horizon for parameter scoring
 OPTIMIZATION_TARGET_BIAS = "bullish"  # primary bias to optimize for
 OPTIMIZATION_MIN_ACCURACY_DELTA = 0.03  # min projected improvement to generate a proposal
+
+# --- Signal v2 ---
+# All v2 tunables live here. v1 config above is untouched until Phase 6 cutover.
+V2_PREDICTION_HORIZONS = [5, 10, 20, 21, 42, 63]  # trading days; 5/10/20 kept for v1 comparability
+V2_PRIMARY_HORIZON = 42  # primary calibration/optimization target
+V2_VOL_LOOKBACK_DAYS = 20  # trailing window for daily vol estimate (pct returns)
+V2_THRESHOLD_VOL_MULT = 0.5  # move must exceed k * sigma_daily * sqrt(h)
+V2_BENCHMARK_TICKER = "SPY"
+V2_BETA_WINDOW = 90  # which sector_beta window to use for beta lookup
+V2_EPISODE_GAP_DAYS = 5  # trading-day gap that starts a new episode
+V2_MAX_DAILY_RATIO = 3.0  # quarantine guard: 1-day close ratio above this flags a corp-action seam
+V2_MIN_PRICE = 1.00  # USD/CAD nominal floor; sub-$1 tickers excluded from v2 eligibility
+SIGNAL_VERSION_V2 = "v2.0"
+
+# Phase 2 — continuous feature windows
+V2_FEATURE_SMA_SHORT = 50  # dist_sma50
+V2_FEATURE_SMA_LONG = 200  # dist_sma200, dist_sma200_z
+V2_FEATURE_SMA_LONG_Z_WINDOW = 252  # trailing window for dist_sma200_z z-score
+V2_FEATURE_BB_WINDOW = 20  # bb_pctb (reuses BB_STD=2 from v1)
+V2_FEATURE_52W_WINDOW = 252  # dist_52w_high, dist_52w_low
+V2_FEATURE_VOL_SMA_WINDOW = 20  # vol_ratio denominator
+V2_FEATURE_RET_MED_WINDOW = 21  # ret_21d
+V2_FEATURE_RET_LONG_WINDOW = 63  # ret_63d
+
+# Phase 3 — regime classification
+V2_ADX_WINDOW = 14  # ADX Wilder smoothing window
+V2_ADX_TREND_MIN = 25  # ADX >= this → trending
+V2_SLOPE_WINDOW = 63  # SMA200 slope look-back (trading days)
+V2_SLOPE_TREND_MIN = 0.02  # |sma200_slope| >= this → trending
+
+# Beta shrinkage — applied at usage in outcome resolver, NOT stored in sector_beta.
+# beta_used = W * beta_hat + (1 - W) * 1.0; shrinks extreme betas toward market beta.
+V2_BETA_SHRINKAGE_W = 0.67
+
+# Tools container batch size for memory-bounded analysis scripts.
+# At float32 + ~20 columns, 500 tickers × ~1300 rows ≈ 50 MB per batch.
+TOOLS_TICKER_BATCH = 500

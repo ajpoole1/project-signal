@@ -17,6 +17,7 @@ from dag_components.outcome_tracker.tasks import (
     compute_accuracy_rollup,
     populate_predictions,
     resolve_matured_predictions,
+    resolve_outcomes_v2,
 )
 
 builder = SignalDAG(
@@ -33,3 +34,5 @@ def dag_outcome_tracker():
     resolved = resolve_matured_predictions()
     inserted >> resolved  # enforce ordering; resolve does not consume inserted count
     compute_accuracy_rollup(resolved)
+    # v2 scoreboard runs after v1 resolve so prices are fully loaded
+    resolved >> resolve_outcomes_v2()
