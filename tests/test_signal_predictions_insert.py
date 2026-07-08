@@ -48,9 +48,9 @@ class TestSignalPredictionsInsertMapping:
     def test_column_count_matches_placeholders(self):
         for path in _INSERT_SITES:
             cols, placeholders, _ = _extract_prediction_insert(path.read_text())
-            assert len(cols) == placeholders, (
-                f"{path.name}: {len(cols)} columns but {placeholders} placeholders"
-            )
+            assert (
+                len(cols) == placeholders
+            ), f"{path.name}: {len(cols)} columns but {placeholders} placeholders"
 
     def test_signal_version_in_columns(self):
         for path in _INSERT_SITES:
@@ -74,6 +74,6 @@ class TestSignalPredictionsInsertMapping:
         # reappear in any active insert site.
         for path in _INSERT_SITES:
             cols, _, _ = _extract_prediction_insert(path.read_text())
-            assert "regime_weight_set" not in cols, (
-                f"{path.name}: regime_weight_set is retired Phase 3.5 residue"
-            )
+            assert (
+                "regime_weight_set" not in cols
+            ), f"{path.name}: regime_weight_set is retired Phase 3.5 residue"

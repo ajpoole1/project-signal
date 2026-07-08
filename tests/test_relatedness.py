@@ -207,12 +207,12 @@ class TestBetaValues:
         # If this assertion fails, the INSERT column order has regressed.
         assert ticker == "ABC", "Position 0 must be ticker string"
         assert etf == "SPY", "Position 1 must be etf string"
-        assert isinstance(window_days, int) and window_days == 90, (
-            "Position 2 must be window_days int"
-        )
-        assert isinstance(beta, float) and 0.9 < beta < 1.1, (
-            "Position 3 must be beta float (~1.0 for tracking)"
-        )
+        assert (
+            isinstance(window_days, int) and window_days == 90
+        ), "Position 2 must be window_days int"
+        assert (
+            isinstance(beta, float) and 0.9 < beta < 1.1
+        ), "Position 3 must be beta float (~1.0 for tracking)"
 
 
 # ---------------------------------------------------------------------------
