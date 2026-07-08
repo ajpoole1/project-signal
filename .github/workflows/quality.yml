@@ -28,11 +28,7 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
-      - name: Ruff lint
-        run: ruff check .
-
-      - name: Ruff format check
-        run: ruff format --check .
-
-      - name: Run pytest
-        run: pytest --cov --cov-report=term-missing
+      # The canonical check script is the single definition of green (CHARTER.md).
+      # CI runs the same file agents run locally — do not restate its steps here.
+      - name: Checks (ruff + pytest)
+        run: scripts/checks.sh
