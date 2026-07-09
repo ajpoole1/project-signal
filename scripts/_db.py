@@ -49,13 +49,16 @@ def load_env(env_path: Path | None = None) -> None:
 def get_connection():
     """Return a psycopg2 connection to the signal database.
 
-    Host from `POSTGRES_HOST` (default `localhost`); user/password required from the
-    environment — a missing credential raises immediately rather than connecting as
-    the wrong identity.
+    Host from `POSTGRES_HOST` (default `localhost`). Identity is the signal role
+    (Q12 two-role model): `SIGNAL_DB_USER` (default `signal_app`, the structural
+    role name) and `SIGNAL_DB_PASSWORD` (required — a missing password raises
+    immediately rather than connecting as the wrong identity). Scripts only ever
+    touch the signal DB, never the airflow metadata DB, so there is one credential
+    here by design.
     """
     return psycopg2.connect(
         host=os.environ.get("POSTGRES_HOST", "localhost"),
         dbname=SIGNAL_DB,
-        user=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"],
+        user=os.environ.get("SIGNAL_DB_USER", "signal_app"),
+        password=os.environ["SIGNAL_DB_PASSWORD"],
     )

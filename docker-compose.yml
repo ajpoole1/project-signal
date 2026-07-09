@@ -5,22 +5,28 @@ x-airflow-common:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
-    # DB host is env-driven (§7.4): POSTGRES_HOST comes from the environment —
-    # the RDS endpoint on the AWS box, and host.docker.internal locally when unset.
-    # No code branches: the same compose file runs both, parity via env only.
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-host.docker.internal}/${POSTGRES_DB}
+    # Two roles, one per database (Q12): airflow_app owns the airflow metadata DB,
+    # signal_app owns the signal data DB — the established isolation pattern. Role
+    # and DB names are STRUCTURAL constants (fixed by INFRA's bootstrap-databases.sql),
+    # so they are hardcoded here, not injected; only the two passwords come from the
+    # secrets-fetch shim. Hardcoding both role and DB collapse-proofs the conn strings
+    # (nothing can silently interpolate to the wrong role or database).
+    # DB host is env-driven (§7.4): POSTGRES_HOST is the RDS endpoint on the box,
+    # host.docker.internal locally when unset. Same file both environments, no branches.
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow_app:${AIRFLOW_DB_PASSWORD}@${POSTGRES_HOST:-host.docker.internal}/airflow
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     _PIP_ADDITIONAL_REQUIREMENTS: "pandas>=2.0.0 anthropic>=0.40.0"
     PYTHONPATH: /opt/airflow
     AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
     # Registers the signal DB connection automatically — no manual UI setup needed
-    AIRFLOW_CONN_SIGNAL_POSTGRES: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-host.docker.internal}/signal
+    AIRFLOW_CONN_SIGNAL_POSTGRES: postgresql://signal_app:${SIGNAL_DB_PASSWORD}@${POSTGRES_HOST:-host.docker.internal}/signal
     EODHD_API_KEY: ${EODHD_API_KEY}
     ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     POSTGRES_HOST: ${POSTGRES_HOST:-host.docker.internal}
-    POSTGRES_DB: ${POSTGRES_DB}
-    POSTGRES_USER: ${POSTGRES_USER}
-    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    # Standalone scripts (signal-tools) connect to the signal DB via scripts/_db.py.
+    # signal_app is structural (hardcoded default); only the password is injected.
+    SIGNAL_DB_USER: signal_app
+    SIGNAL_DB_PASSWORD: ${SIGNAL_DB_PASSWORD}
   volumes:
     - ./dags:/opt/airflow/dags
     - ./plugins:/opt/airflow/plugins

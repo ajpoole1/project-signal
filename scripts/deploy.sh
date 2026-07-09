@@ -30,12 +30,80 @@ if [ "$before" != "$after" ]; then
     changed_files="$(git diff --name-only "$before" "$after")"
 fi
 
+# --- 1b. Secrets-fetch shim (§5.1) --------------------------------------------
+# Fetch the named secrets from Secrets Manager via the instance role and export
+# them for THIS process only — they flow to the compose invocation via the
+# environment and are never written to disk. INFRA's contract is only that the
+# instance role can read these secret ARNs; the env-var names are Signal's.
+# Skipped entirely when SECRETS_PREFIX is unset (local dev reads .env instead).
+fetch_secret() {  # $1 = secret name under the prefix, $2 = env var to export
+    local value
+    value="$(aws secretsmanager get-secret-value \
+        --secret-id "${SECRETS_PREFIX}/$1" \
+        --query SecretString --output text 2>/dev/null)" || {
+        log "FAIL: could not read secret ${SECRETS_PREFIX}/$1 (instance role missing grant?)"
+        exit 1
+    }
+    export "$2=$value"
+}
+
+if [ -n "${SECRETS_PREFIX:-}" ]; then
+    log "fetching secrets from ${SECRETS_PREFIX}/* (in-memory, never written to disk)"
+    fetch_secret eodhd_api_key                 EODHD_API_KEY
+    fetch_secret anthropic_api_key             ANTHROPIC_API_KEY
+    fetch_secret airflow_fernet_key            AIRFLOW__CORE__FERNET_KEY
+    fetch_secret airflow_webserver_secret_key  AIRFLOW__WEBSERVER__SECRET_KEY
+    fetch_secret airflow_db_password           AIRFLOW_DB_PASSWORD
+    fetch_secret signal_db_password            SIGNAL_DB_PASSWORD
+    log "secrets loaded into environment"
+else
+    log "SECRETS_PREFIX unset — using .env (local dev)"
+fi
+
+# Ensure the airflow image is present before any container-based step below (the
+# first-boot guard and migrations both run through it). Idempotent + cheap when
+# already pulled; a fresh box has no image until now.
+log "ensuring images present"
+docker compose pull --quiet airflow-scheduler || docker compose build airflow-scheduler
+
+# All DB access below runs INSIDE the airflow image (it has psycopg2), never via
+# host psql — the box's user_data installs docker/compose/git/aws-cli but not psql,
+# so a host-psql step would fail on the box. A single helper runs one-off python in
+# a throwaway container with the two DB passwords passed through the environment.
+db_python() {  # $1 = python snippet; DB creds come from the current env
+    docker compose run --rm --no-deps -T \
+        -e AIRFLOW_DB_PASSWORD="${AIRFLOW_DB_PASSWORD:-}" \
+        -e SIGNAL_DB_PASSWORD="${SIGNAL_DB_PASSWORD:-}" \
+        -e POSTGRES_HOST="${POSTGRES_HOST:-host.docker.internal}" \
+        -e SIGNAL_DB_USER="${SIGNAL_DB_USER:-signal_app}" \
+        airflow-scheduler python -c "$1"
+}
+
+# --- 1c. First-boot guard: the airflow metadata DB must exist (§5.1 runbook) ---
+# Chicken-and-egg by design: boot #1 runs before INFRA's bootstrap-databases.sql
+# has created the airflow/signal databases, so airflow-init would fail obscurely.
+# Detect the missing-database case explicitly and say what to do, rather than
+# emitting a generic connection error that reads like a real outage.
+if [ -n "${POSTGRES_HOST:-}" ]; then
+    log "first-boot guard: probing airflow_app@${POSTGRES_HOST}/airflow"
+    if ! db_python "import psycopg2, os; psycopg2.connect(host=os.environ['POSTGRES_HOST'], dbname='airflow', user='airflow_app', password=os.environ['AIRFLOW_DB_PASSWORD']).close()" \
+            >/dev/null 2>&1; then
+        log "FAIL: airflow metadata DB not reachable as airflow_app@${POSTGRES_HOST}/airflow."
+        log "      If this is the first boot, the databases do not exist yet —"
+        log "      tunnel in and run bootstrap-databases.sql, then re-run deploy.sh (§5.1)."
+        exit 1
+    fi
+    log "first-boot guard: airflow DB reachable"
+fi
+
 # --- 2. Apply safe migrations BEFORE the scheduler starts ---------------------
 # Idempotent, non-destructive migrations only. A migration whose first line is the
 # `-- MANUAL` marker is destructive (DELETE/TRUNCATE/DROP) and is applied by hand via
 # the SSM tunnel — never auto-applied on boot. "Idempotent" is not "non-destructive":
 # a boot-time loop must not re-run a purge every night. This is the mechanical guard
 # for the manual-migration policy (§7.6) — the marker is grep-checkable; prose is not.
+# Applied against the signal DB as signal_app (Q12), inside the airflow image via
+# psycopg2 (already present for the postgres provider) — no host psql dependency.
 apply_migrations() {
     local applied=0 skipped=0
     for migration in $(ls sql/migrations/*.sql 2>/dev/null | sort); do
@@ -45,8 +113,21 @@ apply_migrations() {
             continue
         fi
         log "applying $(basename "$migration")"
-        psql "${SIGNAL_DATABASE_URL:?SIGNAL_DATABASE_URL must be set}" \
-            --set ON_ERROR_STOP=1 --quiet --file "$migration"
+        # Pipe the SQL file into a container-side psycopg2 runner — keeps DB access
+        # inside the image (no host psql) and uses the signal_app identity.
+        docker compose run --rm --no-deps -T \
+            -e SIGNAL_DB_PASSWORD="${SIGNAL_DB_PASSWORD:?SIGNAL_DB_PASSWORD must be set}" \
+            -e POSTGRES_HOST="${POSTGRES_HOST:-host.docker.internal}" \
+            -e SIGNAL_DB_USER="${SIGNAL_DB_USER:-signal_app}" \
+            -v "$(pwd)/$migration:/tmp/migration.sql:ro" \
+            airflow-scheduler python -c "
+import psycopg2, os
+conn = psycopg2.connect(host=os.environ['POSTGRES_HOST'], dbname='signal',
+                        user=os.environ['SIGNAL_DB_USER'], password=os.environ['SIGNAL_DB_PASSWORD'])
+conn.autocommit = True
+with conn.cursor() as cur, open('/tmp/migration.sql') as f:
+    cur.execute(f.read())
+conn.close()"
         applied=$((applied + 1))
     done
     log "migrations: $applied applied, $skipped skipped (manual)"
