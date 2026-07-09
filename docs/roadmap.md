@@ -89,6 +89,26 @@ AWS migration §7.3. `CORRELATION_WINDOWS` dropped the 30d window (kept 90d + 36
 **2026-07-08 — Wind-down mechanism recorded for PR 3 (do not build stale).**
 AWS migration §5/§7.5. When the run-summary + wind-down work lands (PR 3), the orchestrator wind-down task must **asynchronously invoke the `workbench-stop` Lambda and exit** — it must never stop RDS/EC2 directly, because stopping RDS from inside Airflow kills the scheduler's own metadata DB mid-task. Instance role gets `lambda:InvokeFunction` on workbench-stop, not raw `rds:Stop`. Ownership: Signal self-checks for other running DAGs while it is the sole tenant; a platform-global wind-down DAG replaces it at ≥2 tenants (plan open-Q10). Recorded now so PR 3 is designed to the resolved mechanism.
 
+**2026-07-08 — Run-summary schema v1 signed off; Q11 closed. PR 3 contract.**
+AWS migration §6.3/§7.5. Jarvis drafted the schema (`project-jarvis/skills/signal/run_summary_schema_v1.json`), Signal reviewed for producibility, both signed off. **This is the contract PR 3's run-summary writer builds against** — the orchestrator's terminal `all_done` task writes JSON to `s3://…/signal/run-summaries/<run_date>.json`. Agreed producer decisions:
+> - **`rows_written`**: `COUNT(*) WHERE date = <run_date>` per table at summary time (PK-indexed, ~5 cheap counts) — NOT cross-DAG XCom. Semantic: **rows *present* for run_date**, not write-delta (idempotent re-run reflects final state — what Jarvis's delta-detection wants). Confirmed with Jarvis.
+> - **`quarantine_count`**: add a quarantine counter to `resolve_outcomes_v2`'s return ("quarantined this run"), not a diff-against-prior-set.
+> - **`deploy` block**: `deploy.sh` writes `deploy_status.json` (exit_status, tier, commit_hash, timestamp_utc, detail) to the checkout root; summary task reads it. **PR #18's deploy.sh does NOT write it yet** — v1 emits `deploy: null` (key present, null value satisfies `required`); add the ~3-line writer in PR 3 → v1.1-required. Map deploy.sh tiers onto the enum (`migration-applied` when a non-MANUAL migration ran, `unknown` fallback).
+> - **`wind_down`**: producer-facts only `{attempted, result}`; `result ∈ {invoked, skipped_other_dags_running, invoke_failed}`. `skipped_other_dags_running` = metadata-DB query for running DagRuns of other tenants' dag_ids (the §5 self-check). completed/backstop are Jarvis-side inferences, not fields.
+> - **`dags[]`** (logical_date, state, wall_clock, failed_tasks[].log_excerpt ≤20 lines): from the Airflow metadata DB via `@provide_session` in the summary task. logical_date guaranteed (orchestrator triggers with explicit execution_date).
+> - **`data_gates`**: absent in v1; shape `{check: {passed, detail}}` confirmed for when the hardening pass makes the SIGNAL_GUIDE STOP-conditions programmatic.
+> - Timestamps ISO-8601 UTC; S3 key date == `meta.run_date` (America/Toronto logical date). Bump `schema_version` to 2 for any field-shape change — never mutate v1 (Jarvis gates on `== 1`).
+
+**2026-07-08 — Q12 closed: two DB roles, one per database. First-boot-prerequisite PR.**
+AWS migration §2/§5.1/Q12. [INFRA] added an `airflow_app` role owning the `airflow` metadata DB + a 5th secret `airflow_db_password`; Signal owns the conn-string mapping. **Signal's ground-truth check found the post-§7.4 compose unsatisfiable as-is** — both conn strings shared one credential pair (`POSTGRES_USER`/`POSTGRES_PASSWORD`), so `signal_app` would have owned Airflow's metadata DB (Q12's exact failure mode). Fix (dedicated PR, pulled forward as a first-boot prerequisite — airflow-init can't authenticate without it):
+> - **Two-credential split, roles + DBs hardcoded** in `docker-compose.yml`: `SQL_ALCHEMY_CONN = airflow_app:${AIRFLOW_DB_PASSWORD}@host/airflow`, `AIRFLOW_CONN_SIGNAL_POSTGRES = signal_app:${SIGNAL_DB_PASSWORD}@host/signal`. Role and DB names are structural constants (fixed by bootstrap-databases.sql), not secrets — hardcoding both collapse-proofs the strings. Only the two passwords are injected.
+> - **`scripts/_db.py`** (scripts → signal DB only) now reads `SIGNAL_DB_USER` (default `signal_app`) + `SIGNAL_DB_PASSWORD`, not generic `POSTGRES_USER`/`POSTGRES_PASSWORD`.
+> - **Dead vars removed**: `POSTGRES_USER`/`POSTGRES_DB` deleted from compose + `.env.example` (also dropped the stale `POLYGON_API_KEY` from `.env.example`, a PR#18 residue).
+> - **`deploy.sh` secrets-fetch shim (§5.1)**: fetches the 6 named secrets via `aws secretsmanager get-secret-value` (instance role), exports for the compose invocation only, never to disk. Gated on `SECRETS_PREFIX` (local dev uses `.env`). Plus the first-boot guard: detect airflow-DB-absent and emit the specific "run bootstrap first" message rather than a generic error.
+> - Env-var names are Signal's (both shim and compose are Signal-owned); INFRA's only contract is the secret names.
+> - Not touched (separate cleanup): `sql/init/01_create_signal_db.sh` is dead (old container-Postgres model, unreferenced by compose) but out of scope for this PR.
+> - **Local-dev note:** Tier-2 local Docker is retired (§7 dev lifecycle), so hardcoding `airflow_app`/`signal_app` in compose is not a local regression — nobody runs the airflow container locally; local dev is Tier-1 venv + Tier-3 on AWS. `_db.py`'s `SIGNAL_DB_USER` override covers a differently-named local role.
+
 ---
 
 ## Next actions

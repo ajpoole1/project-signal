@@ -5,6 +5,69 @@ This file is the running memory across authoring sessions; keep entries tight an
 
 ---
 
+## Session — 2026-07-08 (cont.) — §7 migration execution: PR 1 + PR 2
+
+**Context:** Consolidated AWS migration plan reached v1.2 (plan of record, absorbed the
+§7 implementation-plan reviews). This session executed the [SIGNAL] §7 pre-migration
+repo work as staged PRs. Plan artifact (reconciled with v1.2):
+https://claude.ai/code/artifact/c48f2c99-7da0-4ab8-ac88-fb1472f0b476
+
+**Completed — PR #17 (merged → main `ecf97d0`), "PR 1":**
+- **§7.4 connection rewiring** — new `scripts/_db.py` shared helper (`load_env` +
+  `get_connection`, env-driven `POSTGRES_HOST` default `localhost`, never
+  host.docker.internal). All 10 scripts rewired to it. `docker-compose.yml` DB host →
+  `${POSTGRES_HOST:-host.docker.internal}` (verified via `docker compose config`: box→RDS,
+  local→gateway). `POLYGON_API_KEY` dropped from compose.
+- **§7.2 relatedness stop-safety** — replaced up-front `TRUNCATE relatedness_matrix` with
+  per-window `DELETE ... WHERE window_days=%s` + INSERT committed per window (5am kill can't
+  leave the table globally empty). `TestRelatednessStopSafety` (static-source) fences it.
+- **§7.3 relatedness trim** — `CORRELATION_WINDOWS=[90,365]` (30d dropped), `RELATEDNESS_MIN_R`
+  0.20→0.50. Migration `011` (MANUAL-marked) deletes orphaned rows. Validated on live DB:
+  **20.1M → 558K rows (97% cut)**. Finding F (relatedness_matrix has no wired reader) +
+  wire-or-retire backlog item + PR-3 wind-down mechanism recorded in roadmap decision log.
+
+**Completed — PR #18 (merged → main `a60ee1b`), "PR 2":**
+- **§7.6** — `scripts/deploy.sh` (deploy-on-boot: git reset → apply auto-safe migrations →
+  tier-detect → smoke check). **Mechanical `-- MANUAL` destructive-migration guard** (greps
+  file CONTENTS, not filename — 008 is named "bugfix" but DELETEs). Migrations 006/008/009
+  marked retroactively. New **DagBag-import CI job** in `quality.yml` (airflow 2.9.0 +
+  postgres provider + constraints) — the only pre-prod DAG-parse gate now Tier-2 Docker is gone.
+- **§7.5 (partial)** — orchestrator cron → `5 2 * * 0-5` with tz-aware America/Toronto
+  start_date (2:05am ET, DST-correct); `alert_on_failure` TaskFlow `@task(ONE_FAILED)`.
+- **§7.7** — signal-tools mem cap 8g→4g (224 MiB peak, ~18x headroom); `jarvis` least-privilege
+  Airflow role/account in airflow-init (read DAGs/Runs/Tasks/Logs + create DagRuns; password
+  from `JARVIS_AIRFLOW_PASSWORD`, skipped locally).
+- **§7.9** — deleted dormant polygon/yfinance clients + tests + `backfill_history.py`; removed
+  polygon residue from `base_client.py` (kept `BaseMarketClient`); `source` default →`eodhd`.
+
+**Worth remembering:**
+- **The DagBag CI gate paid off on its first run** — it caught `ModuleNotFoundError:
+  airflow.providers.postgres` (bare pip install doesn't bundle providers like the container
+  image does). Fixed by adding `apache-airflow-providers-postgres`; verified by reproducing the
+  CI install in a throwaway venv (all 7 DAGs parse). Lesson: the DagBag CI job's dep set must
+  track every `airflow.providers.*` the DAGs import, separately from the container image.
+- deploy.sh applies non-MANUAL migrations every boot relying on idempotency (no
+  `schema_migrations` tracking table). Fine now; revisit if migration volume grows.
+
+**In progress:** Nothing.
+
+**Blocked:**
+- **PR 3 (§7.5 remainder)** — wind-down task + run-summary writer. Wind-down MECHANISM is
+  resolved and recorded (async-invoke `workbench-stop` Lambda, never raw rds:Stop; ownership
+  Signal-self-check until ≥2 tenants). Blocked on: **Q11** run-summary schema v1 (Jarvis drafts
+  → Signal reviews for producibility) and **S3/boto3** prefix from infra. Do NOT build until
+  those land, or it's built stale.
+
+**Next:**
+- When Q11 schema + S3 land: build PR 3 — orchestrator run-summary writer (writes JSON to
+  `signal/run-summaries/` on `all_done`, incl. `deploy` + `data_gates` blocks) + wind-down task.
+- **§7.8 sizing report** — per-table sizes + wall-clocks, measured on the inauguration backfill
+  day (§8), a step-7 deliverable. Ticker count (6,419) already delivered.
+- Signal side of §7 otherwise complete; remaining work gates on [INFRA] provisioning (§9 step 4)
+  and [JARVIS] schema draft.
+
+---
+
 ## Session — 2026-07-08
 
 **Context:** AWS-migration capacity review. Target box is a shared t4g.large (arm64,
