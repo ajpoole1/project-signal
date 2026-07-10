@@ -96,6 +96,53 @@ if [ -n "${POSTGRES_HOST:-}" ]; then
     log "first-boot guard: airflow DB reachable"
 fi
 
+# --- 1d. Schema bootstrap (B1): apply schema.sql if the signal DB has no tables --
+# On a fresh box the bootstrap step creates the empty `signal` DATABASE, but the
+# TABLES are schema.sql's job (run AS signal_app — it owns them, §2/§8). Without
+# this, a cold box has an empty signal DB and every downstream task fails on a
+# missing table. Detect the empty-schema case and apply once; on an already-built
+# DB this is a no-op (schema.sql is CREATE TABLE IF NOT EXISTS throughout).
+if [ -n "${POSTGRES_HOST:-}" ]; then
+    # The count query must SUCCEED and return a number. A failed query (signal DB
+    # unreachable, signal_app password blank/wrong) must NOT be read as "0 tables"
+    # and trigger a bogus schema apply — §1c only proves the *airflow* DB reachable
+    # as airflow_app, a different DB+role, so it does not cover this path. On query
+    # failure we STOP: an empty result and a broken connection are different states.
+    table_count="$(db_python "
+import psycopg2, os
+c = psycopg2.connect(host=os.environ['POSTGRES_HOST'], dbname='signal',
+                     user=os.environ['SIGNAL_DB_USER'], password=os.environ['SIGNAL_DB_PASSWORD'])
+cur = c.cursor(); cur.execute(\"SELECT COUNT(*) FROM pg_tables WHERE schemaname='public'\")
+print(cur.fetchone()[0]); c.close()" 2>/dev/null | tr -d '[:space:]')"
+
+    if ! printf '%s' "$table_count" | grep -qE '^[0-9]+$'; then
+        log "FAIL: could not read signal DB table count (got: '${table_count}')."
+        log "      signal DB unreachable as signal_app, or SIGNAL_DB_PASSWORD blank/wrong."
+        log "      Not assuming an empty DB — fix the signal connection and re-run."
+        exit 1
+    fi
+
+    if [ "$table_count" = "0" ]; then
+        log "schema bootstrap: signal DB has 0 tables — applying schema.sql as signal_app"
+        docker compose run --rm --no-deps -T \
+            -e SIGNAL_DB_PASSWORD="${SIGNAL_DB_PASSWORD:?SIGNAL_DB_PASSWORD must be set}" \
+            -e POSTGRES_HOST="${POSTGRES_HOST}" \
+            -e SIGNAL_DB_USER="${SIGNAL_DB_USER:-signal_app}" \
+            -v "$(pwd)/sql/schema.sql:/tmp/schema.sql:ro" \
+            airflow-scheduler python -c "
+import psycopg2, os
+conn = psycopg2.connect(host=os.environ['POSTGRES_HOST'], dbname='signal',
+                        user=os.environ['SIGNAL_DB_USER'], password=os.environ['SIGNAL_DB_PASSWORD'])
+conn.autocommit = True
+with conn.cursor() as cur, open('/tmp/schema.sql') as f:
+    cur.execute(f.read())
+conn.close()"
+        log "schema bootstrap: schema.sql applied"
+    else
+        log "schema bootstrap: signal DB has $table_count tables — skip (already built)"
+    fi
+fi
+
 # --- 2. Apply safe migrations BEFORE the scheduler starts ---------------------
 # Idempotent, non-destructive migrations only. A migration whose first line is the
 # `-- MANUAL` marker is destructive (DELETE/TRUNCATE/DROP) and is applied by hand via
@@ -134,23 +181,28 @@ conn.close()"
 }
 apply_migrations
 
-# --- 3. Tier detection: rebuild only when build inputs changed ----------------
-# Code-only change -> restart the scheduler (picks up new DAGs/plugins from the
-# mounted checkout). requirements/compose change -> full rebuild. On first boot
-# (before == after impossible after reset, but empty diff) do a rebuild to be safe.
-needs_rebuild=false
-if [ -z "$changed_files" ]; then
-    log "no file changes since last boot — restarting scheduler only"
-elif echo "$changed_files" | grep -qE '(^requirements.*\.txt$|^docker-compose\.ya?ml$|^Dockerfile)'; then
-    needs_rebuild=true
-    log "build inputs changed -> full rebuild"
-else
-    log "code-only change -> scheduler restart"
-fi
+# --- 3. Bring the stack to the desired state ----------------------------------
+# Three cases, in priority order:
+#   (B2) stack not running  -> `up -d`, unconditionally. This is the cold-boot case
+#        that blocked inauguration: a no-change boot with the stack down would
+#        otherwise hit `restart`, which FAILS when there's nothing to restart. Boot
+#        state, not the git diff, decides whether we must start the stack.
+#   build inputs changed    -> `up -d --build` (rebuild the image).
+#   code-only change on a    -> `restart airflow-scheduler` (mounted checkout already
+#        running stack           has the new DAGs/plugins; just reload).
+# Count running services for this project; 0 means the stack is down.
+running="$(docker compose ps --status running --quiet 2>/dev/null | grep -c . || true)"
 
-if [ "$needs_rebuild" = true ]; then
+if [ "${running:-0}" = "0" ]; then
+    log "stack not running ($running services up) -> up -d"
+    docker compose up -d
+elif echo "$changed_files" | grep -qE '(^requirements.*\.txt$|^docker-compose\.ya?ml$|^Dockerfile)'; then
+    log "build inputs changed -> up -d --build"
     docker compose up -d --build
+elif [ -z "$changed_files" ]; then
+    log "no file changes, stack already up -> nothing to do"
 else
+    log "code-only change -> restart scheduler"
     docker compose restart airflow-scheduler
 fi
 
@@ -158,6 +210,40 @@ fi
 # A green boot means: DAGs parse, the DB is reachable, containers are healthy.
 # Any failure exits nonzero (surfaced by the start hook) rather than leaving a
 # half-live stack that looks up but can't run the nightly chain.
+
+# (B3) Assert the secrets are actually non-blank INSIDE the running container.
+# The "declared-done != verified-live" defect class: a secret can exist in Secrets
+# Manager as an empty container, or the shim can export a blank, and everything
+# looks fine until a task authenticates with "" and fails at 2am. Check the live
+# container, not this script's env — the container is what runs the pipeline.
+#
+# Each secret is checked WHERE IT ACTUALLY LANDS (verified against compose, not
+# assumed): four ride the container env directly; AIRFLOW_DB_PASSWORD is NOT a
+# standalone env var — it is interpolated into AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+# at render time, so we assert that conn string carries a non-empty password rather
+# than looking for an env var that was never passed (which would false-fail).
+log "smoke: secrets non-blank in-container"
+missing_secrets="$(docker compose exec -T airflow-scheduler python -c "
+import os, re
+bad = []
+# Direct container-env secrets:
+for k in ['EODHD_API_KEY', 'ANTHROPIC_API_KEY', 'AIRFLOW__CORE__FERNET_KEY',
+          'AIRFLOW__WEBSERVER__SECRET_KEY', 'SIGNAL_DB_PASSWORD']:
+    if not os.environ.get(k, '').strip():
+        bad.append(k)
+# airflow_app password lives inside the metadata conn string: user:PASSWORD@host.
+conn = os.environ.get('AIRFLOW__DATABASE__SQL_ALCHEMY_CONN', '')
+m = re.search(r'://[^:]+:([^@]*)@', conn)
+if not conn or m is None or not m.group(1).strip():
+    bad.append('AIRFLOW_DB_PASSWORD(in SQL_ALCHEMY_CONN)')
+print(','.join(bad))" 2>/dev/null | tr -d '[:space:]')"
+if [ -n "$missing_secrets" ]; then
+    log "FAIL: secret(s) blank/absent inside the container: $missing_secrets"
+    log "      Secrets Manager container empty, or the shim exported a blank value."
+    exit 1
+fi
+log "smoke: all required secrets present in-container"
+
 log "smoke: DAG import errors"
 import_errors="$(docker compose exec -T airflow-scheduler airflow dags list-import-errors 2>&1)"
 if ! echo "$import_errors" | grep -qiE 'no data|No import errors'; then
