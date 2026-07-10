@@ -173,6 +173,66 @@ class TestFetchOHLCV:
         assert bars[0]["ticker"] == "VIX.INDX"
 
 
+class TestFetchOHLCVZeroBarGuard:
+    """Zero/no-trade bars are dropped at normalization (inauguration §8 defect #10).
+
+    EODHD returns non-trading days as all-zero OHLCV rows; a stored close <= 0 is not
+    a real price and poisons returns downstream. The guard lives at this single
+    chokepoint so every write path (nightly, backfill, corp-action re-fetch) inherits
+    it — the backfill lacked it and wrote 2,023 such rows on inauguration night.
+    """
+
+    @staticmethod
+    def _bar(date, close, adj_close, o=0.0, h=0.0, low=0.0, vol=0):
+        return {
+            "date": date,
+            "open": o,
+            "high": h,
+            "low": low,
+            "close": close,
+            "adjusted_close": adj_close,
+            "volume": vol,
+        }
+
+    @resp_lib.activate
+    def test_all_zero_no_trade_bar_dropped(self):
+        payload = [self._bar("2024-06-03", close=0.0, adj_close=0.0)]
+        resp_lib.add(resp_lib.GET, f"{_BASE}/eod/HNGE.US", json=payload, status=200)
+        bars = EODHDClient(_KEY).fetch_ohlcv("HNGE", "2024-06-03", "2024-06-03")
+        assert bars == []
+
+    @resp_lib.activate
+    def test_zero_adjusted_close_dropped_even_if_raw_close_nonzero(self):
+        # The stored close is adjusted_close; guard keys on it, not raw close.
+        payload = [
+            self._bar("2024-06-03", close=5.0, adj_close=0.0, o=5.0, h=5.0, low=5.0, vol=100)
+        ]
+        resp_lib.add(resp_lib.GET, f"{_BASE}/eod/X.US", json=payload, status=200)
+        bars = EODHDClient(_KEY).fetch_ohlcv("X", "2024-06-03", "2024-06-03")
+        assert bars == []
+
+    @resp_lib.activate
+    def test_mixed_batch_keeps_real_drops_zero(self):
+        # A $47 stock with one all-zero no-trade day sandwiched between real bars:
+        # keep the two real bars, drop the zero (the mid-series case that survives
+        # the V2_MIN_PRICE median filter and poisons returns).
+        payload = [
+            self._bar("2024-06-03", close=47.0, adj_close=47.0, o=46.0, h=48.0, low=45.0, vol=5000),
+            self._bar("2024-06-04", close=0.0, adj_close=0.0),  # no-trade zero-fill
+            self._bar("2024-06-05", close=47.5, adj_close=47.5, o=47.0, h=48.0, low=46.5, vol=6000),
+        ]
+        resp_lib.add(resp_lib.GET, f"{_BASE}/eod/HNGE.US", json=payload, status=200)
+        bars = EODHDClient(_KEY).fetch_ohlcv("HNGE", "2024-06-03", "2024-06-05")
+        assert [b["date"] for b in bars] == ["2024-06-03", "2024-06-05"]
+        assert all(b["close"] > 0 for b in bars)
+
+    @resp_lib.activate
+    def test_negative_close_dropped(self):
+        payload = [self._bar("2024-06-03", close=-1.0, adj_close=-1.0)]
+        resp_lib.add(resp_lib.GET, f"{_BASE}/eod/X.US", json=payload, status=200)
+        assert EODHDClient(_KEY).fetch_ohlcv("X", "2024-06-03", "2024-06-03") == []
+
+
 # ---------------------------------------------------------------------------
 # fetch_metadata
 # ---------------------------------------------------------------------------

@@ -14,7 +14,11 @@ dividend-adjusted, i.e. auto-adjust behaviour).
 
 from __future__ import annotations
 
+import logging
+
 from plugins.base_client import BaseMarketClient
+
+log = logging.getLogger(__name__)
 
 _BASE_URL = "https://eodhd.com/api"
 _EXCHANGE_SUFFIXES = (".TO", ".V", ".INDX")
@@ -52,9 +56,24 @@ class EODHDClient(BaseMarketClient):
 
         currency = "CAD" if ticker.endswith(".TO") or ticker.endswith(".V") else "USD"
         result = []
+        dropped = 0
         for bar in bars:
             raw_close = float(bar["close"])
             adj_close = float(bar["adjusted_close"])
+
+            # Drop no-trade / zero-fill bars at the single normalization chokepoint.
+            # EODHD returns rows for non-trading days as all-zero OHLCV; a stored
+            # close <= 0 is not a real price (a $47 stock does not close at $0), and
+            # it poisons returns downstream (0 -> price is an infinite ratio, and a
+            # mid-series 0 survives the V2_MIN_PRICE median filter on real-priced
+            # names). Every write path — nightly ingest, backfill_eodhd, corp-action
+            # re-fetch — flows through here, so guarding once covers all three
+            # (inauguration §8 Step 1b, defect #10). validate_raw's close>0 check
+            # remains as a belt-and-suspenders backstop on the nightly path.
+            if adj_close <= 0:
+                dropped += 1
+                continue
+
             # Scale O/H/L by the same factor so all columns are split/dividend adjusted.
             factor = adj_close / raw_close if raw_close else 1.0
             result.append(
@@ -70,6 +89,8 @@ class EODHDClient(BaseMarketClient):
                     "source": "eodhd",
                 }
             )
+        if dropped:
+            log.info("fetch_ohlcv %s: dropped %d no-trade/zero-close bar(s)", ticker, dropped)
         return result
 
     def fetch_splits(self, ticker: str, from_date: str) -> list[dict]:
