@@ -65,7 +65,7 @@ RELATEDNESS_MIN_R = 0.50  # pairs below this |pearson_r| are not written; raised
 CORRELATION_CHUNK_SIZE = 500  # tickers per block in chunked corr; smaller = less CPU spike
 
 # --- LLM ---
-ANTHROPIC_MODEL_ANALYSIS = "claude-sonnet-4-6"
+ANTHROPIC_MODEL_ANALYSIS = "claude-sonnet-5"  # Sonnet 5 is the standing default (new-era Sonnet)
 ANTHROPIC_MODEL_CLASSIFICATION = "claude-haiku-4-5-20251001"
 LLM_MAX_TOKENS = 1000
 LLM_SIGNAL_THRESHOLD = 0.5  # min abs(composite_vix_adj) to queue for analysis
