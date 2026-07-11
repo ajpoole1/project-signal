@@ -245,20 +245,46 @@ fi
 log "smoke: all required secrets present in-container"
 
 log "smoke: DAG import errors"
+# `list-import-errors` prints a table listing /opt/airflow/dags/... paths on error,
+# or a "No data found" line when clean. Assert the clean sentinel POSITIVELY:
+# the old double-negative (not-clean AND has-dag-path) fell through to "parse clean"
+# on any garbled/contaminated output that matched neither branch — a check that
+# doesn't gate. Now: an error path present -> FAIL; the clean sentinel absent -> also
+# FAIL (we could not confirm clean, so we do not proceed).
 import_errors="$(docker compose exec -T airflow-scheduler airflow dags list-import-errors 2>&1)"
-if ! echo "$import_errors" | grep -qiE 'no data|No import errors'; then
-    # `list-import-errors` prints a table of errors, or a "No data found" line when clean.
-    if echo "$import_errors" | grep -q '/opt/airflow/dags'; then
-        log "FAIL: DAG import errors present"
-        echo "$import_errors"
-        exit 1
-    fi
+if echo "$import_errors" | grep -q '/opt/airflow/dags'; then
+    log "FAIL: DAG import errors present"
+    echo "$import_errors"
+    exit 1
+fi
+if ! echo "$import_errors" | grep -qiE 'no data|no import errors'; then
+    log "FAIL: could not confirm DAGs parse clean (unexpected list-import-errors output):"
+    echo "$import_errors"
+    exit 1
 fi
 log "smoke: DAGs parse clean"
 
 log "smoke: signal DB reachable"
-docker compose exec -T airflow-scheduler \
-    python -c "from airflow.providers.postgres.hooks.postgres import PostgresHook; PostgresHook(postgres_conn_id='signal_postgres').get_first('SELECT 1')"
+# Capture stdout ALONE and assert the expected token, rather than trusting the
+# exit status to propagate through the `docker compose exec` boundary. Two ways a
+# broken DB slips past a bare `exec … python -c` under set -e: (a) compose/image
+# noise (pull, pip, warnings) rides stdout and the exec still returns 0, so a
+# contaminated run looks healthy; (b) a `$(… | tr)` pipe reports the LAST element's
+# status (tr always succeeds), masking the inner failure even under pipefail.
+# So: send diagnostics to stderr (2>/dev/null), keep only the sentinel on stdout,
+# and gate the exit on the sentinel value — the same token-assert the table_count
+# guard already uses. A failure here is a hard stop: never "deploy OK" on an
+# unreachable DB.
+db_ping="$(docker compose exec -T airflow-scheduler python -c "
+from airflow.providers.postgres.hooks.postgres import PostgresHook
+print(PostgresHook(postgres_conn_id='signal_postgres').get_first('SELECT 1')[0])" \
+    2>/dev/null | tr -d '[:space:]')"
+if [ "$db_ping" != "1" ]; then
+    log "FAIL: signal DB smoke check did not return 1 (got: '${db_ping}')."
+    log "      DB unreachable via signal_postgres, or output was contaminated —"
+    log "      either way the nightly chain cannot run. Not reporting deploy OK."
+    exit 1
+fi
 log "smoke: DB reachable"
 
 log "deploy OK ($after)"
